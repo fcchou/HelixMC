@@ -28,15 +28,12 @@ start_time = time.time()
 
 #############################################
 #Parsing input arguments
-parser = argparse.ArgumentParser(description='HelixMC: Base-pair level Monte-Carlo simulation package for Nucleic Acids.')
+parser = argparse.ArgumentParser(description='Base-pair level Monte-Carlo simulations for Z-DNA.')
 
 parser.add_argument('-n_step', type=int, required=True, help='Number of MC steps', metavar='int')
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-params_file', type=str, help='File of database bp-step parameters', metavar='str')
-group.add_argument('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
+parser.add_argument('-params_file', type=str, required=True, help='File of database bp-step parameters', metavar='str')
+parser.add_argument('-n_bp', type=int, required=True, help='Number of base-pairs', metavar='int')
 parser.add_argument('-gaussian_sampling', type=bool, default=True, help='Sampling assuming mutlivariate gaussian', metavar='bool')
-parser.add_argument('-seq', type=str, help='Full sequence or repeating unit. Input the sequence or a fasta file. Assumes random sequence if not given.', metavar='str')
-parser.add_argument('-n_bp', type=int, help='Number of base-pairs', metavar='int')
 parser.add_argument('-force', type=float, default=0, help='Applied external force in z-direction', metavar='float')
 parser.add_argument('-out', type=str, default='MC_data.npz', help='Name of output file (in .npz format)', metavar='str')
 parser.add_argument('-relax_step', type=int, default=120, help='Number of relax MC steps before saving data', metavar='int')
@@ -51,10 +48,6 @@ parser.add_argument('-in_frame', type=str, help='File for imported saved frame',
 parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
 
 args = parser.parse_args()
-if args.params_file == None and (not args.gaussian_sampling):
-    raise argparse.ArgumentError('-params_file must be specified for non-gaussian sampling!!!')
-if args.seq == None and args.n_bp == None:
-    raise argparse.ArgumentError('At least one of -n_bp and -seq must be specified!!!')
 
 is_link_constrained = ( args.target_link != None and args.trap_stiffness != 0 )
 fuller_check_out = args.check_fuller
@@ -64,49 +57,11 @@ if args.constant_seed:
 
 #############################################
 #Initial setup
-if args.params_file != None:
-    if args.params_file[-3:] == 'npz':
-        random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
-    else:
-        if args.seq == None:
-            raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
-        if args.params_file[-3:] == 'npy':
-            params = np.load( args.params_file )
-        elif args.params_file[-3:] == 'txt':
-            params = np.loadtxt( args.params_file )
-        random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
-else:
-    if args.seq == None:
-        raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
-    if args.gaussian_params[-3:] == 'npy' :
-        gaussian_params = np.load( args.gaussian_params )
-    else :
-        gaussian_params = np.loadtxt( args.gaussian_params )
-    params_avg = gaussian_params[0]
-    params_cov = gaussian_params[1:]
-    random_step = RandomStepSimple( params_avg = params_avg, params_cov = params_cov, gaussian_sampling = args.gaussian_sampling )
-
-is_seq_dep = False
-if args.seq != None:
-    is_seq_dep = True
-    seq_unit = ''
-    try:
-        seq_unit = util.read_seq_from_fasta(args.seq)
-    except ValueError:
-        seq_unit = args.seq
-    if args.n_bp == None:
-        seq = seq_unit
-        n_bp = len(seq)
-    else:
-        n_bp = args.n_bp
-        seq = ''
-        while len(seq) < n_bp:
-            seq += seq_unit
-        seq = seq[:n_bp]
-    seq_id = np.empty( n_bp - 1, dtype=int )
-    for i in xrange(n_bp-1):
-        name = seq[i:i+2]
-        seq_id[i] = random_step.name2rand_idx(name)
+random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
+n_bp = args.n_bp
+seq_id = np.empty( n_bp - 1, dtype=int )
+for i in xrange(n_bp-1):
+    seq_id[i] = i % 2
 
 if args.in_frame != None :
     pose = HelixPose( input_file = args.in_frame )
@@ -125,10 +80,7 @@ else:
 #############################################
 #MC Workhorse function
 def MC_move( pose, moving_step, scorefxn, accept_all=False ):
-    if is_seq_dep:
-        next_step_data = random_step( seq_id[moving_step] )
-    else:
-        next_step_data = random_step()
+    next_step_data = random_step( seq_id[moving_step] )
     if accept_all:
         pose.update(moving_step, *next_step_data)
         return True

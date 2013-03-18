@@ -29,14 +29,14 @@ class HelixPose(object):
     Parameters
     ----------
     input_file : str, optional
-        Input file (.npy) that stores the helix pose data. Overides 'init_params' if both specified.
+        Input file (.npz) that stores the helix pose data. Overides 'init_params' if both specified.
     init_params : ndarray, shape (6), optional
         Parameter set used for initializing the helix pose. The initialized pose will have the same bp-step parameters throughout.
     n_bp : int, optional
         Number of base-pairs in the model. Must be specified if init_params is given.
     compute_tw_wr : bool, optional
         Whether to compute twist and writhe (Fuller's writhe) during system update. Should be set to True for
-        link-constrained simulations. Default is False.
+        link-constrained simulations.
 
     Attributes
     ----------
