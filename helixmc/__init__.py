@@ -16,12 +16,10 @@
 
 
 """
-PHURL:
+HelixMC:
 
 Author:
 Fang-Chieh Chou <fcchou@stanford.edu>
-
-Copyright 2013 Fang-Chieh Chou
 """
 
 # list of all the modules (files)
