@@ -19,7 +19,7 @@ import numpy as np
 import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
-from helixmc.random_step import RandomStepSimple, RandomStepAgg
+from helixmc.random_step import RandomStepAgg
 from helixmc.score_function import ScoreFunctionTweezers
 import time
 import argparse
@@ -162,4 +162,3 @@ if args.out_frame != None:
 print 'Total time = %f' % (time.time() - start_time)
 if args.n_step > 0:
     print 'Accept rate = %f' % (float(accept) / (args.n_step * ( n_bp - 1 )))
-
