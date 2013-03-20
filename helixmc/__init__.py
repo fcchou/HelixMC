@@ -27,7 +27,8 @@ __all__ = [
 "util",
 "pose",
 "random_step",
-"score_function"
+"score_function",
+'fit_function'
 ]
 
 #Initialize Random number generator used throughout

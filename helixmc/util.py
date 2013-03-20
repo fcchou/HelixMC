@@ -42,7 +42,7 @@ def Rz( theta ):
     Rx : Return x-rotation matrices with rotational angle theta.
     R_axis : Return rotation matrices with rotational angle theta along an arbitary rotation axis.
     '''
-    if type(theta) is np.ndarray: # array version
+    if isinstance(theta, np.ndarray): # array version
         sin_theta = np.sin( theta )
         cos_theta = np.cos( theta )
         rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
@@ -71,7 +71,7 @@ def Rx( theta ):
     --------
     Rz, Ry, R_axis
     '''
-    if type(theta) is np.ndarray: # array version
+    if isinstance(theta, np.ndarray): # array version
         sin_theta = np.sin( theta )
         cos_theta = np.cos( theta )
         rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
@@ -100,7 +100,7 @@ def Ry( theta ):
     --------
     Rz, Rx, R_axis
     '''
-    if type(theta) is np.ndarray: # array version
+    if isinstance(theta, np.ndarray): # array version
         sin_theta = np.sin( theta )
         cos_theta = np.cos( theta )
         rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
@@ -142,7 +142,7 @@ def R_axis( theta, axis ):
     Ry : Return y-rotation matrices with rotational angle theta.
     Rx : Return x-rotation matrices with rotational angle theta.
     '''
-    if type(theta) is np.ndarray: # array version
+    if isinstance(theta, np.ndarray): # array version
         sin_theta = np.sin( theta )
         cos_theta = np.cos( theta )
         axis = axis / np.sqrt( np.sum(axis * axis, axis = 1) )[:,np.newaxis]

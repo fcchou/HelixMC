@@ -203,11 +203,11 @@ class RandomStepAgg(RandomStepBase):
         Raises
         ------
         TypeError
-            If random_step does not belong to a subclass of RandomStepBase.
+            If random_step does not belong to a subclass of `RandomStepBase`.
         ValueError
             If the input name already exists in self.names.
         '''
-        if not isinstance( random_step, RandomStepBase ):
+        if not issubclass( random_step, RandomStepBase ):
             raise TypeError('random_step does not belong to a subclass of RandomStepBase.')
         if name in self._names:
             raise ValueError('Input name already exists in self.names!!!')

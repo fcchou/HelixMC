@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
