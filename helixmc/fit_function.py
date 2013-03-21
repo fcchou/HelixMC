@@ -41,7 +41,9 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
 
     See Also
     --------
-    wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
+    wlc_bouchiat_impl, wlc_bouchiat_impl_log : Implict worm-like chain fitting formula described in Bouchiat et al.
+    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
+    f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
 
     Notes
     -----
@@ -63,7 +65,7 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
     for alpha in alphas:
         b *= z_div_L
         a += alpha * b
-    F = kT / L0 * a
+    F = kT / Lp * a
     return F
 
 def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
@@ -94,6 +96,8 @@ def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
     See Also
     --------
     wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
+    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
+    f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
 
     Notes
     -----
@@ -118,9 +122,30 @@ def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
     zero = kT / Lp * a - F
     return zero
 
+def wlc_bouchiat_impl_log(Lp, L0, K0, z, F, kT=kBT):
+    r'''
+    Similar to `wlc_bouchiat_impl`, but comparison is done in log10(F) space instead.
+    In practice it is more robust. See `wlc_bouchiat_impl` for details.
+
+    See Also
+    --------
+    wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
+    wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
+    f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
+    '''
+    l = z / L0 - F / K0
+    a = 0.25 / (1.0 - l) ** 2 - 0.25 + l
+    alphas = [-0.5164228, -2.737418, 16.07497, -38.87607, 39.49944, -14.17718]
+    b = copy(l)
+    for alpha in alphas:
+        b *= l
+        a += alpha * b
+    zero = np.log10(kT / Lp * a) - np.log10(F)
+    return zero
+
 def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
     '''
-    Approximately solve the implicit wlc model by grid search and return the force.
+    Approximately solve the force from implicit wlc model by grid search.
 
     Parameters
     ----------
@@ -144,6 +169,7 @@ def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
     --------
     wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
     wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
+    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
     '''
     F_list= np.exp( np.linspace( np.log(0.001), np.log(100), 30000 ) )
     if isinstance(z,float): #float version
