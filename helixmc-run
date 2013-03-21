@@ -211,3 +211,4 @@ print 'Total time = %f' % (time.time() - start_time)
 if args.n_step > 0:
     print 'Accept rate = %f' % (float(accept) / (args.n_step * ( n_bp - 1 )))
 
+pose.plot_helix()
