@@ -39,35 +39,35 @@ class HelixPose(object):
 
     Attributes
     ----------
-    compute_tw_wr : bool
+    `compute_tw_wr` : bool
         See Parameters section above.
-    writhe_exact : float
+    `writhe_exact` : float
         Exact writhe of the helix.
-    writhe_fuller : float
+    `writhe_fuller` : float
         Fuller's writhe of the helix.
-    twist : float
+    `twist` : float
         Supercoiling twist of the helix.
-    coord_terminal : ndarray
+    `coord_terminal` : ndarray
         Coordinate (x,y,z) of the center of last base-pair.
-    frame_terminal : ndarray
+    `frame_terminal` : ndarray
         Coordinate frame of the last base-pair. Each column represent the cooresponding axis (frame[:,0] is the x-axis etc.)
-    z_terminal : float
+    `z_terminal` : float
         Z-component of coord_terminal
-    link_fuller : float
+    `link_fuller` : float
         Link of the helix computed using Fuller's approximation.
-    link_exact : float
+    `link_exact` : float
         Exact link of the helix.
-    coord : ndarray
+    `coord` : ndarray
         Coordinates of all base-pairs in the helix.
-    dr : ndarray
+    `dr` : ndarray
         Delta-r vectors of the entire helix.
-    frame : ndarray
+    `frames` : ndarray
         Frames of all bp-steps in the helix.
-    params : ndarray
+    `params` : ndarray
         List of all bp-step parameters in the helix.
-    n_bp : int
+    `n_bp` : int
         Number of base-pairs in the helix.
-    rb_vec : ndarray
+    `rb_vec` : ndarray
         Ribbon vectors of all base-pairs in the helix.
 
     Raises

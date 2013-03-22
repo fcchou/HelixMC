@@ -18,13 +18,13 @@ import abc
 import warnings
 
 #####Score function#####
-class ScoreFunctionBase(object):
+class ScorefxnBase(object):
     '''
     Base class for scoring fucntion, for inheritence only.
 
     See Also
     --------
-    ScoreFunctionTweezers : Score function for tweezers experiments.
+    ScorefxnTweezers : Score function for tweezers experiments.
     '''
     __metaclass__ = abc.ABCMeta
 
@@ -36,7 +36,7 @@ class ScoreFunctionBase(object):
     def __call__(self, pose):
         return
 
-class ScoreFunctionTweezers(ScoreFunctionBase):
+class ScorefxnTweezers(ScorefxnBase):
     '''
     Score function for tweezers experiments.
 
@@ -51,14 +51,14 @@ class ScoreFunctionTweezers(ScoreFunctionBase):
 
     Attributes
     ----------
-    force : float
-    trap_stiffness : float
-    target_link : float
+    `force` : float
+    `trap_stiffness` : float
+    `target_link` : float
         See Parameters section above.
 
     See Also
     --------
-    ScoreFunctionBase : Base class for scoring fucntion, for inheritence only.
+    ScorefxnBase : Base class for scoring fucntion, for inheritence only.
     '''
     def __init__(self, force=0.0, trap_stiffness=0.0, target_link=None):
         self.force = force

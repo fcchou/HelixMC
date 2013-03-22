@@ -172,37 +172,6 @@ def R_axis( theta, axis ):
         rot_matrix[2,1] = axis[1] * axis[2] * (1 - cos_theta) + axis[0] * sin_theta
     return rot_matrix
 
-def unitarize( R ):
-    '''
-    Enforce unitarity of the input matrix using Gram-Schmidt process.
-    This function overwrites the input matrix.
-
-    Parameters
-    ----------
-    R : ndarray, shape (N,3,3)
-        (List of) input matrix to be unitarized.
-
-    Returns
-    -------
-    R : ndarray, shape (N,3,3)
-        Unitarized input matrix.
-    '''
-    if len( R.shape ) == 2: #1D case
-        R[0] /= math.sqrt( R[0].dot( R[0]) )
-        R[1] -= R[1].dot( R[0]) * R[0]
-        R[1] /= math.sqrt(  R[1].dot( R[1]) )
-        R[2] -= R[2].dot( R[0]) * R[0]
-        R[2] -= R[2].dot( R[1]) * R[1]
-        R[2] /= math.sqrt( R[2].dot( R[2]) )
-    else: #2D case
-        R[:,0] /= np.sqrt( np.sum( R[:,0] ** 2, axis=1) )[:,np.newaxis]
-        R[:,1] -= np.einsum( 'ij,ij->i', R[:,1], R[:,0] )[:,np.newaxis] * R[:,0]
-        R[:,1] /= np.sqrt( np.sum( R[:,1] ** 2, axis=1) )[:,np.newaxis]
-        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,0] )[:,np.newaxis] * R[:,0]
-        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,1] )[:,np.newaxis] * R[:,1]
-        R[:,2] /= np.sqrt( np.sum( R[:,2] ** 2, axis=1) )[:,np.newaxis]
-    return R
-
 def params2coords( params ):
     '''
     Convert base-pair step parameters to bp-center coordinates and rotation matrix.
@@ -294,7 +263,7 @@ def coords2params( o2, R2 ):
         d_vec = np.einsum('ijk,ikl,ilm,im->ij', Rz( -Phi ), Ry( -Tau * 0.5 ), Rz( -Twst * 0.5 + Phi ), o2 )
         return np.column_stack( (d_vec, Tilt, Roll, Twst) )
 
-def params2data( params, frame0 = np.eye(3) ) :
+def params2data( params, frame0 = None ):
     '''
     Convert list of base-pair step parameters to delta-r vectors and frames of each site.
 
@@ -314,6 +283,8 @@ def params2data( params, frame0 = np.eye(3) ) :
     frames : ndarray, shape (N+1,3,3)
         Frame of each base-pair.
     '''
+    if frame0 == None:
+        frame0 = np.eye(3)
     n_bp = params.shape[0] + 1
     frames = np.zeros( (n_bp,3,3) )
     o, R = params2coords( params )
@@ -665,6 +636,37 @@ def writhe_fuller( dr, return_val_only=True ) :
     else :
         return area
 
+def unitarize( R ):
+    '''
+    Enforce unitarity of the input matrix using Gram-Schmidt process.
+    This function overwrites the input matrix.
+
+    Parameters
+    ----------
+    R : ndarray, shape (N,3,3)
+        (List of) input matrix to be unitarized.
+
+    Returns
+    -------
+    R : ndarray, shape (N,3,3)
+        Unitarized input matrix.
+    '''
+    if len( R.shape ) == 2: #1D case
+        R[0] /= math.sqrt( R[0].dot( R[0]) )
+        R[1] -= R[1].dot( R[0]) * R[0]
+        R[1] /= math.sqrt(  R[1].dot( R[1]) )
+        R[2] -= R[2].dot( R[0]) * R[0]
+        R[2] -= R[2].dot( R[1]) * R[1]
+        R[2] /= math.sqrt( R[2].dot( R[2]) )
+    else: #2D case
+        R[:,0] /= np.sqrt( np.sum( R[:,0] ** 2, axis=1) )[:,np.newaxis]
+        R[:,1] -= np.einsum( 'ij,ij->i', R[:,1], R[:,0] )[:,np.newaxis] * R[:,0]
+        R[:,1] /= np.sqrt( np.sum( R[:,1] ** 2, axis=1) )[:,np.newaxis]
+        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,0] )[:,np.newaxis] * R[:,0]
+        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,1] )[:,np.newaxis] * R[:,1]
+        R[:,2] /= np.sqrt( np.sum( R[:,2] ** 2, axis=1) )[:,np.newaxis]
+    return R
+
 def MC_acpt_rej( score_old, score_new, kT = kBT ):
     '''
     Decide whether to accept a Monte-Carlo move, given the old score and new score.
@@ -676,7 +678,7 @@ def MC_acpt_rej( score_old, score_new, kT = kBT ):
     score_new : float
         score of the system after the proposed update.
     kT : float
-        Temperature times Boltzmann constant.
+        Temperature times Boltzmann constant, in pN.A.
 
     Returns
     -------

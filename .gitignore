@@ -43,3 +43,8 @@ tags
 *.tbz2
 *.tgz
 *.zip
+
+# Package specifc #
+###################
+doc/build/
+doc/source/generated/

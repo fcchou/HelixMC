@@ -20,7 +20,7 @@ import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
 from helixmc.random_step import RandomStepSimple, RandomStepAgg
-from helixmc.score_function import ScoreFunctionTweezers
+from helixmc.scorefxn import ScorefxnTweezers
 import time
 import argparse
 
@@ -119,8 +119,8 @@ if args.force == 0 and args.trap_stiffness == 0:
     scorefxn_prerun = None
 else:
     is_accept_all = False
-    scorefxn = ScoreFunctionTweezers(args.force, args.trap_stiffness, args.target_link)
-    scorefxn_prerun = ScoreFunctionTweezers(args.force, 0, None)
+    scorefxn = ScorefxnTweezers(args.force, args.trap_stiffness, args.target_link)
+    scorefxn_prerun = ScorefxnTweezers(args.force, 0, None)
 
 #############################################
 #MC Workhorse function
@@ -210,5 +210,3 @@ if args.out_frame != None:
 print 'Total time = %f' % (time.time() - start_time)
 if args.n_step > 0:
     print 'Accept rate = %f' % (float(accept) / (args.n_step * ( n_bp - 1 )))
-
-pose.plot_helix()

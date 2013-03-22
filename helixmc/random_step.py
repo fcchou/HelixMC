@@ -49,7 +49,8 @@ class RandomStepBase(object):
 
 class RandomStepSimple(RandomStepBase):
     '''
-    Simple random bp-step generator, with option of picking random datasets from database or sample from a multivariate Gaussian
+    Simple random bp-step generator.
+    Pick random datasets from database or sample from a multivariate Gaussian
     built from the database.
 
     Parameters
@@ -68,9 +69,9 @@ class RandomStepSimple(RandomStepBase):
 
     Attributes
     ----------
-    gaussian_sampling : bool
-    params_avg : ndarray
-    params_cov : ndarray
+    `gaussian_sampling` : bool
+    `params_avg` : ndarray
+    `params_cov` : ndarray
         See the Parameters section.
 
     Raises
@@ -157,11 +158,11 @@ class RandomStepAgg(RandomStepBase):
 
     Attributes
     ----------
-    gaussian_sampling : bool
+    `gaussian_sampling` : bool
         See the Parameters section.
-    params_avg : ndarray
+    `params_avg` : ndarray
         Average values for the step parameters distribution.
-    names : list
+    `names` : list
         List of all names of RandomStep in the aggregation.
 
     See Also

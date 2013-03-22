@@ -32,7 +32,7 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
     z : float or 1D ndarray
         Average Z-extension of the helix, in Angstrom.
     kT : float, optional
-        Boltzmann factor times temperature, default is at 298.15 K.
+        Temperature times Boltzmann constant, in pN.A.
 
     Returns
     -------
@@ -86,7 +86,7 @@ def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
     F : float or  1D ndarray
         Z-direction stretching force, in pN.
     kT : float, optional
-        Boltzmann factor times temperature, default is at 298.15 K.
+        Temperature times Boltzmann constant, in pN.A.
 
     Returns
     -------
@@ -158,7 +158,7 @@ def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
     z : float or 1D ndarray
         Average Z-extension of the helix, in Angstrom.
     kT : float, optional
-        Boltzmann factor times temperature, default is at 298.15 K.
+        Temperature times Boltzmann constant, in pN.A.
 
     Returns
     -------
