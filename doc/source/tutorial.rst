@@ -42,7 +42,9 @@ to HelixMC. The versions we used are given in parathesis.
 
 * Scipy (0.10.1)
 
-* GCC (4.6.3, for scipy.weave)
+* Matplotlib (1.1.0)
+
+* A working C/C++ compiler. Here we used GCC (4.6.3)
 
 The easiest way to setup the python environment is to use latest Enthought
 Python Distribution (http://www.enthought.com/). HelixMC will probably run in

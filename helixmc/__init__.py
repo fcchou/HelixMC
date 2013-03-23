@@ -16,10 +16,27 @@
 
 
 """
-HelixMC:
+#######
+HelixMC
+#######
 
-Author:
-Fang-Chieh Chou <fcchou@stanford.edu>
+HelixMC is a software package for Monte-Carlo (MC) simulations of DNA/RNA
+helices using the base-pair level model, coded with Python. HelixMC is
+distributed under the GPLv3 licence.
+
+The project is authored by Fang-Chieh Chou in 2013, under the supervison of
+Dr. Rhiju Das, at the Biochemistry Department of Stanford Unviersity.
+
+Contacts
+--------
+- Fang-Chieh Chou <fcchou@stanford.edu>
+- Rhiju Das <rhiju@stanford.edu>
+
+Links
+-----
+- Source code: https://github.com/fcchou/HelixMC
+- HTML documentation:
+- Das Lab: http://www.stanford.edu/~rhiju/
 """
 #version
 __version__ = 0.2
