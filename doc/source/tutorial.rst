@@ -101,6 +101,11 @@ you should see something like::
     Total time = 1.941772
     Accept rate = 0.787879
 
+It is advisable to check the `Accept rate` of each run, and make sure it is not
+too low. As a rule of thumb, if `Accept rate` < 0.1, this means most MC moves
+are rejected, and you will need use a higher-than-normal number of MC steps to
+acheive the same level of sampling.
+
 Now we can analyze the output data. Open a Python session and enters
 the following::
 
@@ -164,5 +169,13 @@ Here is a list of examples in the ``examples/`` folder.
 * bending_Lp_Olson: How to perform alternative evaluation of bending persistence
   length using the method suggested by Olson et al. [CITE].
 
+* database_curation: Examples on curating base-pair step parameters from PDB.
+
 Base-pair Step Parameters Database
 ==================================
+
+Code Organization
+=================
+
+References
+==========
