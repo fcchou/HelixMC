@@ -259,7 +259,7 @@ class HelixPose(object):
 
     def update_trial(self, i, params, o=None, R=None ):
         '''
-        Trail update of the i-th bp-step.
+        Trial update of the i-th bp-step.
         Following accept_update or reject_update is required.
 
         Parameters
@@ -427,7 +427,7 @@ class HelixPose(object):
         return self._frames[:,:,1].copy()
     #########################
     #Plotting functions
-    def plot_helix(self, rb_width=16.0, color='kb', show=True, fig_ax=None) :
+    def plot_helix(self, rb_width=5.0, color='kb', show=True, fig_ax=None) :
         '''
         Plot the helix using matplotlib + mplot3d.
 

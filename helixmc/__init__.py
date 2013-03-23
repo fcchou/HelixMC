@@ -21,8 +21,10 @@ HelixMC:
 Author:
 Fang-Chieh Chou <fcchou@stanford.edu>
 """
+#version
+__version__ = 0.2
 
-# list of all the modules (files)
+#list of all the modules (files)
 __all__ = [
 "util",
 "pose",
@@ -40,7 +42,7 @@ def constant_seed( seed=24601 ):
     Set constant random seed.
 
     Parameters
-    ---------
+    ----------
     seed : int, optional
         Random seed.
     '''

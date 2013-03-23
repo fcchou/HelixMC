@@ -316,7 +316,7 @@ def dr2coord( dr ):
 
 def ribbon_twist( dr, rb_vec, return_val_only=True ):
     '''
-    Compute the ribbon-twist (i.e. supercoiling twist) of a helix.
+    Compute the ribbon-twist (supercoiling twist) of a helix.
 
     Parameters
     ----------
@@ -456,10 +456,15 @@ def writhe_exact( dr ) :
     writhe_fuller : Compute the writhe of the helix using the Fuller's approximated single integral.
     ribbon_twist : Compute the ribbon-twist of a helix.
 
+    Notes
+    -----
+    Details of the evaluation scheme is dicussed in reference [RM]_ [W1]_.
+
     References
     ----------
-    [1] Rossetto V, Maggs AC (2003) Writhing geometry of open DNA. J. Chem. Phys. 118: 9864-9874.
-    [2] White JH (1969) Self-linking and the Gauss integral in higher dimensions. Am. J. Math. 91: 693-728.
+    .. [RM] Rossetto V, Maggs AC (2003) Writhing geometry of open DNA. J. Chem. Phys. 118: 9864-9874.
+
+    .. [W1] White JH (1969) Self-linking and the Gauss integral in higher dimensions. Am. J. Math. 91: 693-728.
     '''
     r0 = dr2coord( dr )
     r1 = r0[1:] - r0[0]
@@ -586,10 +591,9 @@ def writhe_fuller( dr, return_val_only=True ) :
     writhe_exact : Compute the writhe of the helix using the exact Gauss double integral.
     ribbon_twist : Compute the ribbon-twist of a helix.
 
-    References
-    ----------
-    [1] Rossetto V, Maggs AC (2003) Writhing geometry of open DNA. J. Chem. Phys. 118: 9864-9874.
-    [2] Fuller FB (1971) The writhing number of a space curve. PNAS 68: 815-819.
+    Notes
+    -----
+    Details of the evaluation scheme is dicussed in reference [RM]_ [W1]_.
     '''
 
     n = dr.shape[0] - 1
@@ -669,14 +673,14 @@ def unitarize( R ):
 
 def MC_acpt_rej( score_old, score_new, kT = kBT ):
     '''
-    Decide whether to accept a Monte-Carlo move, given the old score and new score.
+    Decide whether to accept a Monte-Carlo move.
 
     Parameters
     ----------
     score_old : float
-        score of the system before the proposed update.
+        score before the proposed update.
     score_new : float
-        score of the system after the proposed update.
+        score after the proposed update.
     kT : float
         Temperature times Boltzmann constant, in pN.A.
 

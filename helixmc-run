@@ -87,6 +87,7 @@ else:
     random_step = RandomStepSimple( params_avg = params_avg, params_cov = params_cov, gaussian_sampling = args.gaussian_sampling )
 
 is_seq_dep = False
+n_bp = args.n_bp
 if args.seq != None:
     is_seq_dep = True
     seq_unit = ''
@@ -94,11 +95,10 @@ if args.seq != None:
         seq_unit = util.read_seq_from_fasta(args.seq)
     except ValueError:
         seq_unit = args.seq
-    if args.n_bp == None:
+    if n_bp == None:
         seq = seq_unit
         n_bp = len(seq)
     else:
-        n_bp = args.n_bp
         seq = ''
         while len(seq) < n_bp:
             seq += seq_unit

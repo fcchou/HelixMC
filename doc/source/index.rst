@@ -14,11 +14,3 @@ Contents:
    tutorial
    reference
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
-

@@ -10,9 +10,16 @@ HelixMC Reference
 
 .. currentmodule:: helixmc
 
-This reference page details functions, modules, and objects
+This reference document details functions, modules, and objects
 included in HelixMC, describing what they are and what they do.
 For learning how to use HelixMC, see also :ref:`tutorial`.
+
+Constant Random Seed
+====================
+.. autosummary::
+   :toctree: generated/
+
+   constant_seed
 
 Helix Pose
 ==========
@@ -89,7 +96,6 @@ Useful Fitting Functions
 
    fitfxn.wlc_bouchiat
    fitfxn.wlc_bouchiat_impl
-   fitfxn.wlc_bouchiat_impl_log
    fitfxn.f_wlc_bouchiat_impl
    fitfxn.moroz_3rd
    fitfxn.moroz_1st

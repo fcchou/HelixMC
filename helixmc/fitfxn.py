@@ -21,7 +21,8 @@ from __init__ import kBT
 def wlc_bouchiat(Lp, L0, z, kT=kBT):
     r'''
     Worm-like chain fitting formula described in Bouchiat et al. 1999 paper.
-    For fitting force-extension curve.
+    Assumes the chain has constant length (inextensive model).
+    For fitting force-extension curve in low-to-medium force regime (< 10 pN).
 
     Parameters
     ----------
@@ -41,22 +42,23 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
 
     See Also
     --------
-    wlc_bouchiat_impl, wlc_bouchiat_impl_log : Implict worm-like chain fitting formula described in Bouchiat et al.
-    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
+    wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
     f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
 
     Notes
     -----
-    Here is the function :
-    .. math ::
-       F=\frac{kT}{{{L}_{p}}}\left[ \frac{1}{4{{(1-z/{{L}_{0}})}^{2}}}-\frac{1}{4}+\frac{z}{{{L}_{0}}}+
-       \sum\limits_{i=2}^{i\le 7}{{{\alpha }_{i}}{{\left( \frac{z}{{{L}_{0}}} \right)}^{i}}} \right]
+    The fitting function [BW]_ is
+
+    .. math::
+       F = \frac{kT}{L_p} \left[ \frac{1}{4 (1 - z / L_0)^2} - \frac{1}{4} + \frac{z}{L_0} +
+       \sum\limits_{i=2}^{i \le 7}{ \alpha_i {\left( \frac{z}{L_0}  \right)}^i} \right]
+
     Where :math:`\alpha` = [-0.5164228, -2.737418, 16.07497, -38.87607, 39.49944, -14.17718] for i = 2~7.
 
     References
     ----------
-    [1] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999) Estimating the persistence
-    length of a worm-like chain molecule from force-extension measurements. Biophys. J. 76: 409-413.
+    .. [BW] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999) Estimating the persistence
+       length of a worm-like chain molecule from force-extension measurements. Biophys. J. 76: 409-413.
     '''
     z_div_L = z / L0
     a = 0.25 / (1.0 - z_div_L) ** 2 - 0.25 + z_div_L
@@ -68,10 +70,11 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
     F = kT / Lp * a
     return F
 
-def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
+def wlc_bouchiat_impl(Lp, L0, S, z, F, kT=kBT):
     r'''
     Implicit worm-like chain fitting formula described in Bouchiat et al. 1999 paper.
-    For fitting force-extension curve at high-force.
+    Comparison is done in log10(F) space instead (more robust in practice).
+    An extensive rod factor is added for fitting force-extension curve at high-force.
 
     Parameters
     ----------
@@ -79,7 +82,7 @@ def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
         Bending persistence length, in Angstrom.
     L0 : float
         Contour length, in Angstrom.
-    K0 : float
+    S : float
         Stretch modulus, in pN.
     z : float or 1D ndarray
         Average Z-extension of the helix, in Angstrom.
@@ -96,44 +99,21 @@ def wlc_bouchiat_impl(Lp, L0, K0, z, F, kT=kBT):
     See Also
     --------
     wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
-    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
     f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
 
     Notes
     -----
-    Equation :
-    .. math ::
-       \frac{kT}{{{L}_{p}}}\left[ \frac{1}{4{{(1-l)}^{2}}}-\frac{1}{4}+l+
-       \sum\limits_{i=2}^{i\le 7}{{{\alpha }_{i}}{{l}^{i}}} \right]-F=0
-    With :math:`l=z/{{L}_{0}}-F/{{K}_{0}}`
+    The fitting function [BW]_ is
 
-    References
-    ----------
-    [1] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999) Estimating the persistence
-    length of a worm-like chain molecule from force-extension measurements. Biophys. J. 76: 409-413.
+    .. math::
+       \log_{10} \left[  \frac{kT}{L_p} \left( \frac{1}{4(1-l)^2} - \frac{1}{4} + l +
+       \sum \limits_{i=2}^{i \le 7}{\alpha_i l^i} \right) \right]- \log_{10} (F) = 0
+
+    With :math:`l = z / L_0 - F / S`
+
+    See `wlc_bouchiat` for reference papers.
     '''
-    l = z / L0 - F / K0
-    a = 0.25 / (1.0 - l) ** 2 - 0.25 + l
-    alphas = [-0.5164228, -2.737418, 16.07497, -38.87607, 39.49944, -14.17718]
-    b = copy(l)
-    for alpha in alphas:
-        b *= l
-        a += alpha * b
-    zero = kT / Lp * a - F
-    return zero
-
-def wlc_bouchiat_impl_log(Lp, L0, K0, z, F, kT=kBT):
-    r'''
-    Similar to `wlc_bouchiat_impl`, but comparison is done in log10(F) space instead.
-    In practice it is more robust. See `wlc_bouchiat_impl` for details.
-
-    See Also
-    --------
-    wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
-    wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
-    f_wlc_bouchiat_impl : Approximately solve the force from implicit wlc model by grid search.
-    '''
-    l = z / L0 - F / K0
+    l = z / L0 - F / S
     a = 0.25 / (1.0 - l) ** 2 - 0.25 + l
     alphas = [-0.5164228, -2.737418, 16.07497, -38.87607, 39.49944, -14.17718]
     b = copy(l)
@@ -143,7 +123,7 @@ def wlc_bouchiat_impl_log(Lp, L0, K0, z, F, kT=kBT):
     zero = np.log10(kT / Lp * a) - np.log10(F)
     return zero
 
-def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
+def f_wlc_bouchiat_impl(Lp, L0, S, z, kT=kBT):
     '''
     Approximately solve the force from implicit wlc model by grid search.
 
@@ -153,7 +133,7 @@ def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
         Bending persistence length, in Angstrom.
     L0 : float
         Contour length, in Angstrom.
-    K0 : float
+    S : float
         Stretch modulus, in pN.
     z : float or 1D ndarray
         Average Z-extension of the helix, in Angstrom.
@@ -169,16 +149,15 @@ def f_wlc_bouchiat_impl(Lp, L0, K0, z, kT=kBT):
     --------
     wlc_bouchiat : Worm-like chain fitting formula described in Bouchiat et al.
     wlc_bouchiat_impl : Implict worm-like chain fitting formula described in Bouchiat et al.
-    wlc_bouchiat_impl_log : wlc_bouchiat_impl compared in log space.
     '''
     F_list= np.exp( np.linspace( np.log(0.001), np.log(100), 30000 ) )
     if isinstance(z,float): #float version
-        zero = wlc_bouchiat_impl(Lp, L0, K0, z, F_list, kT=kBT)
+        zero = wlc_bouchiat_impl(Lp, L0, S, z, F_list, kT=kBT)
         return F_list[np.argmin( np.abs(zero) )]
     else: #ndarray version
         F = []
         for z_indv in z:
-            zero = wlc_bouchiat_impl(Lp, L0, K0, z_indv, F_list, kT=kBT)
+            zero = wlc_bouchiat_impl(Lp, L0, S, z_indv, F_list, kT=kBT)
             F.append( F_list[np.argmin( np.abs(zero) )] )
         return np.array(F)
 
@@ -206,21 +185,29 @@ def moroz_3rd(Lp, C, F, kT=kBT):
 
     Notes
     -----
-    Equation :
+    The fitting function, orginally proposed in reference [M1]_ [M2]_,
+    and summarized in [LW]_, is
+
     .. math::
-       {{C}_{eff}}=C\left( 1-\frac{M}{4K}+\frac{{{M}^{2}}-2M}{16{{K}^{2}}}
-       -\frac{4{{M}^{3}}-16{{M}^{2}}+21M}{256{{K}^{3}}} \right) \\
-       M=\frac{C}{{{L}_{p}}},K=\sqrt{\frac{{{L}_{p}}F}{kT}}
+       C_{eff} = C \left( 1-\frac{M}{4K} + \frac{M^2-2M}{16K^2}
+       - \frac{4M^3-16M^2+21M}{256K^3} \right )
+
+    With
+
+    .. math::
+       M = \frac{C}{L_p}, \quad K=\sqrt{ \frac{L_p F}{kT} }
 
     References
     ----------
-    [1] Moroz JD, Nelson P (1997) Torsional directed walks, entropic
-    elasticity, and DNA twist stiffness. PNAS 94: 14418-14422.
-    [2] Moroz JD, Nelson P (1998) Entropic Elasticity of Twist-Storing
-    Polymers. Macromolecules 31: 6333-6347.
-    [3] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
-    Freely orbiting magnetic tweezers to directly monitor changes in the twist
-    of nucleic acids. Nat. Comm. 2: 439.
+    .. [M1] Moroz JD, Nelson P (1997) Torsional directed walks, entropic
+       elasticity, and DNA twist stiffness. PNAS 94: 14418-14422.
+
+    .. [M2] Moroz JD, Nelson P (1998) Entropic Elasticity of Twist-Storing
+       Polymers. Macromolecules 31: 6333-6347.
+
+    .. [LW] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
+       Freely orbiting magnetic tweezers to directly monitor changes in the twist
+       of nucleic acids. Nat. Comm. 2: 439.
     '''
     K = np.sqrt( Lp * F / kT )
     M = C / Lp
@@ -229,13 +216,25 @@ def moroz_3rd(Lp, C, F, kT=kBT):
     return Ceff
 
 def moroz_1st(Lp, C, F, kT=kBT):
-    '''
+    r'''
     1st order Moroz-Nelson function for effective torsional persistence.
     See `moroz_3rd` for detailed explanation.
 
     See Also
     --------
     moroz_3rd : 3rd order Moroz-Nelson function for effective torsional persistence.
+
+    Notes
+    -----
+    The fitting function is
+
+    .. math::
+       C_{eff} = C \left( 1-\frac{M}{4K} \right)
+
+    With
+
+    .. math::
+       M = \frac{C}{L_p}, \quad K=\sqrt{ \frac{L_p F}{kT} }
     '''
     K = np.sqrt( Lp * F / kT )
     M = C / Lp
