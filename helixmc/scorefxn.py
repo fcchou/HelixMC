@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -45,7 +47,7 @@ class ScorefxnTweezers(ScorefxnBase):
     force : float, optional
         Applied z-direction force to the helix, in pN.
     trap_stiffness : float, optional
-        The stiffness of the angular trap, in pN.A.
+        The stiffness of the angular trap, in pN.Å.
     target_link : float, optional
         Center of the harmonic angular trap (linking number trap), in radians.
 

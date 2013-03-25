@@ -14,12 +14,47 @@ This reference document details functions, modules, and objects
 included in HelixMC, describing what they are and what they do.
 For learning how to use HelixMC, see also :ref:`tutorial`.
 
+Code Organization
+=================
+
+HelixMC is coded in Python in an object-oriented fashion, allowing easy usage
+and extension. Here we briefly summarizes the organization of the code.
+
+First, :ref:`HelixPose <HelixPose>` object stores all information of the
+current helix conformation. Various properties, e.g. coordinates, twist, writhe,
+etc. can be directly accessed from the object. The object also contains
+functions that allow one to update the conformation and to plot the helix.
+
+Second, :ref:`RandomStep <RandomStep>` are used to generate random samples of
+base-pair step parameters. `RandomStepSimple` takes in a list of database
+parameter sets, and can randomly emit one of input parameter set, or construct
+a multivariate Gaussian and emit samples from the distribution, upon the choice
+of the user. `RandomStepAgg` aggregates multiple `RandomStep` objects into one,
+allow easy handling of sequence-dependent sampling (by aggregating several
+`RandomStepSimple` for different sequences). The user can also create their
+own `RandomStep` objects by inheriting from `RandomStepBase`.
+
+Third, :ref:`Scorefxn <Scorefxn>` objects take a `HelixPose` and scores it.
+The scoring can then be used to decide whether a Monte-Carlo move should be
+accepted. Currently the only score function is `ScorefxnTweezers`, that allows
+socring with external z-direction stretching force and/or harmonic trapping of
+linking number. The user can also define their own scoring by inheriting from
+`ScorefxnBase`.
+
+Last, the :ref:`util <util>` module contains useful functions for evaluating
+twist and writhe, for conversion between bp-step parameters and cartesian
+translation and rotation operation, and so on. The :ref:`fitfxn <fitfxn>`
+module is a standalone module that contains a few widely used analytical
+fitting functions based on elastic rod models.
+
 Constant Random Seed
 ====================
 .. autosummary::
    :toctree: generated/
 
    constant_seed
+
+.. _HelixPose:
 
 Helix Pose
 ==========
@@ -28,6 +63,8 @@ Helix Pose
    :template: class.rst
 
    pose.HelixPose
+
+.. _RandomStep:
 
 Random Base-pair Steps Generators
 =================================
@@ -39,6 +76,8 @@ Random Base-pair Steps Generators
    random_step.RandomStepSimple
    random_step.RandomStepAgg
 
+.. _Scorefxn:
+
 Score Functions
 ===============
 .. autosummary::
@@ -47,6 +86,8 @@ Score Functions
 
    scorefxn.ScorefxnBase
    scorefxn.ScorefxnTweezers
+
+.. _util:
 
 Utility Functions
 =================
@@ -88,6 +129,8 @@ Other Functions
    util.unitarize
    util.MC_acpt_rej
    util.read_seq_from_fasta
+
+.. _fitfxn:
 
 Useful Fitting Functions
 ========================

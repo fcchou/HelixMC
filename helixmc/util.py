@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -179,7 +181,7 @@ def params2coords( params ):
     Parameters
     ----------
     params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Angstroms, angles in unit of radians.
+        Input base-pair step parameters. Distances in unit of Å, angles in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     Returns
@@ -220,7 +222,7 @@ def coords2params( o2, R2 ):
     Returns
     -------
     params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Angstroms, angles in unit of radians.
+        Input base-pair step parameters. Distances in unit of Å, angles in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     See Also
@@ -272,7 +274,7 @@ def params2data( params, frame0 = None ):
     params : ndarray, shape (N,6)
         Input base-pair step parameters.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
-        Distance in unit of Angstroms, angle in unit of radians.
+        Distance in unit of Å, angle in unit of radians.
     frame0 : ndarray, shape (3,3), optional
         The frame for the 1st base-pair. Default set to np.eye(3).
 
@@ -458,13 +460,13 @@ def writhe_exact( dr ) :
 
     Notes
     -----
-    Details of the evaluation scheme is dicussed in reference [RM]_ [W1]_.
+    Details of the evaluation scheme is dicussed in reference [#]_ [#]_.
 
     References
     ----------
-    .. [RM] Rossetto V, Maggs AC (2003) Writhing geometry of open DNA. J. Chem. Phys. 118: 9864-9874.
+    .. [#] Rossetto V, Maggs AC (2003) Writhing geometry of open DNA.J. Chem. Phys. 118: 9864-9874.
 
-    .. [W1] White JH (1969) Self-linking and the Gauss integral in higher dimensions. Am. J. Math. 91: 693-728.
+    .. [#] White JH (1969) Self-linking and the Gauss integral in higher dimensions. Am. J. Math. 91: 693-728.
     '''
     r0 = dr2coord( dr )
     r1 = r0[1:] - r0[0]
@@ -593,7 +595,7 @@ def writhe_fuller( dr, return_val_only=True ) :
 
     Notes
     -----
-    Details of the evaluation scheme is dicussed in reference [RM]_ [W1]_.
+    See `writhe_exact` for references on details of the evaluation scheme.
     '''
 
     n = dr.shape[0] - 1
@@ -682,7 +684,7 @@ def MC_acpt_rej( score_old, score_new, kT = kBT ):
     score_new : float
         score after the proposed update.
     kT : float
-        Temperature times Boltzmann constant, in pN.A.
+        Temperature times Boltzmann constant, in pN.Å.
 
     Returns
     -------

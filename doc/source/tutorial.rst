@@ -8,33 +8,33 @@ HelixMC Tutorial
 :Date: |today|
 
 HelixMC is a software package for Monte-Carlo (MC) simulations of DNA/RNA
-helices using the base-pair level model [CITE]. This type of coarse-grained
-model bridges between simple elastic rod models and full-atom representations,
-providing a resonably sophiscated and yet computationally tractable way to
-model long DNA/RNA helices up to thousands and to evalute their mechanical
-properties of base-pair. HelixMC has the utility of applying external stetching
-and twisting forces to the terminal of the helix and measuring the end-to-end
-distance and the rotation of the terminal base-pair (known as `linking number`)
-during the process. This is exactly what has been done in recent single-molecule
-tweezers experiments [CITE], making HelixMC a powerful tool for direct
-simulation of these experiments.
+helices using the base-pair (bp) level model [R1]_. This type of
+coarse-grained model bridges between simple elastic rod models and full-atom
+representations, providing a resonably sophiscated and yet computationally
+tractable way to model long DNA/RNA helices up to thousands and to evalute
+their mechanical properties of bp. HelixMC has the utility of applying
+external stetching and twisting forces to the terminal of the helix and
+measuring the end-to-end distance and the rotation of the terminal bp
+(known as `linking number`) during the process. This is exactly what has
+been done in recent single-molecule tweezers experiments [R2]_, making HelixMC
+a powerful tool for direct simulations of these experiments.
 
 HelixMC is coded in Python in an object-oriented fashion. Some core
 computations are speeded up by wrapping in C++ codes using scipy.weave.
-Therefore HelixMC provides a framework that is easy to use and extend, as well
-as being resonable fast when it comes to large-scale computations.
+Therefore HelixMC provides a framework that is easy to use and to extend, as
+well as being resonable fast when it comes to large-scale computations.
 
 This tutorial demonstrates how to install and run simple calculations with
-HelixMC, and breifly summarizes the code organization, useful curated database,
-and available examples. For details on the classes and functions availble,
-please see :ref:`reference`.
+HelixMC, and breifly summarizes available examples and bp-step paramerter
+database. For details on the classes and functions availble, please see
+:ref:`reference`.
 
 Install
 =======
 
 Currently HelixMC has only been tested on Linux. It should run on other
 Unix-like system (e.g. Mac OS X). The following packages are also required
-to HelixMC. The versions we used are given in parathesis.
+by HelixMC. The versions we used are given in parathesis.
 
 * Python (2.7.3)
 
@@ -54,8 +54,8 @@ The source code of HelixMC is hosted on GitHub. To download, simply run::
 
     $ git clone https://github.com/fcchou/HelixMC.git
 
-Or you can go to https://github.com/fcchou/HelixMC/ and download to source code
-by clicking the "ZIP" button on upper-left.
+Or you can go to https://github.com/fcchou/HelixMC/ and download the source
+code by clicking the "ZIP" button on upper-left.
 
 After this, add your HelixMC folder into the system's ``$PATH`` and
 ``$PYTHONPATH``. In bash this can be done by adding the following lines to your
@@ -88,12 +88,12 @@ First, run the following command to kick out a MC run::
       -n_bp 100 -n_step 10 -seq GCCG -force 5 -compute_fuller_link True \
       -out_frame test_run
 
-Here, ``-params_file`` give the input database file that contains base-pair
-step parameters curated from PDB. ``-n_bp`` is the total number of base-pairs
-in the helix ``-n_step`` is the number of MC steps. ``-seq`` gives the sequence
-of the nucleic acids (ATCG for DNA and AUCG for RNA). ``-force`` is the applied
+Here, ``-params_file`` give the input database file that contains bp-step
+parameters curated from PDB. ``-n_bp`` is the total number of bp in the helix
+``-n_step`` is the number of MC steps. ``-seq`` gives the sequence of the
+nucleic acids (ATCG for DNA and AUCG for RNA). ``-force`` is the applied
 z-direction stretching force. ``-compute_fuller_link`` tells HelixMC to compute
-and store the linking number using Fuller's approximation [CITE].
+and store the linking number using Fuller's approximation [R3]_.
 ``-out_frame`` option will make HelixMC save the final frame to disk as
 ``test_run.npz`` in this case.
 
@@ -116,7 +116,7 @@ the following::
     >>> from helixmc.pose import HelixPose
 
 The observables for each frame are stored in ``MC_data.npz``. Normally the
-coordinates and reference frames of the last base-pair are recorded. If
+coordinates and reference frames of the last bp are recorded. If
 ``-compute_fuller_link`` or ``-compute_exact_link`` is set to True, the twist
 and writhe of the helix will also be stored (note that link = twist + writhe).
 
@@ -130,7 +130,7 @@ as follows::
     array([ 309.06198311,  317.92717085,  320.17158221,  304.42561971,
             319.07461907,  306.94162915,  314.7566295 ,  319.04106375,
             322.42125203,  325.72718993])
-    >>> np.average(data['coord_terminal'][:,2]) #avg. z-extension in A
+    >>> np.average(data['coord_terminal'][:,2]) #avg. z-extension in Å
     315.95487393228649
     >>> np.average(data['twist'] + data['writhe']) #avg. link in radian
     60.648749666780688
@@ -142,7 +142,7 @@ will now plot the helix using that::
     >>> pose.plot_centerline() #plot the centerline
     >>> pose.plot_helix() #plot the entire helix
 
-You should see something like the following images
+You should see something similar to the following
 
 .. image:: images/helixplot.png
    :width: 800 px
@@ -155,29 +155,94 @@ Other Examples
 
 Here is a list of examples in the ``examples/`` folder.
 
-* force_extension: This is just the example above.
+:force_ext:
+    This is just the example above.
 
-* link_constrained: This is for link-contrained simulation, similar to the
-  torsioal-trap single-molecule experiment [CITE].
+:link_cst:
+    This is for link-contrained simulation, similar to the
+    torsioal-trap single-molecule experiment [R2]_.
 
-* z-dna: Simulation of Z-DNA using `helixmc-run`.
+:z-dna:
+    Simulation of Z-DNA using `helixmc-run`.
 
-* fuller_check: Check the if the Fuller's approximation is correct in certain
-  criteria.
+:fuller_check:
+    Check the if the Fuller's approximation is correct in certain criteria.
 
-* data_fitting: How to use `helixmc.fitfxn` to fit simulation or experiment
-  data to simple analytical models.
+:data_fitting:
+    How to use `helixmc.fitfxn` to fit simulation or experiment
+    data to simple analytical models.
 
-* bending_Lp_Olson: How to perform alternative evaluation of bending persistence
-  length using the method suggested by Olson et al. [CITE].
+:helixplot:
+    More examples for plotting the helices.
 
-* database_curation: Examples on curating base-pair step parameters from PDB.
+:Lp_Olson:
+    How to perform alternative evaluation of bending persistence
+    length using the method suggested by Olson et al. [R1]_.
+
+:bp_database:
+    Examples on curating bp-step parameters from PDB.
 
 Base-pair Step Parameters Database
 ==================================
 
-Code Organization
-=================
+In the ``database/`` folder, several different bp-step parameter sets are
+given. These datasets were all extracted from structures in Protein Data Bank
+(PDB, http://www.pdb.org/), with different selection and filtering. The list
+below summarizes these data.
+
+:DNA_default: 
+    B-DNA data from structures with resolution (Rs) <= 2.8 Å,
+    excluding protein-binding models.
+
+:DNA_2.8_all:
+    A-DNA + B-DNA, Rs <= 2.8 Å, including protein-binding models.
+
+:DNA_2.0_noprot:
+    B-DNA, Rs <= 2.0 Å, excluding protein-binding models.
+
+:RNA_default: 
+    RNA, Rs <= 2.8 Å, excluding protein-binding models.
+
+:RNA_2.8_all:
+    RNA, Rs <= 2.8 Å, including protein-binding models.
+
+:RNA_2.0_noprot:
+    RNA, Rs <= 2.0 Å, excluding protein-binding models.
+
+:Z-DNA:
+    Z-DNA, Rs <= 2.8 Å, including protein-binding models.
+
+The corresponding lists of PDB models being used are given in the
+``database/pdb_list/`` folder.
+
+These datasets are in .npz format (Numpy archive). The data for different
+bp-steps of different sequences were separated into different arrays in the
+file. For B-DNA and RNA, parameter sets with Rise >= 5.5 Å or Twist <= 5° were
+thrown away as outliers. For B-DNA (except `DNA_2.8_all`, where the protein
+binding makes A-DNA and B-DNA unseparable), we further clustered the data
+using k-means algorithm to separate the A-DNA and B-DNA data. In the final
+step, parameter sets with values beyond 4 standard deviation away from the
+mean for any of the 6 bp-step parameters were also removed.
+
+For Z-DNA, we only considered two types of bp-steps: CG and GC. We used the
+following selection criteria: Twist <= -30° for GC, and -30° < Twist <= 5° for
+CG. For CG bp-steps, we further filtered the data by only keeping parameter
+sets with 4.5 Å <= Rise < 6.3 Å. Parameter sets with values beyond 4 standard
+deviation away from the mean were then removed, similar to the above cases.
+
+See also ``examples/database_curation/`` for a detailed example for the
+curation of ``DNA_2.0_noprot.npz``.
 
 References
 ==========
+.. [R1] Olson WK, Colasanti AV, Czapla L, Zheng G (2008) Insights into the
+   Sequence-Dependent Macromolecular Properties of DNA from Base-Pair Level
+   Modeling. In: Voth GA, editor. Coarse-Graining of Condensed Phase and
+   Biomolecular Systems: CRC Press. pp. 205-223.
+
+.. [R2] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
+   Freely orbiting magnetic tweezers to directly monitor changes in the twist
+   of nucleic acids. Nat. Comm. 2: 439.
+
+.. [R3] Fuller FB (1978) Decomposition of the linking number of a closed
+   ribbon: A problem from molecular biology. PNAS 75: 3557-3561.

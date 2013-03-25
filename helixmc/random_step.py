@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -59,7 +61,7 @@ class RandomStepSimple(RandomStepBase):
         Input base-pair step parameters. Usually obtained by analyzing the structures in PDB.
         Must be specified if params_cov and params_avg is not being input, or if gaussian_sampling is set to False.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
-        Distance in unit of Angstroms, angle in unit of radians.
+        Distance in unit of Å, angle in unit of radians.
     params_cov : ndarray, shape (6,6), optional
         Covariance matrix of the multivariate Gaussian for step parameters. Used for Gaussian sampling.
     params_avg : ndarray, shape (6,6), optional

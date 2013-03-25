@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -27,13 +29,13 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
     Parameters
     ----------
     Lp : float
-        Bending persistence length, in Angstrom.
+        Bending persistence length, in Å.
     L0 : float
-        Contour length, in Angstrom.
+        Contour length, in Å.
     z : float or 1D ndarray
-        Average Z-extension of the helix, in Angstrom.
+        Average Z-extension of the helix, in Å.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.A.
+        Temperature times Boltzmann constant, in pN.Å.
 
     Returns
     -------
@@ -47,7 +49,7 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
 
     Notes
     -----
-    The fitting function [BW]_ is
+    The fitting function [#]_ is
 
     .. math::
        F = \frac{kT}{L_p} \left[ \frac{1}{4 (1 - z / L_0)^2} - \frac{1}{4} + \frac{z}{L_0} +
@@ -57,7 +59,7 @@ def wlc_bouchiat(Lp, L0, z, kT=kBT):
 
     References
     ----------
-    .. [BW] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999) Estimating the persistence
+    .. [#] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999) Estimating the persistence
        length of a worm-like chain molecule from force-extension measurements. Biophys. J. 76: 409-413.
     '''
     z_div_L = z / L0
@@ -79,17 +81,17 @@ def wlc_bouchiat_impl(Lp, L0, S, z, F, kT=kBT):
     Parameters
     ----------
     Lp : float
-        Bending persistence length, in Angstrom.
+        Bending persistence length, in Å.
     L0 : float
-        Contour length, in Angstrom.
+        Contour length, in Å.
     S : float
         Stretch modulus, in pN.
     z : float or 1D ndarray
-        Average Z-extension of the helix, in Angstrom.
+        Average Z-extension of the helix, in Å.
     F : float or  1D ndarray
         Z-direction stretching force, in pN.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.A.
+        Temperature times Boltzmann constant, in pN.Å.
 
     Returns
     -------
@@ -103,15 +105,13 @@ def wlc_bouchiat_impl(Lp, L0, S, z, F, kT=kBT):
 
     Notes
     -----
-    The fitting function [BW]_ is
+    The fitting function (see `wlc_bouchiat` for reference) is
 
     .. math::
        \log_{10} \left[  \frac{kT}{L_p} \left( \frac{1}{4(1-l)^2} - \frac{1}{4} + l +
        \sum \limits_{i=2}^{i \le 7}{\alpha_i l^i} \right) \right]- \log_{10} (F) = 0
 
     With :math:`l = z / L_0 - F / S`
-
-    See `wlc_bouchiat` for reference papers.
     '''
     l = z / L0 - F / S
     a = 0.25 / (1.0 - l) ** 2 - 0.25 + l
@@ -130,15 +130,15 @@ def f_wlc_bouchiat_impl(Lp, L0, S, z, kT=kBT):
     Parameters
     ----------
     Lp : float
-        Bending persistence length, in Angstrom.
+        Bending persistence length, in Å.
     L0 : float
-        Contour length, in Angstrom.
+        Contour length, in Å.
     S : float
         Stretch modulus, in pN.
     z : float or 1D ndarray
-        Average Z-extension of the helix, in Angstrom.
+        Average Z-extension of the helix, in Å.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.A.
+        Temperature times Boltzmann constant, in pN.Å.
 
     Returns
     -------
@@ -168,16 +168,16 @@ def moroz_3rd(Lp, C, F, kT=kBT):
     Parameters
     ----------
     Lp : float
-        Bending persistence length, in Angstrom.
+        Bending persistence length, in Å.
     C : float
-        Torsional persistence length, in Angstrom.
+        Torsional persistence length, in Å.
     F : float or 1D ndarray
         Z-direction stretching force, in pN.
 
     Returns
     -------
     Ceff : float or 1D ndarray
-        Effective torsional persistence length in Angstrom. Ceff = L0 / Var(Lk).
+        Effective torsional persistence length in Å. Ceff = L0 / Var(Lk).
 
     See Also
     --------
@@ -185,8 +185,8 @@ def moroz_3rd(Lp, C, F, kT=kBT):
 
     Notes
     -----
-    The fitting function, orginally proposed in reference [M1]_ [M2]_,
-    and summarized in [LW]_, is
+    The fitting function, orginally proposed in reference [#]_ [#]_,
+    and summarized in [#]_, is
 
     .. math::
        C_{eff} = C \left( 1-\frac{M}{4K} + \frac{M^2-2M}{16K^2}
@@ -199,13 +199,13 @@ def moroz_3rd(Lp, C, F, kT=kBT):
 
     References
     ----------
-    .. [M1] Moroz JD, Nelson P (1997) Torsional directed walks, entropic
+    .. [#] Moroz JD, Nelson P (1997) Torsional directed walks, entropic
        elasticity, and DNA twist stiffness. PNAS 94: 14418-14422.
 
-    .. [M2] Moroz JD, Nelson P (1998) Entropic Elasticity of Twist-Storing
+    .. [#] Moroz JD, Nelson P (1998) Entropic Elasticity of Twist-Storing
        Polymers. Macromolecules 31: 6333-6347.
 
-    .. [LW] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
+    .. [#] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
        Freely orbiting magnetic tweezers to directly monitor changes in the twist
        of nucleic acids. Nat. Comm. 2: 439.
     '''

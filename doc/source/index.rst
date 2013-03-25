@@ -13,4 +13,4 @@ Contents:
 
    tutorial
    reference
-
+   about

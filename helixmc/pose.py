@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -434,7 +436,7 @@ class HelixPose(object):
         Parameters
         ----------
         rb_width : float, optional
-            Width of the helix ribbon in Angstrom.
+            Width of the helix ribbon in Å.
         color : str, optional
             Colors of the plot (matplotlib color codes), first letter for backbond and second letter for base-pair.
         show : bool, optional
