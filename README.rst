@@ -15,7 +15,7 @@ Links
 =====
 
 - Source code: https://github.com/fcchou/HelixMC
-- HTML documentation:
+- HTML documentation: http://fcchou.github.com/HelixMC/
 - Das Lab @ Stanford: http://www.stanford.edu/~rhiju/
 
 Dependencies
