@@ -9,6 +9,9 @@ import numpy as np
 import scipy.cluster.vq as vq
 import matplotlib.pyplot as plt
 
+# This example demonstrate how the database file
+# database/DNA_2.0_noprot.npz is curated.
+
 # Download PDBs #
 pdb_list = '../../database/pdb_list/DNA_2.0_noprot.txt'
 server_name = 'http://www.rcsb.org/pdb/files/'

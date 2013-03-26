@@ -28,11 +28,14 @@ Install
 =======
 
 This package uses distutils, which is the default way of installing
-python modules. To install in your home directory, use::
-
-  python setup.py install --home
-
-To install for all users on Unix/Linux::
+python modules. To install, use::
 
   python setup.py build
   sudo python setup.py install
+
+Alternatively, you can just add your HelixMC folder into the system's
+``$PATH`` and ``$PYTHONPATH``. In bash this can be done by adding the
+following lines to your ``~/.bashrc``::
+
+    export PATH=$PATH:<HelixMC Path>
+    export PYTHONPATH=$PYTHONPATH:<HelixMC Path>

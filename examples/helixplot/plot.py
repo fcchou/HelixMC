@@ -2,6 +2,10 @@ from helixmc.pose import HelixPose
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 
+# Here we have the final frames of 3 independent HelixMC runs,
+# named data0.npz, data1.npz and data3.npz. We will plot these
+# data in this example.
+
 # Load data #
 pose_list = []
 pose_list.append( HelixPose( 'data0.npz' ) )
