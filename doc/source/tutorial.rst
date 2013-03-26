@@ -112,7 +112,6 @@ Now we can analyze the output data. Open a Python session and enters
 the following::
 
     >>> import numpy as np
-    >>> import matplotlib.pyplot as plt
     >>> from helixmc.pose import HelixPose
 
 The observables for each frame are stored in ``MC_data.npz``. Normally the
@@ -218,11 +217,11 @@ The corresponding lists of PDB models being used are given in the
 These datasets are in .npz format (Numpy archive). The data for different
 bp-steps of different sequences were separated into different arrays in the
 file. For B-DNA and RNA, parameter sets with Rise >= 5.5 Å or Twist <= 5° were
-thrown away as outliers. For B-DNA (except `DNA_2.8_all`, where the protein
-binding makes A-DNA and B-DNA unseparable), we further clustered the data
-using k-means algorithm to separate the A-DNA and B-DNA data. In the final
-step, parameter sets with values beyond 4 standard deviation away from the
-mean for any of the 6 bp-step parameters were also removed.
+thrown away as outliers. Then, parameter sets with values beyond 4 standard
+deviation away from the mean for any of the 6 bp-step parameters were also
+removed. For B-DNA (except `DNA_2.8_all`, where the protein binding makes
+A-DNA and B-DNA unseparable), we further clustered the data using k-means
+algorithm to separate the A-DNA and B-DNA data.
 
 For Z-DNA, we only considered two types of bp-steps: CG and GC. We used the
 following selection criteria: Twist <= -30° for GC, and -30° < Twist <= 5° for
