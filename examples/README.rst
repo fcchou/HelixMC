@@ -30,3 +30,12 @@ Here is a list of examples in the ``examples/`` folder.
 :bp_database:
     Examples on curating bp-step parameters from PDB.
 
+.. [R1] Olson WK, Colasanti AV, Czapla L, Zheng G (2008) Insights into the
+   Sequence-Dependent Macromolecular Properties of DNA from Base-Pair Level
+   Modeling. In: Voth GA, editor. Coarse-Graining of Condensed Phase and
+   Biomolecular Systems: CRC Press. pp. 205-223.
+
+.. [R2] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
+   Freely orbiting magnetic tweezers to directly monitor changes in the twist
+   of nucleic acids. Nat. Comm. 2: 439.
+
