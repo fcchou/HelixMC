@@ -223,7 +223,7 @@ These datasets are in .npz format (Numpy archive). The data for different
 bp-steps of different sequences were separated into different arrays in the
 file. For B-DNA and RNA, parameter sets with Rise >= 5.5 Å or Twist <= 5° were
 thrown away as outliers. Then, parameter sets with values beyond 4 standard
-deviation away from the mean for any of the 6 bp-step parameters were also
+deviations away from the mean for any of the 6 bp-step parameters were also
 removed. For B-DNA (except `DNA_2.8_all`, where the protein binding makes
 A-DNA and B-DNA unseparable), we further clustered the data using k-means
 algorithm to separate the A-DNA and B-DNA data.
