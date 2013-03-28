@@ -92,13 +92,14 @@ class RandomStepSimple(RandomStepBase):
         if params != None:
             self._params_avg = np.average( params, axis=0 )
             self._params_cov = np.cov( params, rowvar=0 )
+            self._o_list, self._R_list = params2coords( params )
+            self._n_bp_step = params.shape[0]
         else:
             if params_avg == None or params_cov == None:
                 raise ValueError('params_avg and params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
-            self._o_list, self._R_list = params2coords( params )
-            self._n_bp_step = params.shape[0]
+
         self.gaussian_sampling = gaussian_sampling
 
     @property
