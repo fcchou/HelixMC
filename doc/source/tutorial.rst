@@ -234,7 +234,7 @@ CG. For CG bp-steps, we further filtered the data by only keeping parameter
 sets with 4.5 Å <= Rise < 6.3 Å. Parameter sets with values beyond 4 standard
 deviation away from the mean were then removed, similar to the above cases.
 
-See also ``examples/database_curation/`` for a detailed example for the
+See also ``examples/bp_database/`` for a detailed example for the
 curation of ``DNA_2.0_noprot.npz``.
 
 References
