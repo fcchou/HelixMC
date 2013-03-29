@@ -62,7 +62,7 @@ copyright = u'2013-%s, Fang-Chieh Chou (GPLv3 Licence)' % time.strftime('%Y')
 #
 # The short X.Y version.
 import helixmc
-version = '%.1f' % helixmc.__version__
+version = helixmc.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
 
