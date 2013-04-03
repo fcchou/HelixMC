@@ -84,7 +84,7 @@ class ScorefxnTweezers(ScorefxnBase):
         score = 0
         if self.force != 0:
             score -= pose.z_terminal * self.force
-        if self.trap_stiffness != 0 and self.target_link != None:
+        if self.trap_stiffness != 0 and self.target_link is not None:
             score += 0.5 * self.trap_stiffness * (pose.link_fuller - self.target_link) ** 2
             if not pose.compute_tw_wr:
                 warnings.warn('pose.compute_tw_wr should be set to Ture for repeating scoring with target link!!!', RuntimeWarning)

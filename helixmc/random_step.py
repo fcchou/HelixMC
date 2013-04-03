@@ -89,13 +89,13 @@ class RandomStepSimple(RandomStepBase):
     '''
     def __init__(self, params=None, params_cov=None, params_avg=None, gaussian_sampling=True):
         self._params = params
-        if params != None:
+        if params is not None:
             self._params_avg = np.average( params, axis=0 )
             self._params_cov = np.cov( params, rowvar=0 )
             self._o_list, self._R_list = params2coords( params )
             self._n_bp_step = params.shape[0]
         else:
-            if params_avg == None or params_cov == None:
+            if params_avg is None or params_cov is None:
                 raise ValueError('params_avg and params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
@@ -112,7 +112,7 @@ class RandomStepSimple(RandomStepBase):
         if val:
             self._max_cached_data = 20000
             self._idx = self._max_cached_data
-        elif self._params == None:
+        elif self._params is None:
             raise ValueError('params is not specified, but gaussian_sampling is set to False.')
 
     @property
@@ -177,7 +177,7 @@ class RandomStepAgg(RandomStepBase):
         self._names = []
         self._rand_list = []
         self.gaussian_sampling = gaussian_sampling
-        if data_file != None:
+        if data_file is not None:
             self.load_from_file( data_file )
 
     def load_from_file(self, data_file):
@@ -282,9 +282,9 @@ class RandomStepAgg(RandomStepBase):
         R : ndarray, shape (3,3)
             Corresponding frame for the 2nd bp of the bp-step.
         '''
-        if name == None and idx == None:
+        if name is None and idx is None:
             return self._rand_list[ random.randint( len(self._rand_list) ) ]()
-        elif idx != None:
+        elif idx is not None:
             return self._rand_list[idx]()
         else:
             return self._rand_list[ self.name2rand_idx(name) ] ()

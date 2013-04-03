@@ -51,24 +51,24 @@ parser.add_argument('-in_frame', type=str, help='File for imported saved frame',
 parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
 
 args = parser.parse_args()
-if args.params_file == None and (not args.gaussian_sampling):
+if args.params_file is None and (not args.gaussian_sampling):
     raise argparse.ArgumentError('-params_file must be specified for non-gaussian sampling!!!')
-if args.seq == None and args.n_bp == None:
+if args.seq is None and args.n_bp is None:
     raise argparse.ArgumentError('At least one of -n_bp and -seq must be specified!!!')
 
-is_link_constrained = ( args.target_link != None and args.trap_stiffness != 0 )
+is_link_constrained = ( args.target_link is not None and args.trap_stiffness != 0 )
 fuller_check_out = args.check_fuller
-is_check_fuller = (fuller_check_out != None)
+is_check_fuller = (fuller_check_out is not None)
 if args.constant_seed:
     helixmc.constant_seed()
 
 #############################################
 #Initial setup
-if args.params_file != None:
+if args.params_file is not None:
     if args.params_file[-3:] == 'npz':
         random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
     else:
-        if args.seq == None:
+        if args.seq is None:
             raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
         if args.params_file[-3:] == 'npy':
             params = np.load( args.params_file )
@@ -76,7 +76,7 @@ if args.params_file != None:
             params = np.loadtxt( args.params_file )
         random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
 else:
-    if args.seq == None:
+    if args.seq is None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
     if args.gaussian_params[-3:] == 'npy' :
         gaussian_params = np.load( args.gaussian_params )
@@ -88,14 +88,14 @@ else:
 
 is_seq_dep = False
 n_bp = args.n_bp
-if args.seq != None:
+if args.seq is not None:
     is_seq_dep = True
     seq_unit = ''
     try:
         seq_unit = util.read_seq_from_fasta(args.seq)
     except ValueError:
         seq_unit = args.seq
-    if n_bp == None:
+    if n_bp is None:
         seq = seq_unit
         n_bp = len(seq)
     else:
@@ -108,7 +108,7 @@ if args.seq != None:
         name = seq[i:i+2]
         seq_id[i] = random_step.name2rand_idx(name)
 
-if args.in_frame != None :
+if args.in_frame is not None :
     pose = HelixPose( input_file = args.in_frame )
 else :
     pose = HelixPose( init_params = random_step.params_avg, n_bp = n_bp )
@@ -204,7 +204,7 @@ else :
         np.savez( args.out, coord_terminal=all_coord, frame_terminal=all_frame )
 #############################################
 
-if args.out_frame != None:
+if args.out_frame is not None:
     pose.write2disk( args.out_frame )
 
 print 'Total time = %f' % (time.time() - start_time)

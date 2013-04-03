@@ -19,10 +19,10 @@ measuring the end-to-end distance and the rotation of the terminal bp
 been done in recent single-molecule tweezers experiments [R2]_, making HelixMC
 a powerful tool for direct simulations of these experiments.
 
-HelixMC is coded in Python in an object-oriented fashion. Some core
-computations are speeded up by wrapping in C++ codes using scipy.weave.
-Therefore HelixMC provides a framework that is easy to use and to extend, as
-well as being resonable fast when it comes to large-scale computations.
+HelixMC is coded in Python in an object-oriented fashion. Some rate-limiting 
+core computations are speeded up using Cython. Therefore HelixMC provides a
+framework that is easy to use and to extend, as well as being resonable fast
+when it comes to large-scale computations.
 
 This tutorial demonstrates how to install and run simple calculations with
 HelixMC, and breifly summarizes available examples and bp-step paramerter
@@ -69,7 +69,16 @@ following lines to your ``~/.bashrc``::
     export PATH=$PATH:<HelixMC Path>
     export PYTHONPATH=$PYTHONPATH:<HelixMC Path>
 
-Then you should be all set. To test the install, simply run::
+Then build the Cython extension. Under the ``HelixMC/helixmc/`` folder, run::
+    
+    python _cython_build.py build_ext --inplace
+
+Note that this requires you to have Cython installed. Otherwise you can choose
+to build the c source file, then you do not need Cython::
+
+    python _c_build.py build_ext --inplace
+
+Now you should be all set. To test the install, simply run::
 
     $ helixmc-run --help
 

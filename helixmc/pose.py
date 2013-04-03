@@ -96,10 +96,10 @@ class HelixPose(object):
         self._obs['frame_terminal'] = None
         self._obs['score'] = None
 
-        if input_file != None:
+        if input_file is not None:
             self.load_from_file(input_file)
             self.compute_tw_wr = compute_tw_wr
-        elif init_params != None:
+        elif init_params is not None:
             if n_bp < 2:
                 raise ValueError('n_bp < 2.')
             self._n_bp = n_bp
@@ -241,7 +241,7 @@ class HelixPose(object):
         '''
         if i < 0 or i >= self._n_bp:
             raise ValueError('i < 0 or i >= n_bp.')
-        if o == None or R == None:
+        if o is None or R is None:
             o, R = params2coords( params )
         self._obs_clear()
 
@@ -282,7 +282,7 @@ class HelixPose(object):
         '''
         if i < 0 or i >= self._n_bp:
             raise ValueError('i < 0 or i >= n_bp.')
-        if o == None or R == None:
+        if o is None or R is None:
             o, R = params2coords( params )
 
         self._params_new = params
@@ -339,7 +339,7 @@ class HelixPose(object):
         exclude : list, optional
             Keys that are excluded from the clear action.
         '''
-        if exclude == None:
+        if exclude is None:
             for j in self._obs.iterkeys():
                 self._obs[j] = None
         else:
@@ -358,13 +358,13 @@ class HelixPose(object):
     #Returning observables
     @property
     def writhe_exact(self):
-        if self._obs['writhe_exact'] == None:
+        if self._obs['writhe_exact'] is None:
              self._obs['writhe_exact']  = writhe_exact(self._dr)
         return self._obs['writhe_exact']
 
     @property
     def writhe_fuller(self):
-        if self._obs['writhe_fuller'] == None:
+        if self._obs['writhe_fuller'] is None:
             if not self.compute_tw_wr:
                 self._obs['writhe_fuller'] = writhe_fuller( self._dr )
             else:
@@ -373,7 +373,7 @@ class HelixPose(object):
 
     @property
     def twist(self):
-        if self._obs['twist'] == None:
+        if self._obs['twist'] is None:
             if not self.compute_tw_wr:
                 self._obs['twist'] = ribbon_twist( self._dr, self._frames[:,:,1] )
             else:
@@ -382,13 +382,13 @@ class HelixPose(object):
 
     @property
     def coord_terminal(self):
-        if self._obs['coord_terminal'] == None:
+        if self._obs['coord_terminal'] is None:
              self._obs['coord_terminal'] = np.sum( self._dr, axis=0 )
         return self._obs['coord_terminal']
 
     @property
     def frame_terminal(self):
-        if self._obs['frame_terminal'] == None:
+        if self._obs['frame_terminal'] is None:
              self._obs['frame_terminal'] = self._frames[-1].copy()
         return self._obs['frame_terminal']
 
@@ -448,7 +448,7 @@ class HelixPose(object):
         coord = self.coord
         bb1 = coord - rb_vec * rb_width * 0.5
         bb2 = coord + rb_vec * rb_width * 0.5
-        if fig_ax == None:
+        if fig_ax is None:
             fig = plt.figure()
             ax = p3.Axes3D(fig)
         else:
@@ -480,7 +480,7 @@ class HelixPose(object):
             Input mplot3d.Axes3D object. For ploting multiple helix on the same graph.
         '''
         coord = self.coord
-        if fig_ax == None:
+        if fig_ax is None:
             fig = plt.figure()
             ax = p3.Axes3D(fig)
         else:

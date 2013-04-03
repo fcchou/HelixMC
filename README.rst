@@ -28,14 +28,23 @@ Install
 =======
 
 This package uses distutils, which is the default way of installing
-python modules. To install, use::
+python modules. To install, simply use::
 
   python setup.py build
   sudo python setup.py install
 
-Alternatively, you can just add your HelixMC folder into the system's
-``$PATH`` and ``$PYTHONPATH``. In bash this can be done by adding the
-following lines to your ``~/.bashrc``::
+Alternatively, you can add your HelixMC folder into the system's ``$PATH`` and
+``$PYTHONPATH``. In bash this can be done by adding the following lines to your
+``~/.bashrc``::
 
     export PATH=$PATH:<HelixMC Path>
     export PYTHONPATH=$PYTHONPATH:<HelixMC Path>
+
+Then build the Cython extension. Under the ``HelixMC/helixmc/`` folder, run::
+    
+    python _cython_build.py build_ext --inplace
+
+Note that this requires you to have Cython installed. Otherwise you can choose
+to build the c source file, then you do not need Cython::
+
+    python _c_build.py build_ext --inplace
