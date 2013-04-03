@@ -2,6 +2,7 @@
 
 import os
 from distutils.core import setup
+from distutils.extension import Extension
 import helixmc
 
 DISTNAME = 'helixmc'
@@ -13,6 +14,7 @@ URL = 'http://fcchou.github.com/HelixMC/'
 LICENSE = 'GPL'
 DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC'
 VERSION = str(helixmc.__version__)
+ext_modules = [Extension("helixmc._util_cython", ["helixmc/_util_cython.c"])]
 
 
 setup(name=DISTNAME,
@@ -26,6 +28,7 @@ setup(name=DISTNAME,
       long_description=LONG_DESCRIPTION,
       packages=["helixmc"],
       scripts=['helixmc-run'],
+      ext_modules = ext_modules,
       classifiers=[
           'Intended Audience :: Science/Research',
           'License :: OSI Approved',
@@ -34,5 +37,5 @@ setup(name=DISTNAME,
           'Operating System :: POSIX',
           'Operating System :: Unix',
           'Operating System :: MacOS'
-         ]
+         ],
     )
