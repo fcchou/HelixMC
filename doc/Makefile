@@ -154,15 +154,3 @@ doctest:
 	@echo "Testing of doctests in the sources finished, look at the " \
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
-gh-pages:
-	cd ..; git checkout gh-pages; \
-	rm -rf build _sources _static; \
-	git checkout master doc helixmc; \
-	git reset HEAD; \
-	cd doc/; make html;	cd ..; \
-	mv -fv doc/build/html/* ./; \
-	rm -rf doc helixmc build; \
-	git add -A; \
-	git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`"; \
-	git push origin gh-pages; \
-	git checkout master;
