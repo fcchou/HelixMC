@@ -15,7 +15,7 @@ LICENSE = 'GPL'
 DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC'
 VERSION = str(helixmc.__version__)
 ext_modules = [Extension("helixmc._util_cython", ["helixmc/_util_cython.c"])]
-
+package_data={'helixmc': ['database/*.npz']}
 
 setup(name=DISTNAME,
       author=AUTHOR,
@@ -28,6 +28,7 @@ setup(name=DISTNAME,
       long_description=LONG_DESCRIPTION,
       packages=["helixmc"],
       scripts=['helixmc-run'],
+      package_data=package_data,
       ext_modules = ext_modules,
       classifiers=[
           'Intended Audience :: Science/Research',

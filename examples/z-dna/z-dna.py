@@ -7,7 +7,7 @@ from helixmc.pose import HelixPose
 
 # Run HelixMC #
 cmdline  = 'helixmc-run '
-cmdline += '-params_file ../../database/Z-DNA.npz '
+cmdline += '-params_file Z-DNA.npz '
 cmdline += '-n_bp 100 '
 cmdline += '-n_step 10 '
 cmdline += '-seq GC '

@@ -7,7 +7,7 @@ from helixmc.pose import HelixPose
 
 # Quick prerun to get the avg. link at relaxed state #
 cmdline  = 'helixmc-run '
-cmdline += '-params_file ../../database/DNA_default.npz '
+cmdline += '-params_file DNA_default.npz '
 cmdline += '-n_bp 500 '
 cmdline += '-n_step 20 '
 cmdline += '-force 5 '
@@ -27,7 +27,7 @@ target_link = avg_link + 8 * ( 2 * np.pi ) #set the center of link contraint at 
 print 'Target link:', target_link
 
 cmdline  = 'helixmc-run '
-cmdline += '-params_file ../../database/DNA_default.npz '
+cmdline += '-params_file DNA_default.npz '
 cmdline += '-n_bp 500 '
 cmdline += '-n_step 20 '
 cmdline += '-force 5 '

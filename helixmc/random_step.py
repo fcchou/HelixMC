@@ -18,6 +18,8 @@
 
 import numpy as np
 import abc
+import sys
+import os.path
 from util import params2coords
 from __init__ import random
 
@@ -183,13 +185,24 @@ class RandomStepAgg(RandomStepBase):
     def load_from_file(self, data_file):
         '''
         Load data file in .npz format and append to the current aggregation.
+        The routine will look for helixmc/data folder if the data_file cannot be found.
 
         Parameters
         ----------
         data_file : str, optional
             Pre-curated database file with sequence dependence in .npz format.
+
+        Raises
+        ------
+        ValueError : if the data_file does not exist.
         '''
-        data = np.load(data_file)
+        data_file_real = data_file[:]
+        if not os.path.exists(data_file_real):
+            location = os.path.abspath(os.path.dirname(__file__))
+            data_file_real = os.path.join(location, 'data/', data_file_real)
+        if not os.path.exists(data_file_real):
+            raise ValueError('Cannot find the data file %s!' % data_file)
+        data = np.load(data_file_real)
         for name in data.files:
             self.append_random_step( name, RandomStepSimple( params=data[name], gaussian_sampling=self.gaussian_sampling ) )
 

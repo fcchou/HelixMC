@@ -1,7 +1,7 @@
 Base-pair Step Parameters Database
 ==================================
 
-In the ``database/`` folder, several different bp-step parameter sets are
+In the ``helixmc/data/`` folder, several different bp-step parameter sets are
 given. These datasets were all extracted from structures in Protein Data Bank
 (PDB, http://www.pdb.org/), with different selection and filtering. The list
 below summarizes these data.
@@ -29,4 +29,4 @@ below summarizes these data.
     Z-DNA, Rs <= 2.8 Å, including protein-binding models.
 
 The corresponding lists of PDB models being used are given in the
-``database/pdb_list/`` folder.
+``helixmc/data/pdb_list/`` folder.

@@ -98,14 +98,14 @@ Now we demonstrate a simple example for `helixmc-run`.
 
 First, run the following command to kick out a MC run::
 
-    $ helixmc-run -params_file <HelixMC Path>/database/DNA_default.npz \
-      -n_bp 100 -n_step 10 -seq GCCG -force 5 -compute_fuller_link True \
-      -out_frame test_run
+    $ helixmc-run -params_file DNA_default.npz -n_bp 100 -n_step 10 -seq GCCG \
+    -force 5 -compute_fuller_link True -out_frame test_run
 
 Here, ``-params_file`` give the input database file that contains bp-step
-parameters curated from PDB. ``-n_bp`` is the total number of bp in the helix
-``-n_step`` is the number of MC steps. ``-seq`` gives the sequence of the
-nucleic acids (ATCG for DNA and AUCG for RNA). ``-force`` is the applied
+parameters curated from PDB (by default it searches the helixmc database folder
+if it does not find the input file). ``-n_bp`` is the total number of bp in the
+helix. ``-n_step`` is the number of MC steps. ``-seq`` gives the sequence of
+the nucleic acids (ATCG for DNA and AUCG for RNA). ``-force`` is the applied
 z-direction stretching force. ``-compute_fuller_link`` tells HelixMC to compute
 and store the linking number using Fuller's approximation [R3]_.
 ``-out_frame`` option will make HelixMC save the final frame to disk as
@@ -198,7 +198,7 @@ Here is a list of examples in the ``examples/`` folder.
 Base-pair Step Parameters Database
 ==================================
 
-In the ``database/`` folder, several different bp-step parameter sets are
+In the ``helixmc/data/`` folder, several different bp-step parameter sets are
 given. These datasets were all extracted from structures in Protein Data Bank
 (PDB, http://www.pdb.org/), with different selection and filtering. The list
 below summarizes these data.
@@ -226,7 +226,7 @@ below summarizes these data.
     Z-DNA, Rs <= 2.8 Å, including protein-binding models.
 
 The corresponding lists of PDB models being used are given in the
-``database/pdb_list/`` folder.
+``helixmc/data/pdb_list/`` folder.
 
 These datasets are in .npz format (Numpy archive). The data for different
 bp-steps of different sequences were separated into different arrays in the

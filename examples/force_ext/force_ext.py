@@ -7,7 +7,7 @@ from helixmc.pose import HelixPose
 
 # Run HelixMC #
 cmdline  = 'helixmc-run '
-cmdline += '-params_file ../../database/DNA_default.npz '
+cmdline += '-params_file DNA_default.npz '
 cmdline += '-n_bp 100 '
 cmdline += '-n_step 10 '
 cmdline += '-seq GCCG '

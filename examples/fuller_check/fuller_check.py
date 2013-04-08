@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 # Run HelixMC #
 cmdline  = 'helixmc-run '
-cmdline += '-params_file ../../database/DNA_default.npz '
+cmdline += '-params_file DNA_default.npz '
 cmdline += '-n_bp 1000 '
 cmdline += '-n_step 50 '
 cmdline += '-force 0 '
