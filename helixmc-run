@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 #This file is part of HelixMC.
 #    Copyright (C) 2013  Fang-Chieh Chou <fcchou@stanford.edu>
 #
@@ -32,20 +33,20 @@ parser = argparse.ArgumentParser(description='HelixMC: Base-pair level Monte-Car
 
 parser.add_argument('-n_step', type=int, required=True, help='Number of MC steps', metavar='int')
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-params_file', type=str, help='File of database bp-step parameters', metavar='str')
-group.add_argument('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
+group.add_argument ('-params_file', type=str, help='File of database bp-step parameters', metavar='str')
+group.add_argument ('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
 parser.add_argument('-gaussian_sampling', type=bool, default=True, help='Sampling assuming mutlivariate gaussian', metavar='bool')
 parser.add_argument('-seq', type=str, help='Full sequence or repeating unit. Input the sequence or a fasta file. Assumes random sequence if not given.', metavar='str')
 parser.add_argument('-n_bp', type=int, help='Number of base-pairs', metavar='int')
-parser.add_argument('-force', type=float, default=0, help='Applied external force in z-direction', metavar='float')
+parser.add_argument('-force', type=float, default=0, help='External force along z-direction (pN)', metavar='float')
 parser.add_argument('-out', type=str, default='MC_data.npz', help='Name of output file (in .npz format)', metavar='str')
 parser.add_argument('-relax_step', type=int, default=120, help='Number of relax MC steps before saving data', metavar='int')
 parser.add_argument('-link_relax_step', type=int, default=50, help='Number of MC steps to relax after link constraint', metavar='int')
 parser.add_argument('-compute_exact_link', type=bool, default=False, help='Compute exact linking number (slow)', metavar='bool')
 parser.add_argument('-compute_fuller_link', type=bool, default=False, help="Compute Fuller's linking number", metavar='bool')
 parser.add_argument('-check_fuller', type=str, help='Print out the fuller vs exact writhe to specified file for checking. Overrides the standard behavior.', metavar='str')
-parser.add_argument('-target_link', type=float, help='Constrain the linking number to be close to a input value', metavar='float')
-parser.add_argument('-trap_stiffness', type=float, default=0, help='Stiffness of the angular trap (for link constraint)', metavar='float')
+parser.add_argument('-target_link', type=float, help='Constrain the linking number to stay close to input value in radians', metavar='float')
+parser.add_argument('-trap_stiffness', type=float, default=0, help='Stiffness of the angular trap (for link constraint, pN.Å)', metavar='float')
 parser.add_argument('-out_frame', type=str, help='File for final frame saving', metavar='str')
 parser.add_argument('-in_frame', type=str, help='File for imported saved frame', metavar='str')
 parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
@@ -68,7 +69,7 @@ if args.params_file is not None:
     if args.params_file[-3:] == 'npz':
         random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
     else:
-        if args.seq is None:
+        if args.seq is not None:
             raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
         if args.params_file[-3:] == 'npy':
             params = np.load( args.params_file )
@@ -76,7 +77,7 @@ if args.params_file is not None:
             params = np.loadtxt( args.params_file )
         random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
 else:
-    if args.seq is None:
+    if args.seq is not None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
     if args.gaussian_params[-3:] == 'npy' :
         gaussian_params = np.load( args.gaussian_params )
