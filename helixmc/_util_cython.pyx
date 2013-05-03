@@ -282,7 +282,7 @@ def writhe_fuller(double[:,::1] dr, bool return_val_only=True):
     else :
         return area
 
-def ribbon_twist(double[:,::1] dr, double[:,::1] rb_vec, bool return_val_only=True):
+def ribbon_twist(dr, rb_vec, return_val_only=True):
     '''
     ribbon_twist(dr, rb_vec, return_val_only=True)
 
@@ -318,8 +318,11 @@ def ribbon_twist(double[:,::1] dr, double[:,::1] rb_vec, bool return_val_only=Tr
     if dr.shape[0] != rb_vec.shape[0] + 1:
         raise ValueError('dr.shape[0] != rb_vec.shape[0] + 1')
 
+
     global pi
-    cdef int n_dr = dr.shape[0]
+    cdef double[:,::1] dr_c = dr
+    cdef double[:,::1] rb_vec_c = rb_vec.copy()
+    cdef int n_dr = dr_c.shape[0]
     cdef double[::1] twist = np.empty(n_dr - 2)
     cdef double b0[3]
     cdef double b1[3]
@@ -328,14 +331,14 @@ def ribbon_twist(double[:,::1] dr, double[:,::1] rb_vec, bool return_val_only=Tr
     cdef np.intp_t i
 
     #Compute inital b vector and alpha
-    cross(&dr[0,0], &dr[1,0], b0)
+    cross(&dr_c[0,0], &dr_c[1,0], b0)
     if is_vec_nil(b0):
-        normal_vec(&dr[0,0], b0)
+        normal_vec(&dr_c[0,0], b0)
     normalize(b0)
 
-    angle = arccos( dot(b0, &rb_vec[0,0]) )
-    cross(b0, &rb_vec[0,0], rc)
-    sign = dot(rc, &dr[0,0]) #sign = dot(dr[0], cross(b0, rb_vec[0]))
+    angle = arccos( dot(b0, &rb_vec_c[0,0]) )
+    cross(b0, &rb_vec_c[0,0], rc)
+    sign = dot(rc, &dr_c[0,0]) #sign = dot(dr[0], cross(b0, rb_vec[0]))
     if sign >= 0:
         alpha0 = angle
     else:
@@ -344,15 +347,15 @@ def ribbon_twist(double[:,::1] dr, double[:,::1] rb_vec, bool return_val_only=Tr
     #Loop through the helix
     for i in xrange(n_dr-2):
         #b vector
-        cross(&dr[i+1,0], &dr[i+2,0], b1)
+        cross(&dr_c[i+1,0], &dr_c[i+2,0], b1)
         if is_vec_nil(b1):
-            normal_vec(&dr[i+1,0], b1)
+            normal_vec(&dr_c[i+1,0], b1)
         normalize(b1)
         
         #alpha angle
-        angle = arccos( dot(b1, &rb_vec[i+1,0]) )
-        cross(b1, &rb_vec[i+1,0], rc)
-        sign = dot(rc, &dr[i+1,0])
+        angle = arccos( dot(b1, &rb_vec_c[i+1,0]) )
+        cross(b1, &rb_vec_c[i+1,0], rc)
+        sign = dot(rc, &dr_c[i+1,0])
         if sign >= 0:
             alpha1 = angle
         else:
@@ -361,7 +364,7 @@ def ribbon_twist(double[:,::1] dr, double[:,::1] rb_vec, bool return_val_only=Tr
         #beta angle
         angle = arccos( dot(b0, b1) )
         cross(b0, b1, rc)
-        sign = dot(rc, &dr[i+1,0]) #sign = dot(dr[i+1], cross(b0, b1))
+        sign = dot(rc, &dr_c[i+1,0]) #sign = dot(dr[i+1], cross(b0, b1))
         if sign >= 0:
             beta = angle
         else:
