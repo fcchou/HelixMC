@@ -323,7 +323,8 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
     cdef double[:,::1] dr_c = dr
     cdef double[:,::1] rb_vec_c = rb_vec.copy()
     cdef int n_dr = dr_c.shape[0]
-    cdef double[::1] twist = np.empty(n_dr - 2)
+    twist = np.empty(n_dr - 2)
+    cdef double[::1] twist_c = twist
     cdef double b0[3]
     cdef double b1[3]
     cdef double rc[3]
@@ -376,12 +377,11 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
             twist_temp -= 2 * pi
         elif twist_temp <= -pi:
             twist_temp += 2 * pi
-        twist[i] = twist_temp
+        twist_c[i] = twist_temp
 
         #Move to the next segment
         alpha0 = alpha1
         b0[0] = b1[0]; b0[1] = b1[1]; b0[2] = b1[2]
-
     if return_val_only :
         return np.sum( twist )
     else :
