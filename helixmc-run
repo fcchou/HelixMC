@@ -20,7 +20,7 @@ import numpy as np
 import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
-from helixmc.random_step import RandomStepSimple, RandomStepAgg
+from helixmc.random_step import RandomStepSimple, RandomStepAgg, load_gaussian_params
 from helixmc.scorefxn import ScorefxnTweezers
 import time
 import argparse
@@ -79,13 +79,9 @@ if args.params_file is not None:
 else:
     if args.seq is not None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
-    if args.gaussian_params[-3:] == 'npy' :
-        gaussian_params = np.load( args.gaussian_params )
-    else :
-        gaussian_params = np.loadtxt( args.gaussian_params )
-    params_avg = gaussian_params[0]
-    params_cov = gaussian_params[1:]
-    random_step = RandomStepSimple( params_avg = params_avg, params_cov = params_cov, gaussian_sampling = args.gaussian_sampling )
+    random_step = load_gaussian_params( args.gaussian_params )
+    if not args.gaussian_sampling:
+        raise ValueError('-gaussian_sampling should be True when -gaussian_params is being input!')
 
 is_seq_dep = False
 n_bp = args.n_bp
