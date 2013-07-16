@@ -305,6 +305,7 @@ class RandomStepAgg(RandomStepBase):
             sym_name = ''
             for lett in name:
                 sym_name += name_conv[lett]
+            sym_name = sym_name[::-1]
             params1 = self.get_rand_step(name=name).params
             params1[:,0] *= -1
             params1[:,3] *= -1
