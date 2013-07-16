@@ -38,6 +38,8 @@ class HelixPose(object):
     compute_tw_wr : bool, optional
         Whether to compute twist and writhe (Fuller's writhe) during system update. Should be set to True for
         link-constrained simulations.
+    frame0 : ndarray of (3,3)
+        The frame of the first base-pair, default is np.eye(3) (overlaps with global coordinate).
 
     Attributes
     ----------
@@ -77,7 +79,7 @@ class HelixPose(object):
     ValueError
         If n_bp < 2
     '''
-    def __init__(self, input_file=None, init_params=None, n_bp=0, compute_tw_wr=False):
+    def __init__(self, input_file=None, init_params=None, n_bp=0, compute_tw_wr=False, frame0 = None):
         #core data
         self._n_bp = None
         self._dr = None
@@ -104,7 +106,7 @@ class HelixPose(object):
                 raise ValueError('n_bp < 2.')
             self._n_bp = n_bp
             self._params = np.tile( init_params, (n_bp-1,1) ).copy()
-            self._dr, self._frames = params2data( self._params )
+            self._dr, self._frames = params2data( self._params, frame0 )
             self.compute_tw_wr = compute_tw_wr
 
     def load_from_file(self, input_file):
@@ -187,7 +189,7 @@ class HelixPose(object):
             True for full update and False for trial update.
         '''
         if full_update:
-            twist = self.twist_data
+            twist = self._twist_data
             dr = self._dr
             self._mat = np.eye(3)
         else:

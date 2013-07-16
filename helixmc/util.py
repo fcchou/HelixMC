@@ -246,6 +246,8 @@ def coords2params( o2, R2 ):
             Phi += pi
         Roll = Tau * np.cos(Phi)
         Tilt = Tau * np.sin(Phi)
+        if Tau < 1e-6:
+            Twst = math.atan2(R2[1,0], R2[0,0])
         d_vec = Rz( -Phi ).dot( Ry( -Tau * 0.5 ) ).dot( Rz( -Twst * 0.5 + Phi ) ).dot( o2 )
         return np.hstack( (d_vec, Tilt, Roll, Twst) )
     else: #2D case
@@ -261,6 +263,9 @@ def coords2params( o2, R2 ):
         Twst[Twst <= -pi] += 2 *pi
         Roll = Tau * np.cos(Phi)
         Tilt = Tau * np.sin(Phi)
+        special_idx = (Tau < 1e-6)
+        if np.any(special_idx):
+            Twst[special_idx] = np.arctan2(R2[special_idx,1,0], R2[special_idx,0,0])
         d_vec = np.einsum('ijk,ikl,ilm,im->ij', Rz( -Phi ), Ry( -Tau * 0.5 ), Rz( -Twst * 0.5 + Phi ), o2 )
         return np.column_stack( (d_vec, Tilt, Roll, Twst) )
 

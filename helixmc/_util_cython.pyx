@@ -35,9 +35,9 @@ cdef inline double arccos(double x) nogil:
     "Arccos with tolerence of x > 1 or x < -1 (due to numeric error)"
     global pi
     if x >= 1:
-        return pi
-    elif x <= -1:
         return 0
+    elif x <= -1:
+        return pi
     else:
         return acos(x)
 

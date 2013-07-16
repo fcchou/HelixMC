@@ -73,9 +73,15 @@ class RandomStepSimple(RandomStepBase):
     Attributes
     ----------
     `gaussian_sampling` : bool
+        See the Parameters section.
     `params_avg` : ndarray
+        See the Parameters section.
     `params_cov` : ndarray
         See the Parameters section.
+    `params` : ndarray
+        See the Parameters section. If no params is given when the RandomStep
+        is initialized, return None.
+
 
     Raises
     ------
@@ -89,13 +95,8 @@ class RandomStepSimple(RandomStepBase):
     RandomStepAgg : Random bp-step generator by aggregrating multiple independent bp-step generators.
     '''
     def __init__(self, params=None, params_cov=None, params_avg=None, gaussian_sampling=True):
-        self._params = params
-        if params is not None:
-            self._params_avg = np.average( params, axis=0 )
-            self._params_cov = np.cov( params, rowvar=0 )
-            self._o_list, self._R_list = params2coords( params )
-            self._n_bp_step = params.shape[0]
-        else:
+        self.params = params
+        if params is None:
             if params_avg is None or params_cov is None:
                 raise ValueError('params_avg and params_cov are not specified.')
             self._params_cov = params_cov
@@ -118,11 +119,24 @@ class RandomStepSimple(RandomStepBase):
 
     @property
     def params_avg(self):
-        return self._params_avg
+        return self._params_avg.copy()
 
     @property
     def params_cov(self):
-        return self._params_cov
+        return self._params_cov.copy()
+
+    @property
+    def params(self):
+        return self._params.copy()
+
+    @params.setter
+    def params(self, val):
+        self._params = val
+        if val is not None:
+            self._params_avg = np.average( val, axis=0 )
+            self._params_cov = np.cov( val, rowvar=0 )
+            self._o_list, self._R_list = params2coords( val )
+            self._n_bp_step = val.shape[0]
 
     def __call__(self):
         '''
@@ -204,6 +218,8 @@ class RandomStepAgg(RandomStepBase):
         See the Parameters section.
     `params_avg` : ndarray
         Average values for the step parameters distribution.
+    `rand_list` : list
+        List of all RandomStep objects in the aggregation.
     `names` : list
         List of all names of RandomStep in the aggregation.
 
@@ -268,6 +284,36 @@ class RandomStepAgg(RandomStepBase):
         self._names.append( name )
         self._rand_list.append( random_step )
 
+    def symmetrize(self):
+        'Symmetrize the dataset by counting from opposite direction.'
+        is_DNA = False
+        is_RNA = False
+        for name in self._names:
+            if 'T' in name:
+                is_DNA = True
+            if 'U' in name:
+                is_RNA = True
+        if is_DNA and is_RNA:
+            raise ValueError("The data is RNA-DNA mixture!! Cannot symmetrize.")
+        if is_DNA:
+            name_conv = { 'A':'T', 'T':'A', 'G':'C', 'C':'G' }
+        else:
+            name_conv = { 'A':'U', 'U':'A', 'G':'C', 'C':'G' }
+
+        new_params = {}
+        for name in self._names:
+            sym_name = ''
+            for lett in name:
+                sym_name += name_conv[lett]
+            params1 = self.get_rand_step(name=name).params
+            params1[:,0] *= -1
+            params1[:,3] *= -1
+            params2 = np.vstack( (self.get_rand_step(name=sym_name).params, params1) )
+            new_params[sym_name] = params2
+
+        for name in self._names:
+            self.get_rand_step(name=name).params = new_params[name]
+
     def clear_all(self):
         'Clear all random bp-step generator in the aggregation.'
         self._names[:] = []
@@ -294,6 +340,10 @@ class RandomStepAgg(RandomStepBase):
     def names(self):
         return self._names[:]
 
+    @property
+    def rand_list(self):
+        return self.rand_list[:]
+
     def name2rand_idx(self, name):
         '''
         Get the index of a RandomStep object in rand_list from its name.
@@ -310,6 +360,28 @@ class RandomStepAgg(RandomStepBase):
         '''
         return self._names.index(name)
 
+    def get_rand_step(self, idx=None, name=None):
+        '''
+        Return one RandomStep object stored in the aggregation.
+
+        Parameters
+        ----------
+        idx : int
+            Index of the requested random step generator. Overides the 'name' parameter is both specified.
+        name : str
+            Name of the requested random step generator.
+
+        Returns
+        -------
+        rand_step : subclass of RandomStepBase
+             RandomStep object stored in the aggregation.
+        '''
+        if idx is not None:
+            return self._rand_list[idx]
+        elif name is not None:
+            return self._rand_list[ self.name2rand_idx(name) ]
+        else:
+            raise ValueError("Either idx or name input variable must be given!!")
 
     def __call__(self, idx=None, name=None):
         '''

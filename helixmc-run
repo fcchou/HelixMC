@@ -36,6 +36,7 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument ('-params_file', type=str, help='File of database bp-step parameters', metavar='str')
 group.add_argument ('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
 parser.add_argument('-gaussian_sampling', type=bool, default=True, help='Sampling assuming mutlivariate gaussian', metavar='bool')
+parser.add_argument('-symmetrize', type=bool, default=False, help='Symmetrize the input parameter set,', metavar='bool')
 parser.add_argument('-seq', type=str, help='Full sequence or repeating unit. Input the sequence or a fasta file. Assumes random sequence if not given.', metavar='str')
 parser.add_argument('-n_bp', type=int, help='Number of base-pairs', metavar='int')
 parser.add_argument('-force', type=float, default=0, help='External force along z-direction (pN)', metavar='float')
@@ -47,8 +48,9 @@ parser.add_argument('-compute_fuller_link', type=bool, default=False, help="Comp
 parser.add_argument('-check_fuller', type=str, help='Print out the fuller vs exact writhe to specified file for checking. Overrides the standard behavior.', metavar='str')
 parser.add_argument('-target_link', type=float, help='Constrain the linking number to stay close to input value in radians', metavar='float')
 parser.add_argument('-trap_stiffness', type=float, default=0, help='Stiffness of the angular trap (for link constraint, pN.Å)', metavar='float')
-parser.add_argument('-out_frame', type=str, help='File for final frame saving', metavar='str')
-parser.add_argument('-in_frame', type=str, help='File for imported saved frame', metavar='str')
+parser.add_argument('-out_frame', type=str, help='File for final frame saving (.npz)', metavar='str')
+parser.add_argument('-in_frame', type=str, help='File for imported saved frame (.npz)', metavar='str')
+parser.add_argument('-frame0', type=str, help='File for frame of first base-pair (3x3 matrix in .npy)', metavar='str')
 parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
 
 args = parser.parse_args()
@@ -68,7 +70,11 @@ if args.constant_seed:
 if args.params_file is not None:
     if args.params_file[-3:] == 'npz':
         random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
+        if args.symmetrize:
+            random_step.symmetrize()
     else:
+        if args.symmetrize:
+            raise argparse.ArgumentError('-symmetrize is True but user did not input a seq-dependent database file!')
         if args.seq is not None:
             raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
         if args.params_file[-3:] == 'npy':
@@ -107,8 +113,11 @@ if args.seq is not None:
 
 if args.in_frame is not None :
     pose = HelixPose( input_file = args.in_frame )
-else :
-    pose = HelixPose( init_params = random_step.params_avg, n_bp = n_bp )
+else:
+    frame0 = None
+    if args.frame0 != None:
+        frame0 = np.load(args.frame0)
+    pose = HelixPose( init_params = random_step.params_avg, n_bp = n_bp, frame0 = frame0 )
 
 if args.force == 0 and args.trap_stiffness == 0:
     is_accept_all = True
@@ -186,7 +195,6 @@ else :
         for i in xrange(n_bp-1):
             is_accept = MC_move( pose, i, scorefxn, is_accept_all )
             accept += is_accept
-        #print pose.dr
         all_coord[j] = pose.coord_terminal
         all_frame[j] = pose.frame_terminal
         if args.compute_exact_link:
