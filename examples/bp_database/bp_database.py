@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 # database/DNA_2.0_noprot.npz is curated.
 
 # Download PDBs #
-pdb_list = '../../database/pdb_list/DNA_2.0_noprot.txt'
+pdb_list = '../../helixmc/data/pdb_list/DNA_2.0_noprot.txt'
 server_name = 'http://www.rcsb.org/pdb/files/'
 for pdb_id in open(pdb_list) :
     filename = '%s.pdb.gz' % pdb_id[:-1].lower()
