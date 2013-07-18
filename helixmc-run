@@ -81,6 +81,8 @@ if args.params_file is not None:
             params = np.load( args.params_file )
         elif args.params_file[-3:] == 'txt':
             params = np.loadtxt( args.params_file )
+        else:
+            raise argparse.ArgumentError('Input of -params is of unknown datatype!')
         random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
 else:
     if args.seq is not None:
