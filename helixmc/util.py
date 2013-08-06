@@ -421,7 +421,7 @@ def read_seq_from_fasta( fasta ):
         If the fasta file does not exist.
     '''
     if not exists(fasta):
-        raise ValueError('The fasta file does not exist.')
+        raise ValueError('The fasta file %s does not exist.' % fasta)
     comment_symbols = ['>', ';', '#']
     seq = ''
     for line in open(fasta):

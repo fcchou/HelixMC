@@ -98,7 +98,7 @@ class RandomStepSimple(RandomStepBase):
         self.params = params
         if params is None:
             if params_avg is None or params_cov is None:
-                raise ValueError('params_avg and params_cov are not specified.')
+                raise ValueError('params is not specified; params_avg and params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
 
@@ -115,7 +115,7 @@ class RandomStepSimple(RandomStepBase):
             self._max_cached_data = 20000
             self._idx = self._max_cached_data
         elif self._params is None:
-            raise ValueError('params is not specified, but gaussian_sampling is set to False.')
+            raise ValueError('Params is not specified, but gaussian_sampling is set to False.')
 
     @property
     def params_avg(self):
@@ -274,18 +274,25 @@ class RandomStepAgg(RandomStepBase):
         ------
         TypeError
             If random_step does not belong to a subclass of `RandomStepBase`.
-        ValueError
+        ValuError
             If the input name already exists in self.names.
         '''
         if not isinstance( random_step, RandomStepBase ):
-            raise TypeError('random_step does not belong to a subclass of RandomStepBase.')
+            raise TypeError('Appended random_step is not a subclass of RandomStepBase.')
         if name in self._names:
-            raise ValueError('Input name already exists in self.names!!!')
+            raise ValueError("Appended random_step name '%s' already exists in list of names!" % name)
         self._names.append( name )
         self._rand_list.append( random_step )
 
     def symmetrize(self):
-        'Symmetrize the dataset by counting from opposite direction.'
+        '''
+        Symmetrize the dataset by counting from opposite direction.
+
+        Raises
+        ------
+        ValueError :
+            If the dataset contain mixed RNA and DNA bases (U and T).
+        '''
         is_DNA = False
         is_RNA = False
         for name in self._names:
@@ -361,54 +368,65 @@ class RandomStepAgg(RandomStepBase):
         '''
         return self._names.index(name)
 
-    def get_rand_step(self, idx=None, name=None):
+    def get_rand_step(self, identifier):
         '''
         Return one RandomStep object stored in the aggregation.
 
         Parameters
         ----------
-        idx : int
-            Index of the requested random step generator. Overides the 'name' parameter is both specified.
-        name : str
-            Name of the requested random step generator.
+        identifier : int or str
+            Index or name of the requested random step generator.
 
         Returns
         -------
         rand_step : subclass of RandomStepBase
              RandomStep object stored in the aggregation.
-        '''
-        if idx is not None:
-            return self._rand_list[idx]
-        elif name is not None:
-            return self._rand_list[ self.name2rand_idx(name) ]
-        else:
-            raise ValueError("Either idx or name input variable must be given!!")
 
-    def __call__(self, idx=None, name=None):
+        Raises
+        ------
+        TypeError :
+            If the input identifier is not int or str
+        '''
+        if isinstance(identifier, int):
+            return self._rand_list[identifier]
+        elif isinstance(identifier, str):
+            return self._rand_list[ self.name2rand_idx(identifier) ]
+        else:
+            raise TypeError("Input identifier has invalid datatype (is %s, should be int or str)!!" % type(identifier))
+
+    def __call__(self, identifier=None):
         '''
         Draw one random bp-step parameter set from the distribution.
-        Randomly select one generator in the aggregation and return its generated result if neither 'name' nor 'idx' is given.
+        Randomly select one generator in the aggregation and return its generated result
+        if no input parameter is given.
 
         Parameters
         ----------
-        idx : int
-            Index of the requested random step generator. Overides the 'name' parameter is both specified.
-        name : str
-            Name of the requested random step generator.
+        identifier : int or str
+            Index or name of the requested random step generator.
 
         Returns
         -------
         params: ndarray, shape (6)
             Randomly generated bp-step parameter set.
         o : ndarray, shape (3)
-            Corresponding bp-center for the 2nd bp of the bp-step (1st bp is at origin and oriented with the coordinate frame).
+            Corresponding bp-center for the 2nd bp of the bp-step (1st bp is at origin and
+            oriented with the coordinate frame).
         R : ndarray, shape (3,3)
             Corresponding frame for the 2nd bp of the bp-step.
+
+        Raises
+        ------
+        TypeError :
+            If the input identifier is not int or str
         '''
-        if name is None and idx is None:
+        if identifier is None:
             return self._rand_list[ random.randint( len(self._rand_list) ) ]()
-        elif idx is not None:
-            return self._rand_list[idx]()
+        elif isinstance(identifier, int):
+            return self._rand_list[identifier]()
+        elif isinstance(identifier, str):
+            return self._rand_list[ self.name2rand_idx(identifier) ] ()
         else:
-            return self._rand_list[ self.name2rand_idx(name) ] ()
+            raise TypeError("Input identifier has invalid datatype (is %s, should be int or str)!!" % type(identifier))
+
 

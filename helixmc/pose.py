@@ -103,7 +103,7 @@ class HelixPose(object):
             self.compute_tw_wr = compute_tw_wr
         elif init_params is not None:
             if n_bp < 2:
-                raise ValueError('n_bp < 2.')
+                raise ValueError('HelixPose cannot have n_bp < 2!')
             self._n_bp = n_bp
             self._params = np.tile( init_params, (n_bp-1,1) ).copy()
             self._dr, self._frames = params2data( self._params, frame0 )
@@ -117,6 +117,11 @@ class HelixPose(object):
         ----------
         input_file : str
             Name of the input file containing the pose data.
+
+        Raises
+        ------
+        ValueError
+            If n_bp < 2 in the input file.
         '''
         data = np.load(input_file)
         self._params = data['params']
@@ -124,7 +129,7 @@ class HelixPose(object):
         self._frames = data['frames']
         self._n_bp = self._frames.shape[0]
         if self._n_bp < 2:
-            raise ValueError('n_bp < 2.')
+            raise ValueError('HelixPose cannot have n_bp < 2!')
 
     def copy(self):
         '''
@@ -242,7 +247,8 @@ class HelixPose(object):
             If i < 0 or i >= n_bp.
         '''
         if i < 0 or i >= self._n_bp:
-            raise ValueError('i < 0 or i >= n_bp.')
+            raise ValueError('The bp-step %d being updated is out of the ' % i
+            + 'bound of current HelixPose (0 - %d).' % self._n_bp)
         if o is None or R is None:
             o, R = params2coords( params )
         self._obs_clear()
@@ -283,7 +289,8 @@ class HelixPose(object):
             If i < 0 or i >= n_bp.
         '''
         if i < 0 or i >= self._n_bp:
-            raise ValueError('i < 0 or i >= n_bp.')
+            raise ValueError('The bp-step %d being updated is out of the ' % i
+            + 'bound of current HelixPose (0 - %d).' % self._n_bp)
         if o is None or R is None:
             o, R = params2coords( params )
 

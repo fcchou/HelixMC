@@ -16,6 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from os.path import isfile
 import numpy as np
 import helixmc
 from helixmc import util
@@ -25,6 +26,10 @@ from helixmc.scorefxn import ScorefxnTweezers
 import time
 import argparse
 
+def check_file_exist( filename ):
+    if not isfile(filename):
+        raise ValueError("File '%s' does not exist!" % filename)
+
 start_time = time.time()
 
 #############################################
@@ -33,7 +38,7 @@ parser = argparse.ArgumentParser(description='HelixMC: Base-pair level Monte-Car
 
 parser.add_argument('-n_step', type=int, required=True, help='Number of MC steps', metavar='int')
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument ('-params_file', type=str, help='File of database bp-step parameters', metavar='str')
+group.add_argument ('-params', type=str, help='File of database bp-step parameters', metavar='str')
 group.add_argument ('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
 parser.add_argument('-gaussian_sampling', type=bool, default=True, help='Sampling assuming mutlivariate gaussian', metavar='bool')
 parser.add_argument('-symmetrize', type=bool, default=False, help='Symmetrize the input parameter set.', metavar='bool')
@@ -54,8 +59,8 @@ parser.add_argument('-frame0', type=str, help='File for frame of first base-pair
 parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
 
 args = parser.parse_args()
-if args.params_file is None and (not args.gaussian_sampling):
-    raise argparse.ArgumentError('-params_file must be specified for non-gaussian sampling!!!')
+if args.params is None and (not args.gaussian_sampling):
+    raise argparse.ArgumentError('-params must be specified for non-gaussian sampling!!!')
 if args.seq is None and args.n_bp is None:
     raise argparse.ArgumentError('At least one of -n_bp and -seq must be specified!!!')
 
@@ -67,9 +72,10 @@ if args.constant_seed:
 
 #############################################
 #Initial setup
-if args.params_file is not None:
-    if args.params_file[-3:] == 'npz':
-        random_step = RandomStepAgg( args.params_file, gaussian_sampling = args.gaussian_sampling )
+if args.params is not None:
+    check_file_exist(args.params)
+    if args.params[-3:] == 'npz':
+        random_step = RandomStepAgg( args.params, gaussian_sampling = args.gaussian_sampling )
         if args.symmetrize:
             random_step.symmetrize()
     else:
@@ -77,19 +83,20 @@ if args.params_file is not None:
             raise argparse.ArgumentError('-symmetrize is True but user did not input a seq-dependent database file!')
         if args.seq is not None:
             raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
-        if args.params_file[-3:] == 'npy':
-            params = np.load( args.params_file )
-        elif args.params_file[-3:] == 'txt':
-            params = np.loadtxt( args.params_file )
+        if args.params[-3:] == 'npy':
+            params = np.load( args.params )
+        elif args.params[-3:] == 'txt':
+            params = np.loadtxt( args.params )
         else:
             raise argparse.ArgumentError('Input of -params is of unknown datatype!')
         random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
 else:
+    check_file_exist(args.gaussian_params)
     if args.seq is not None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
     random_step = load_gaussian_params( args.gaussian_params )
     if not args.gaussian_sampling:
-        raise ValueError('-gaussian_sampling should be True when -gaussian_params is being input!')
+        raise argparse.ArgumentError('-gaussian_sampling should be True when -gaussian_params is being input!')
 
 is_seq_dep = False
 n_bp = args.n_bp
@@ -114,10 +121,12 @@ if args.seq is not None:
         seq_id[i] = random_step.name2rand_idx(name)
 
 if args.in_frame is not None :
+    check_file_exist(args.in_frame)
     pose = HelixPose( input_file = args.in_frame )
 else:
     frame0 = None
     if args.frame0 != None:
+        check_file_exist(args.frame0)
         frame0 = np.load(args.frame0)
     pose = HelixPose( init_params = random_step.params_avg, n_bp = n_bp, frame0 = frame0 )
 

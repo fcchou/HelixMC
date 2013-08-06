@@ -64,7 +64,6 @@ def constant_seed( seed=24601 ):
         Random seed.
     '''
     random.seed(seed)
-
 #####Useful constants#####
 kB = 1.3806488e-1 #Boltzmann constant in pN.A/K
 kBT = kB * 298.15 #kB.T at room temperature (25 degree Celsius)
