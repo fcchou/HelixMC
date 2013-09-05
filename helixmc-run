@@ -73,7 +73,6 @@ if args.constant_seed:
 #############################################
 #Initial setup
 if args.params is not None:
-    check_file_exist(args.params)
     if args.params[-3:] == 'npz':
         random_step = RandomStepAgg( args.params, gaussian_sampling = args.gaussian_sampling )
         if args.symmetrize:
@@ -91,7 +90,6 @@ if args.params is not None:
             raise argparse.ArgumentError('Input of -params is of unknown datatype!')
         random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
 else:
-    check_file_exist(args.gaussian_params)
     if args.seq is not None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
     random_step = load_gaussian_params( args.gaussian_params )
