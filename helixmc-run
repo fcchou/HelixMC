@@ -22,7 +22,7 @@ import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
 from helixmc.random_step import RandomStepSimple, RandomStepAgg, load_gaussian_params
-from helixmc.scorefxn import ScorefxnTweezers
+from helixmc.score import ScoreTweezers
 import time
 import argparse
 
@@ -52,7 +52,9 @@ parser.add_argument('-compute_exact_link', type=bool, default=False, help='Compu
 parser.add_argument('-compute_fuller_link', type=bool, default=False, help="Compute Fuller's linking number", metavar='bool')
 parser.add_argument('-check_fuller', type=str, help='Print out the fuller vs exact writhe to specified file for checking. Overrides the standard behavior.', metavar='str')
 parser.add_argument('-target_link', type=float, help='Constrain the linking number to stay close to input value in radians', metavar='float')
-parser.add_argument('-trap_stiffness', type=float, default=0, help='Stiffness of the angular trap (for link constraint, pN.Å)', metavar='float')
+parser.add_argument('-torsional_stiffness', type=float, default=0, help='Stiffness of the torsional trap (for link constraint, pN.Å)', metavar='float')
+parser.add_argument('-xy_stiffness', type=float, default=0, help='Stiffness of the xy trap (pN/Å)', metavar='float')
+parser.add_argument('-save_all_frames', type=bool, help='Save all frames sampled in the run.', metavar='bool')
 parser.add_argument('-out_frame', type=str, help='File for final frame saving (.npz)', metavar='str')
 parser.add_argument('-in_frame', type=str, help='File for imported saved frame (.npz)', metavar='str')
 parser.add_argument('-frame0', type=str, help='File for frame of first base-pair (3x3 matrix in .npy)', metavar='str')
@@ -64,7 +66,7 @@ if args.params is None and (not args.gaussian_sampling):
 if args.seq is None and args.n_bp is None:
     raise argparse.ArgumentError('At least one of -n_bp and -seq must be specified!!!')
 
-is_link_constrained = ( args.target_link is not None and args.trap_stiffness != 0 )
+is_link_constrained = ( args.target_link is not None and args.torsional_stiffness != 0 )
 fuller_check_out = args.check_fuller
 is_check_fuller = (fuller_check_out is not None)
 if args.constant_seed:
@@ -128,23 +130,16 @@ else:
         frame0 = np.load(args.frame0)
     pose = HelixPose( init_params = random_step.params_avg, n_bp = n_bp, frame0 = frame0 )
 
-if args.force == 0 and args.trap_stiffness == 0:
-    is_accept_all = True
-    scorefxn = None
-    scorefxn_prerun = None
-else:
-    is_accept_all = False
-    scorefxn = ScorefxnTweezers(args.force, args.trap_stiffness, args.target_link)
-    scorefxn_prerun = ScorefxnTweezers(args.force, 0, None)
-
+scorefxn = ScoreTweezers(args.force, args.torsional_stiffness, args.target_link, args.xy_stiffness)
+scorefxn_prerun = ScoreTweezers(args.force, xy_stiffness = args.xy_stiffness)
 #############################################
 #MC Workhorse function
-def MC_move( pose, moving_step, scorefxn, accept_all=False ):
+def MC_move(pose, moving_step, scorefxn):
     if is_seq_dep:
         next_step_data = random_step( seq_id[moving_step] )
     else:
         next_step_data = random_step()
-    if accept_all:
+    if scorefxn.is_empty():
         pose.update(moving_step, *next_step_data)
         return True
     else:
@@ -161,28 +156,27 @@ def MC_move( pose, moving_step, scorefxn, accept_all=False ):
 #initial relax
 for j in xrange(args.relax_step):
     for i in xrange(n_bp-1):
-        MC_move( pose, i, scorefxn_prerun, is_accept_all )
+        MC_move(pose, i, scorefxn_prerun)
 #############################################
 #Trap ramping
 if is_link_constrained:
     pose.compute_tw_wr = True
     curr_target = pose.link_fuller
-    scorefxn_prerun.target_link = curr_target
-    scorefxn_prerun.trap_stiffness = args.trap_stiffness
+    scorefxn_prerun = ScoreTweezers(args.force, args.torsional_stiffness, curr_target, args.xy_stiffness)
 
     incr = np.radians(20) * np.sign( args.target_link - curr_target )
     cutoff = abs( incr * 0.5 )
     while abs(curr_target - args.target_link) > cutoff:
         for i in xrange(n_bp-1):
-            MC_move( pose, i, scorefxn_prerun, is_accept_all )
+            MC_move(pose, i, scorefxn_prerun)
             if abs(curr_target - pose.link_fuller) <= cutoff:
                 curr_target += incr
-                scorefxn_prerun.target_link = curr_target
+                scorefxn_prerun = ScoreTweezers(args.force, args.torsional_stiffness, curr_target, args.xy_stiffness)
             if abs(curr_target - args.target_link) <= cutoff:
                 break
     for j in xrange(args.link_relax_step):
         for i in xrange(n_bp-1):
-            MC_move( pose, i, scorefxn, is_accept_all )
+            MC_move(pose, i, scorefxn)
 #############################################
 #Actual sampling
 accept = 0
@@ -195,14 +189,14 @@ if is_check_fuller :
     out = open(fuller_check_out, 'w')
     for j in xrange(args.n_step):
         for i in xrange(n_bp-1):
-            is_accept = MC_move( pose, i, scorefxn, is_accept_all )
+            is_accept = MC_move(pose, i, scorefxn)
             accept += is_accept
         out.write('%f %f\n' % ( pose.writhe_fuller, pose.writhe_exact ) )
     out.close()
 else :
     for j in xrange(args.n_step):
         for i in xrange(n_bp-1):
-            is_accept = MC_move( pose, i, scorefxn, is_accept_all )
+            is_accept = MC_move(pose, i, scorefxn)
             accept += is_accept
         all_coord[j] = pose.coord_terminal
         all_frame[j] = pose.frame_terminal
@@ -212,6 +206,8 @@ else :
         elif args.compute_fuller_link:
             all_twist[j] = pose.twist
             all_writhe[j] = pose.writhe_fuller
+        if args.save_all_frames:
+            pose.write2disk( 'frame%d' % j )
     if args.compute_exact_link or args.compute_fuller_link:
         np.savez( args.out, coord_terminal=all_coord, frame_terminal=all_frame, writhe=all_writhe, twist=all_twist )
     else :
