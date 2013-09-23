@@ -234,6 +234,6 @@ class ScoreTweezers(ScoreComb):
             self.score_list.append(ScoreExt(force))
         if torsional_stiffness != 0 and target_link is not None:
             self.score_list.append(
-                    ScoreTorsionTrap(torsional_stiffness, targer_link))
+                    ScoreTorsionTrap(torsional_stiffness, target_link))
         if xy_stiffness != 0:
             self.score_list.append(ScoreXyTrap(xy_stiffness))
