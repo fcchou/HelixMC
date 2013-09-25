@@ -16,7 +16,7 @@ DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC'
 VERSION = str(helixmc.__version__)
 ext_modules = [Extension("helixmc._util_cython", ["helixmc/_util_cython.c"],
     include_dirs=[numpy.get_include()])]
-package_data={'helixmc': ['database/*.npz']}
+package_data={'helixmc': ['helixmc/data/*']}
 
 setup(name=DISTNAME,
       author=AUTHOR,
