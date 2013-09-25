@@ -40,7 +40,7 @@ parser.add_argument('-n_step', type=int, required=True, help='Number of MC steps
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument ('-params', type=str, help='File of database bp-step parameters', metavar='str')
 group.add_argument ('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
-parser.add_argument('-no_gaussian_sampling', action='store_false', help='No sampling assuming mutlivariate gaussian')
+parser.add_argument('-no_gaussian_sampling', action='store_true', help='No sampling assuming mutlivariate gaussian')
 parser.add_argument('-symmetrize', action='store_true', help='Symmetrize the input parameter set.')
 parser.add_argument('-seq', type=str, help='Full sequence or repeating unit. Input the sequence or a fasta file. Assumes random sequence if not given.', metavar='str')
 parser.add_argument('-n_bp', type=int, help='Number of base-pairs', metavar='int')

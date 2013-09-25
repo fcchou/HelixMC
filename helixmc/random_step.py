@@ -95,14 +95,13 @@ class RandomStepSimple(RandomStepBase):
     RandomStepAgg : Random bp-step generator by aggregrating multiple independent bp-step generators.
     '''
     def __init__(self, params=None, params_cov=None, params_avg=None, gaussian_sampling=True):
+        self._gaussian_sampling = gaussian_sampling
         self.params = params
         if params is None:
             if params_avg is None or params_cov is None:
                 raise ValueError('params is not specified; params_avg and params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
-
-        self.gaussian_sampling = gaussian_sampling
 
     @property
     def gaussian_sampling(self):
@@ -137,6 +136,7 @@ class RandomStepSimple(RandomStepBase):
             self._params_cov = np.cov( val, rowvar=0 )
             self._o_list, self._R_list = params2coords( val )
             self._n_bp_step = val.shape[0]
+        self.gaussian_sampling = self.gaussian_sampling
 
     def __call__(self):
         '''
@@ -231,7 +231,7 @@ class RandomStepAgg(RandomStepBase):
     def __init__(self, data_file = None, gaussian_sampling=True):
         self._names = []
         self._rand_list = []
-        self.gaussian_sampling = gaussian_sampling
+        self._gaussian_sampling = gaussian_sampling
         if data_file is not None:
             self.load_from_file( data_file )
 
