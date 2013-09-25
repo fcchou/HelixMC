@@ -102,6 +102,9 @@ class RandomStepSimple(RandomStepBase):
                 raise ValueError('params is not specified; params_avg and params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
+            ### To avoid float-point error ###
+            self._params_avg[self._params_avg < 1e-15] = 0
+            self._params_cov[self._params_cov < 1e-15] = 0
 
     @property
     def gaussian_sampling(self):
@@ -134,6 +137,10 @@ class RandomStepSimple(RandomStepBase):
         if val is not None:
             self._params_avg = np.average( val, axis=0 )
             self._params_cov = np.cov( val, rowvar=0 )
+            ### To avoid float-point error ###
+            self._params_avg[self._params_avg < 1e-15] = 0
+            self._params_cov[self._params_cov < 1e-15] = 0
+            ######
             self._o_list, self._R_list = params2coords( val )
             self._n_bp_step = val.shape[0]
         self.gaussian_sampling = self.gaussian_sampling
@@ -316,7 +323,7 @@ class RandomStepAgg(RandomStepBase):
             params1 = self.get_rand_step(name).params
             params1[:,0] *= -1
             params1[:,3] *= -1
-            params2 = np.vstack( (self.get_rand_step(sym_name).params, params1) )
+            params2 = np.vstack((self.get_rand_step(sym_name).params, params1))
             new_params[sym_name] = params2
 
         for name in self._names:
