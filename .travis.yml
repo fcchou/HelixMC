@@ -8,3 +8,4 @@ before_install:
 script:
   - python setup.py build
   - sudo python setup.py install
+  - python tests/runtest.py
