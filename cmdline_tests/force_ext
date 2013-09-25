@@ -1,0 +1,2 @@
+helixmc-run -const_seed -params RNA_default.npz -n_bp 10 -n_step 100 \
+-force 20 -compute_exact_link

@@ -67,7 +67,7 @@ class ScoreExt(ScoreBase):
         score : float
             Score of the pose.
         '''
-        return pose.z_terminal * self.force
+        return -pose.z_terminal * self.force
 
 class ScoreTorsionTrap(ScoreBase):
     '''

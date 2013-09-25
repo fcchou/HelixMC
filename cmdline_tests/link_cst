@@ -1,0 +1,2 @@
+helixmc-run -const_seed -params RNA_default.npz -n_bp 10 -n_step 100 \
+-force 20 -target_link 5.0 -torsional_stiffness 2000.0 -compute_fuller_link

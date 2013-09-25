@@ -40,28 +40,28 @@ parser.add_argument('-n_step', type=int, required=True, help='Number of MC steps
 group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument ('-params', type=str, help='File of database bp-step parameters', metavar='str')
 group.add_argument ('-gaussian_params', type=str, help='File for mutlivariate gaussian parameters', metavar='str')
-parser.add_argument('-gaussian_sampling', type=bool, default=True, help='Sampling assuming mutlivariate gaussian', metavar='bool')
-parser.add_argument('-symmetrize', type=bool, default=False, help='Symmetrize the input parameter set.', metavar='bool')
+parser.add_argument('-no_gaussian_sampling', action='store_false', help='No sampling assuming mutlivariate gaussian')
+parser.add_argument('-symmetrize', action='store_true', help='Symmetrize the input parameter set.')
 parser.add_argument('-seq', type=str, help='Full sequence or repeating unit. Input the sequence or a fasta file. Assumes random sequence if not given.', metavar='str')
 parser.add_argument('-n_bp', type=int, help='Number of base-pairs', metavar='int')
 parser.add_argument('-force', type=float, default=0, help='External force along z-direction (pN)', metavar='float')
 parser.add_argument('-out', type=str, default='MC_data.npz', help='Name of output file (in .npz format)', metavar='str')
 parser.add_argument('-relax_step', type=int, default=120, help='Number of relax MC steps before saving data', metavar='int')
 parser.add_argument('-link_relax_step', type=int, default=50, help='Number of MC steps to relax after link constraint', metavar='int')
-parser.add_argument('-compute_exact_link', type=bool, default=False, help='Compute exact linking number (slow)', metavar='bool')
-parser.add_argument('-compute_fuller_link', type=bool, default=False, help="Compute Fuller's linking number", metavar='bool')
+parser.add_argument('-compute_exact_link', action='store_true', help='Compute exact linking number (slow)')
+parser.add_argument('-compute_fuller_link', action='store_true', help="Compute Fuller's linking number")
 parser.add_argument('-check_fuller', type=str, help='Print out the fuller vs exact writhe to specified file for checking. Overrides the standard behavior.', metavar='str')
 parser.add_argument('-target_link', type=float, help='Constrain the linking number to stay close to input value in radians', metavar='float')
 parser.add_argument('-torsional_stiffness', type=float, default=0, help='Stiffness of the torsional trap (for link constraint, pN.Å)', metavar='float')
 parser.add_argument('-xy_stiffness', type=float, default=0, help='Stiffness of the xy trap (pN/Å)', metavar='float')
-parser.add_argument('-save_all_frames', type=bool, help='Save all frames sampled in the run.', metavar='bool')
+parser.add_argument('-save_all_frames', action='store_true', help='Save all frames sampled in the run.')
 parser.add_argument('-out_frame', type=str, help='File for final frame saving (.npz)', metavar='str')
 parser.add_argument('-in_frame', type=str, help='File for imported saved frame (.npz)', metavar='str')
 parser.add_argument('-frame0', type=str, help='File for frame of first base-pair (3x3 matrix in .npy)', metavar='str')
-parser.add_argument('-constant_seed', type=bool, help='Use constant seed in random generator', metavar='bool')
+parser.add_argument('-const_seed', action='store_true', help='Use constant seed in random generator')
 
 args = parser.parse_args()
-if args.params is None and (not args.gaussian_sampling):
+if args.params is None and args.no_gaussian_sampling:
     raise argparse.ArgumentError('-params must be specified for non-gaussian sampling!!!')
 if args.seq is None and args.n_bp is None:
     raise argparse.ArgumentError('At least one of -n_bp and -seq must be specified!!!')
@@ -69,14 +69,14 @@ if args.seq is None and args.n_bp is None:
 is_link_constrained = ( args.target_link is not None and args.torsional_stiffness != 0 )
 fuller_check_out = args.check_fuller
 is_check_fuller = (fuller_check_out is not None)
-if args.constant_seed:
+if args.const_seed:
     helixmc.constant_seed()
 
 #############################################
 #Initial setup
 if args.params is not None:
     if args.params[-3:] == 'npz':
-        random_step = RandomStepAgg( args.params, gaussian_sampling = args.gaussian_sampling )
+        random_step = RandomStepAgg( args.params, gaussian_sampling = not args.no_gaussian_sampling )
         if args.symmetrize:
             random_step.symmetrize()
     else:
@@ -90,13 +90,13 @@ if args.params is not None:
             params = np.loadtxt( args.params )
         else:
             raise argparse.ArgumentError('Input of -params is of unknown datatype!')
-        random_step = RandomStepSimple( params, gaussian_sampling = args.gaussian_sampling )
+        random_step = RandomStepSimple( params, gaussian_sampling = not args.no_gaussian_sampling )
 else:
     if args.seq is not None:
         raise argparse.ArgumentError('-seq is specified but user did not input a seq-dependent database file!')
     random_step = load_gaussian_params( args.gaussian_params )
-    if not args.gaussian_sampling:
-        raise argparse.ArgumentError('-gaussian_sampling should be True when -gaussian_params is being input!')
+    if args.no_gaussian_sampling:
+        raise argparse.ArgumentError('-no_gaussian_sampling when -gaussian_params is being input!')
 
 is_seq_dep = False
 n_bp = args.n_bp
@@ -217,6 +217,6 @@ else :
 if args.out_frame is not None:
     pose.write2disk( args.out_frame )
 
-print 'Total time = %f' % (time.time() - start_time)
+print 'Total time = %.3f s' % (time.time() - start_time)
 if args.n_step > 0:
-    print 'Accept rate = %f' % (float(accept) / (args.n_step * ( n_bp - 1 )))
+    print 'Accept rate = %.2f %%' % (100 * float(accept) / (args.n_step * ( n_bp - 1 )))
