@@ -38,5 +38,6 @@ for test in tests:
     for key in data:
         if key != 'frame_terminal':
             np.savetxt(key, data[key], fmt='%.6f')
+    os.remove('MC_data.npz')
     os.chdir('../')
 

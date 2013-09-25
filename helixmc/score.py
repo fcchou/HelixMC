@@ -19,7 +19,6 @@
 import abc
 import warnings
 import numpy as np
-import math
 
 #####Score function#####
 class ScoreBase(object):

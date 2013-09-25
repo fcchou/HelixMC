@@ -41,7 +41,7 @@ Alternatively, you can add your HelixMC folder into the system's ``$PATH`` and
     export PYTHONPATH=$PYTHONPATH:<HelixMC Path>
 
 Then build the Cython extension. Under the ``helixmc/`` folder, run::
-    
+
     python _cython_build.py build_ext --inplace
 
 Note that this requires you to have Cython installed. Otherwise you can choose

@@ -1,0 +1,2 @@
+helixmc-run -const_seed -params DNA_default.npz -n_bp 10 -n_step 100 \
+-xy_stiffness 0.1 -force 20

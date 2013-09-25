@@ -313,14 +313,14 @@ class RandomStepAgg(RandomStepBase):
             for lett in name:
                 sym_name += name_conv[lett]
             sym_name = sym_name[::-1]
-            params1 = self.get_rand_step(name=name).params
+            params1 = self.get_rand_step(name).params
             params1[:,0] *= -1
             params1[:,3] *= -1
-            params2 = np.vstack( (self.get_rand_step(name=sym_name).params, params1) )
+            params2 = np.vstack( (self.get_rand_step(sym_name).params, params1) )
             new_params[sym_name] = params2
 
         for name in self._names:
-            self.get_rand_step(name=name).params = new_params[name]
+            self.get_rand_step(name).params = new_params[name]
 
     def clear_all(self):
         'Clear all random bp-step generator in the aggregation.'
