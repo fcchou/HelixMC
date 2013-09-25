@@ -4,9 +4,7 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
-  - sudo apt-get install -qq python-numpy python-scipy python-matplotlib
-install:
-  - pip install Cython
+  - sudo apt-get install -qq python-numpy python-scipy python-matplotlib cython
 script:
   - python setup.py build
   - sudo python setup.py install

@@ -46,7 +46,7 @@ tags
 
 # Package specifc #
 ###################
-./build/
+build/
 helixmc/build/
 doc/build/
 doc/source/generated/

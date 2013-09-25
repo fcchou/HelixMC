@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import os
 from distutils.core import setup
 from distutils.extension import Extension
 import helixmc
@@ -15,7 +14,8 @@ URL = 'http://fcchou.github.com/HelixMC/'
 LICENSE = 'GPL'
 DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC'
 VERSION = str(helixmc.__version__)
-ext_modules = [ Extension("helixmc._util_cython", ["helixmc/_util_cython.c"], include_dirs=[numpy.get_include()] ]
+ext_modules = [Extension("helixmc._util_cython", ["helixmc/_util_cython.c"],
+    include_dirs=[numpy.get_include()])]
 package_data={'helixmc': ['database/*.npz']}
 
 setup(name=DISTNAME,
