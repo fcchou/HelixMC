@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/fcchou/helixmc.png?branch=master
+      :target: https://travis-ci.org/fcchou/helixmc/
+
 ######
 README
 ######
