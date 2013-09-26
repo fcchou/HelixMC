@@ -1,0 +1,25 @@
+HelixMC Test Readme
+===================
+
+This folder contains tests for HelixMC. Currently we only test the helixmc-run
+command lines. These test command lines are located in the `cmdline_tests`
+folder. To run the test, simply runs::
+
+  python runtest.py
+
+Then compare the results with the stored results::
+
+  diff -r test_results stored_results
+
+Code changes that modify the test results should be examined carefully before
+commiting.
+
+For debugging, one can also just run a particular test. For example::
+
+  python test.py zero_force
+
+This just runs the `zero_force` test in the `cmdline_tests` folder.
+
+To add more tests, just create a runnable command line and put it in a new
+file in the `cmdline_tests` folder. Remember to add the `-const_seed` flag to
+force deterministic random generator.
