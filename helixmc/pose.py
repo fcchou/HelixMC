@@ -19,8 +19,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
-from util import params2data, writhe_exact, writhe_fuller, ribbon_twist, params2coords, unitarize, dr2coord
+from util import (
+    params2data, writhe_exact, writhe_fuller, ribbon_twist,
+    params2coords, unitarize, dr2coord)
 from __init__ import ez
+
 
 #####Pose object storing the state info of the helix#####
 class HelixPose(object):
@@ -30,16 +33,21 @@ class HelixPose(object):
     Parameters
     ----------
     input_file : str, optional
-        Input file (.npz) that stores the helix pose data. Overides 'init_params' if both specified.
+        Input file (.npz) that stores the helix pose data. Overides
+        'init_params' if both specified.
     init_params : ndarray, shape (6), optional
-        Parameter set used for initializing the helix pose. The initialized pose will have the same bp-step parameters throughout.
+        Parameter set used for initializing the helix pose. The initialized
+        pose will have the same bp-step parameters throughout.
     n_bp : int, optional
-        Number of base-pairs in the model. Must be specified if init_params is given.
+        Number of base-pairs in the model. Must be specified if init_params is
+        given.
     compute_tw_wr : bool, optional
-        Whether to compute twist and writhe (Fuller's writhe) during system update. Should be set to True for
+        Whether to compute twist and writhe (Fuller's writhe) during system
+        update. Should be set to True for
         link-constrained simulations.
     frame0 : ndarray of (3,3)
-        The frame of the first base-pair, default is np.eye(3) (overlaps with global coordinate).
+        The frame of the first base-pair, default is np.eye(3) (overlaps with
+        global coordinate).
 
     Attributes
     ----------
@@ -54,7 +62,8 @@ class HelixPose(object):
     `coord_terminal` : ndarray
         Coordinate (x,y,z) of the center of last base-pair.
     `frame_terminal` : ndarray
-        Coordinate frame of the last base-pair. Each column represent the cooresponding axis (frame[:,0] is the x-axis etc.)
+        Coordinate frame of the last base-pair. Each column represent the
+        cooresponding axis (frame[:,0] is the x-axis etc.)
     `z_terminal` : float
         Z-component of coord_terminal
     `link_fuller` : float
@@ -79,7 +88,10 @@ class HelixPose(object):
     ValueError
         If n_bp < 2
     '''
-    def __init__(self, input_file=None, init_params=None, n_bp=0, compute_tw_wr=False, frame0 = None):
+    def __init__(
+        self, input_file=None, init_params=None, n_bp=0,
+        compute_tw_wr=False, frame0=None
+    ):
         #core data
         self._n_bp = None
         self._dr = None
@@ -105,8 +117,8 @@ class HelixPose(object):
             if n_bp < 2:
                 raise ValueError('HelixPose cannot have n_bp < 2!')
             self._n_bp = n_bp
-            self._params = np.tile( init_params, (n_bp-1,1) ).copy()
-            self._dr, self._frames = params2data( self._params, frame0 )
+            self._params = np.tile(init_params, (n_bp-1, 1)).copy()
+            self._dr, self._frames = params2data(self._params, frame0)
             self.compute_tw_wr = compute_tw_wr
 
     def load_from_file(self, input_file):
@@ -160,7 +172,8 @@ class HelixPose(object):
         filename : str
             Name of the output file.
         '''
-        np.savez( filename, params=self._params, dr=self._dr, frames=self._frames )
+        np.savez(
+            filename, params=self._params, dr=self._dr, frames=self._frames)
 
     @property
     def compute_tw_wr(self):
@@ -174,15 +187,17 @@ class HelixPose(object):
             self._update_all_twist()
         else:
             self._compute_tw_wr = False
+
     #######################
     #Update system
     def _update_all_writhe(self):
         "Update Writhe data with Fuller's approximation."
-        self._writhe_data = writhe_fuller( self._dr, return_val_only=False )
+        self._writhe_data = writhe_fuller(self._dr, return_val_only=False)
 
     def _update_all_twist(self):
         "Update Twist data."
-        self._twist_data = ribbon_twist( self._dr, self._frames[:,:,1], return_val_only=False )
+        self._twist_data = ribbon_twist(
+            self._dr, self._frames[:, :, 1], return_val_only=False)
 
     def _update_indv_twist(self, full_update=False):
         '''
@@ -204,29 +219,36 @@ class HelixPose(object):
         #Special case
         if self._n_bp <= 4:
             frames = self._frames.copy()
-            frames[(i+1):] = np.einsum('jk,ikl->ijl', self._mat, frames[(i+1):])
-            twist[:] = ribbon_twist( self._dr, frames[:,:,1], False )
+            frames[(i+1):] = np.einsum(
+                'jk,ikl->ijl', self._mat, frames[(i+1):])
+            twist[:] = ribbon_twist(self._dr, frames[:, :, 1], False)
             return twist
 
         if i == 0 or i == 1:
             frames = self._frames[:(i+3)].copy()
-            frames[(i+1):] = np.einsum('jk,ikl->ijl', self._mat, frames[(i+1):])
-            twist[:(i+2)] = ribbon_twist( np.vstack( (ez, dr[:(i+3)]) ), frames[:,:,1], False )
+            frames[(i+1):] = np.einsum(
+                'jk,ikl->ijl', self._mat, frames[(i+1):])
+            twist[:(i+2)] = ribbon_twist(
+                np.vstack((ez, dr[:(i+3)])), frames[:, :, 1], False)
             frames = np.einsum('jk,ikl->ijl', self._mat, self._frames[-2:])
-            twist[-1] = ribbon_twist( np.vstack( (dr[-2:], ez) ), frames[:,:,1], False )
+            twist[-1] = ribbon_twist(
+                np.vstack((dr[-2:], ez)), frames[:, :, 1], False)
         elif i == self._n_bp - 2 or i == self._n_bp - 3:
             frames = self._frames[(i-1):].copy()
             frames[2:] = np.einsum('jk,ikl->ijl', self._mat, frames[2:])
-            twist[(i-1):] = ribbon_twist( np.vstack( (dr[(i-2):], ez) ), frames[:,:,1], False )
+            twist[(i-1):] = ribbon_twist(
+                np.vstack((dr[(i-2):], ez)), frames[:, :, 1], False)
         else:
             frames = self._frames[(i-1):(i+3)].copy()
             frames[2:] = np.einsum('jk,ikl->ijl', self._mat, frames[2:])
-            twist[(i-1):(i+2)] = ribbon_twist( dr[(i-2):(i+3)], frames[:,:,1], False )
+            twist[(i-1):(i+2)] = ribbon_twist(
+                dr[(i-2):(i+3)], frames[:, :, 1], False)
             frames = np.einsum('jk,ikl->ijl', self._mat, self._frames[-2:])
-            twist[-1] = ribbon_twist( np.vstack( (dr[-2:], ez) ), frames[:,:,1], False )
+            twist[-1] = ribbon_twist(
+                np.vstack((dr[-2:], ez)), frames[:, :, 1], False)
         return twist
 
-    def update(self, i, params, o=None, R=None ):
+    def update(self, i, params, o=None, R=None):
         '''
         Full update of the i-th bp-step.
 
@@ -247,16 +269,19 @@ class HelixPose(object):
             If i < 0 or i >= n_bp.
         '''
         if i < 0 or i >= self._n_bp:
-            raise ValueError('The bp-step %d being updated is out of the ' % i
-            + 'bound of current HelixPose (0 - %d).' % self._n_bp)
+            raise ValueError(
+                'The bp-step %d being updated is out of the bound'
+                ' of current HelixPose (0 - %d).' % (i, self._n_bp))
         if o is None or R is None:
-            o, R = params2coords( params )
+            o, R = params2coords(params)
         self._obs_clear()
 
-        mat = unitarize( self._frames[i].dot(R).dot(self._frames[i+1].T) )
+        mat = unitarize(self._frames[i].dot(R).dot(self._frames[i+1].T))
         dr1 = self._frames[i].dot(o)
-        self._frames[(i+1):] = np.einsum('jk,ikl->ijl', mat, self._frames[(i+1):])
-        self._dr[i:] = np.vstack( ( dr1, np.einsum('jk,ik->ij', mat, self._dr[(i+1):]) ) )
+        self._frames[(i+1):] = np.einsum(
+            'jk,ikl->ijl', mat, self._frames[(i+1):])
+        self._dr[i:] = np.vstack((
+            dr1, np.einsum('jk,ik->ij', mat, self._dr[(i+1):])))
         self._params[i] = params
         if self.compute_tw_wr:
             self._working_bp_step = i
@@ -264,10 +289,10 @@ class HelixPose(object):
             if i == 0 or i == 1:
                 self._update_all_writhe()
             else:
-                self._writhe_data[(i-1):] = writhe_fuller(self._dr[(i-1):], return_val_only=False)
+                self._writhe_data[(i-1):] = writhe_fuller(
+                    self._dr[(i-1):], return_val_only=False)
 
-
-    def update_trial(self, i, params, o=None, R=None ):
+    def update_trial(self, i, params, o=None, R=None):
         '''
         Trial update of the i-th bp-step.
         Following accept_update or reject_update is required.
@@ -289,48 +314,59 @@ class HelixPose(object):
             If i < 0 or i >= n_bp.
         '''
         if i < 0 or i >= self._n_bp:
-            raise ValueError('The bp-step %d being updated is out of the ' % i
-            + 'bound of current HelixPose (0 - %d).' % self._n_bp)
+            raise ValueError(
+                'The bp-step %d being updated is out of the bound '
+                'of current HelixPose (0 - %d).' % (i, self._n_bp))
         if o is None or R is None:
-            o, R = params2coords( params )
+            o, R = params2coords(params)
 
         self._params_new = params
-        self._mat = unitarize( self._frames[i].dot(R).dot(self._frames[i+1].T) )
+        self._mat = unitarize(self._frames[i].dot(R).dot(self._frames[i+1].T))
         self._dr1 = self._frames[i].dot(o)
         self._working_bp_step = i
         self._obs_bkup()
 
         if self.compute_tw_wr:
-            self._dr_new = np.vstack( ( self._dr[:i], self._dr1, np.einsum('jk,ik->ij', self._mat, self._dr[(i+1):]) ) )
+            self._dr_new = np.vstack((
+                self._dr[:i], self._dr1,
+                np.einsum('jk,ik->ij', self._mat, self._dr[(i+1):])))
             self._twist_new = self._update_indv_twist()
             if i == 0 or i == 1:
-                self._writhe_new = writhe_fuller( self._dr_new, False )
+                self._writhe_new = writhe_fuller(self._dr_new, False)
             else:
-                self._writhe_new = np.hstack((self._writhe_data[:(i-1)], writhe_fuller(self._dr_new[(i-1):], False)))
-            self._obs['frame_terminal'] = self._frames[-1].dot( self._mat )
+                self._writhe_new = np.hstack((
+                    self._writhe_data[:(i-1)],
+                    writhe_fuller(self._dr_new[(i-1):], False)))
+            self._obs['frame_terminal'] = self._frames[-1].dot(self._mat)
             self._obs['twist'] = np.sum(self._twist_new)
             self._obs['writhe_fuller'] = np.sum(self._writhe_new)
             self._obs['coord_terminal'] = np.sum(self._dr_new, axis=0)
-            updated_keys = ['writhe_fuller', 'coord_terminal', 'twist', 'frame_terminal']
+            updated_keys = [
+                'writhe_fuller', 'coord_terminal', 'twist', 'frame_terminal']
         else:
-            self._obs['coord_terminal'] = np.sum(self._dr[:i], axis=0) + self._dr1 + self._mat.dot( np.sum(self._dr[(i+1):], axis=0) )
-            self._obs['frame_terminal'] = self._frames[-1].dot( self._mat )
+            self._obs['coord_terminal'] = (
+                np.sum(self._dr[:i], axis=0) + self._dr1 +
+                self._mat.dot(np.sum(self._dr[(i+1):], axis=0)))
+            self._obs['frame_terminal'] = self._frames[-1].dot(self._mat)
             updated_keys = ['coord_terminal', 'frame_terminal']
-        self._obs_clear( exclude=updated_keys )
+        self._obs_clear(exclude=updated_keys)
 
     def accept_update(self):
         'Accept a trial update.'
         mat = self._mat
         i = self._working_bp_step
         if self.compute_tw_wr:
-            self._frames[(i+1):] = np.einsum('jk,ikl->ijl', mat, self._frames[(i+1):])
+            self._frames[(i+1):] = np.einsum(
+                'jk,ikl->ijl', mat, self._frames[(i+1):])
             self._dr = self._dr_new
             self._params[i] = self._params_new
             self._writhe_data = self._writhe_new
             self._twist_data = self._twist_new
         else:
-            self._frames[(i+1):] = np.einsum('jk,ikl->ijl', mat, self._frames[(i+1):])
-            self._dr[i:] = np.vstack( ( self._dr1, np.einsum('jk,ik->ij', mat, self._dr[(i+1):]) ) )
+            self._frames[(i+1):] = np.einsum(
+                'jk,ikl->ijl', mat, self._frames[(i+1):])
+            self._dr[i:] = np.vstack((
+                self._dr1, np.einsum('jk,ik->ij', mat, self._dr[(i+1):])))
             self._params[i] = self._params_new
 
     def reject_update(self):
@@ -363,19 +399,20 @@ class HelixPose(object):
     def _obs_revert(self):
         'Revert to the backup _obs.'
         self._obs = self._obs_old
+
     ########################
     #Returning observables
     @property
     def writhe_exact(self):
         if self._obs['writhe_exact'] is None:
-             self._obs['writhe_exact']  = writhe_exact(self._dr)
+            self._obs['writhe_exact'] = writhe_exact(self._dr)
         return self._obs['writhe_exact']
 
     @property
     def writhe_fuller(self):
         if self._obs['writhe_fuller'] is None:
             if not self.compute_tw_wr:
-                self._obs['writhe_fuller'] = writhe_fuller( self._dr )
+                self._obs['writhe_fuller'] = writhe_fuller(self._dr)
             else:
                 self._obs['writhe_fuller'] = np.sum(self._writhe_data)
         return self._obs['writhe_fuller']
@@ -384,7 +421,8 @@ class HelixPose(object):
     def twist(self):
         if self._obs['twist'] is None:
             if not self.compute_tw_wr:
-                self._obs['twist'] = ribbon_twist( self._dr, self._frames[:,:,1] )
+                self._obs['twist'] = ribbon_twist(
+                    self._dr, self._frames[:, :, 1])
             else:
                 self._obs['twist'] = np.sum(self._twist_data)
         return self._obs['twist']
@@ -392,13 +430,13 @@ class HelixPose(object):
     @property
     def coord_terminal(self):
         if self._obs['coord_terminal'] is None:
-             self._obs['coord_terminal'] = np.sum( self._dr, axis=0 )
+            self._obs['coord_terminal'] = np.sum(self._dr, axis=0)
         return self._obs['coord_terminal']
 
     @property
     def frame_terminal(self):
         if self._obs['frame_terminal'] is None:
-             self._obs['frame_terminal'] = self._frames[-1].copy()
+            self._obs['frame_terminal'] = self._frames[-1].copy()
         return self._obs['frame_terminal']
 
     @property
@@ -415,7 +453,7 @@ class HelixPose(object):
 
     @property
     def coord(self):
-        return dr2coord( self._dr )
+        return dr2coord(self._dr)
 
     @property
     def dr(self):
@@ -435,10 +473,11 @@ class HelixPose(object):
 
     @property
     def rb_vec(self):
-        return self._frames[:,:,1].copy()
+        return self._frames[:, :, 1].copy()
+
     #########################
     #Plotting functions
-    def plot_helix(self, rb_width=5.0, color='kb', show=True, fig_ax=None) :
+    def plot_helix(self, rb_width=5.0, color='kb', show=True, fig_ax=None):
         '''
         Plot the helix using matplotlib + mplot3d.
 
@@ -447,11 +486,13 @@ class HelixPose(object):
         rb_width : float, optional
             Width of the helix ribbon in Å.
         color : str, optional
-            Colors of the plot (matplotlib color codes), first letter for backbond and second letter for base-pair.
+            Colors of the plot (matplotlib color codes), first letter for
+            backbond and second letter for base-pair.
         show : bool, optional
             Whether to invoke pyplot.show() method at the end.
         fig_ax : mplot3d.Axes3D, optional
-            Input mplot3d.Axes3D object. For ploting multiple helix on the same graph.
+            Input mplot3d.Axes3D object. For ploting multiple helix on
+            the same graph.
         '''
         rb_vec = self.rb_vec
         coord = self.coord
@@ -462,12 +503,14 @@ class HelixPose(object):
             ax = p3.Axes3D(fig)
         else:
             ax = fig_ax
-        ax.plot3D(bb1[:,0], bb1[:,1], bb1[:,2], color[0]+'-')
-        ax.plot3D(bb2[:,0], bb2[:,1], bb2[:,2], color[0]+'-')
-        for i in xrange( bb1.shape[0] ):
-            ax.plot3D( np.array( [bb1[i,0], bb2[i,0]] ),
-                       np.array( [bb1[i,1], bb2[i,1]] ),
-                       np.array( [bb1[i,2], bb2[i,2]] ), color[1]+'-')
+        ax.plot3D(bb1[:, 0], bb1[:, 1], bb1[:, 2], color[0] + '-')
+        ax.plot3D(bb2[:, 0], bb2[:, 1], bb2[:, 2], color[0] + '-')
+        for i in xrange(bb1.shape[0]):
+            ax.plot3D(
+                np.array([bb1[i, 0], bb2[i, 0]]),
+                np.array([bb1[i, 1], bb2[i, 1]]),
+                np.array([bb1[i, 2], bb2[i, 2]]),
+                color[1] + '-')
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -475,7 +518,7 @@ class HelixPose(object):
         if show:
             plt.show()
 
-    def plot_centerline(self, color='k', show=True, fig_ax=None) :
+    def plot_centerline(self, color='k', show=True, fig_ax=None):
         '''
         Plot the helix center-line using matplotlib + mplot3d.
 
@@ -486,7 +529,8 @@ class HelixPose(object):
         show : bool, optional
             Whether to invoke pyplot.show() method at the end.
         fig_ax : mplot3d.Axes3D, optional
-            Input mplot3d.Axes3D object. For ploting multiple helix on the same graph.
+            Input mplot3d.Axes3D object. For ploting multiple helix on
+            the same graph.
         '''
         coord = self.coord
         if fig_ax is None:
@@ -494,10 +538,9 @@ class HelixPose(object):
             ax = p3.Axes3D(fig)
         else:
             ax = fig_ax
-        ax.plot3D(coord[:,0], coord[:,1], coord[:,2], color+'-')
+        ax.plot3D(coord[:, 0], coord[:, 1], coord[:, 2], color + '-')
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         if show:
             plt.show()
-#######################################

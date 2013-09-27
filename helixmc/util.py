@@ -18,12 +18,14 @@
 
 import numpy as np
 import math
-from __init__ import random, pi, kBT
+from numpy import pi
+from . import random, kBT
 from os.path import exists
 from _util_cython import dr2coord, writhe_fuller, writhe_exact, ribbon_twist
 
+
 #####Utility functions#####
-def Rz( theta ):
+def Rz(theta):
     '''
     Return z-rotation matrices with rotational angle theta.
 
@@ -35,34 +37,38 @@ def Rz( theta ):
     Returns
     -------
     rot_matrix : ndarray
-        Corresponding z-rotation martrices for each input angle, align with the first index.
+        Corresponding z-rotation martrices for each input angle,
+        align with the first index.
 
     See Also
     --------
     Ry : Return y-rotation matrices with rotational angle theta.
     Rx : Return x-rotation matrices with rotational angle theta.
-    R_axis : Return rotation matrices with rotational angle theta along an arbitary rotation axis.
+    R_axis :
+        Return rotation matrices with rotational angle theta along
+        an arbitary rotation axis.
     '''
-    if isinstance(theta, np.ndarray): # array version
-        sin_theta = np.sin( theta )
-        cos_theta = np.cos( theta )
-        rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
-        rot_matrix[:,0,0] =  cos_theta
-        rot_matrix[:,0,1] = -sin_theta
-        rot_matrix[:,1,0] =  sin_theta
-        rot_matrix[:,1,1] =  cos_theta
-        rot_matrix[:,2,2] =  1
-    else: #Scalar version
-        sin_theta = math.sin( theta )
-        cos_theta = math.cos( theta )
+    if isinstance(theta, np.ndarray):  # array version
+        sin_theta = np.sin(theta)
+        cos_theta = np.cos(theta)
+        rot_matrix = np.zeros((theta.shape[0], 3, 3))
+        rot_matrix[:, 0, 0] = cos_theta
+        rot_matrix[:, 0, 1] = -sin_theta
+        rot_matrix[:, 1, 0] = sin_theta
+        rot_matrix[:, 1, 1] = cos_theta
+        rot_matrix[:, 2, 2] = 1
+    else:  # Scalar version
+        sin_theta = math.sin(theta)
+        cos_theta = math.cos(theta)
         rot_matrix = np.eye(3)
-        rot_matrix[0,0] =  cos_theta
-        rot_matrix[0,1] = -sin_theta
-        rot_matrix[1,0] =  sin_theta
-        rot_matrix[1,1] =  cos_theta
+        rot_matrix[0, 0] = cos_theta
+        rot_matrix[0, 1] = -sin_theta
+        rot_matrix[1, 0] = sin_theta
+        rot_matrix[1, 1] = cos_theta
     return rot_matrix
 
-def Rx( theta ):
+
+def Rx(theta):
     '''
     Return x-rotation matrices with rotational angle theta.
 
@@ -72,26 +78,27 @@ def Rx( theta ):
     --------
     Rz, Ry, R_axis
     '''
-    if isinstance(theta, np.ndarray): # array version
-        sin_theta = np.sin( theta )
-        cos_theta = np.cos( theta )
-        rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
-        rot_matrix[:,1,1] =  cos_theta
-        rot_matrix[:,1,2] = -sin_theta
-        rot_matrix[:,2,1] =  sin_theta
-        rot_matrix[:,2,2] =  cos_theta
-        rot_matrix[:,0,0] =  1
-    else: #Scalar version
-        sin_theta = math.sin( theta )
-        cos_theta = math.cos( theta )
+    if isinstance(theta, np.ndarray):  # array version
+        sin_theta = np.sin(theta)
+        cos_theta = np.cos(theta)
+        rot_matrix = np.zeros((theta.shape[0], 3, 3))
+        rot_matrix[:, 1, 1] = cos_theta
+        rot_matrix[:, 1, 2] = -sin_theta
+        rot_matrix[:, 2, 1] = sin_theta
+        rot_matrix[:, 2, 2] = cos_theta
+        rot_matrix[:, 0, 0] = 1
+    else:  # Scalar version
+        sin_theta = math.sin(theta)
+        cos_theta = math.cos(theta)
         rot_matrix = np.eye(3)
-        rot_matrix[1,1] =  cos_theta
-        rot_matrix[1,2] = -sin_theta
-        rot_matrix[2,1] =  sin_theta
-        rot_matrix[2,2] =  cos_theta
+        rot_matrix[1, 1] = cos_theta
+        rot_matrix[1, 2] = -sin_theta
+        rot_matrix[2, 1] = sin_theta
+        rot_matrix[2, 2] = cos_theta
     return rot_matrix
 
-def Ry( theta ):
+
+def Ry(theta):
     '''
     Return y-rotation matrices with rotational angle theta.
 
@@ -101,41 +108,44 @@ def Ry( theta ):
     --------
     Rz, Rx, R_axis
     '''
-    if isinstance(theta, np.ndarray): # array version
-        sin_theta = np.sin( theta )
-        cos_theta = np.cos( theta )
-        rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
-        rot_matrix[:,0,0] =  cos_theta
-        rot_matrix[:,0,2] =  sin_theta
-        rot_matrix[:,2,0] = -sin_theta
-        rot_matrix[:,2,2] =  cos_theta
-        rot_matrix[:,1,1] =  1
-    else: #Scalar version
-        sin_theta = math.sin( theta )
-        cos_theta = math.cos( theta )
+    if isinstance(theta, np.ndarray):  # array version
+        sin_theta = np.sin(theta)
+        cos_theta = np.cos(theta)
+        rot_matrix = np.zeros((theta.shape[0], 3, 3))
+        rot_matrix[:, 0, 0] = cos_theta
+        rot_matrix[:, 0, 2] = sin_theta
+        rot_matrix[:, 2, 0] = -sin_theta
+        rot_matrix[:, 2, 2] = cos_theta
+        rot_matrix[:, 1, 1] = 1
+    else:  # Scalar version
+        sin_theta = math.sin(theta)
+        cos_theta = math.cos(theta)
         rot_matrix = np.eye(3)
-        rot_matrix[0,0] =  cos_theta
-        rot_matrix[0,2] =  sin_theta
-        rot_matrix[2,0] = -sin_theta
-        rot_matrix[2,2] =  cos_theta
+        rot_matrix[0, 0] = cos_theta
+        rot_matrix[0, 2] = sin_theta
+        rot_matrix[2, 0] = -sin_theta
+        rot_matrix[2, 2] = cos_theta
     return rot_matrix
 
-def R_axis( theta, axis ):
+
+def R_axis(theta, axis):
     '''
-    Return rotation matrices with rotational angle theta along an arbitary rotation axis.
+    Return rotation matrices with rotational angle theta along
+    an arbitary rotation axis.
 
     Parameters
     ----------
     theta : array-like
         Rotation angles of the matrix in radians.
     axis : ndarray, shape (N,3)
-        Rotational axis for the rotation being performed, align with first index (i.e. axis[3] is the rotational axis
-        for angle theta[3]).
+        Rotational axis for the rotation being performed, align with first
+        index (i.e. axis[3] is the rotational axis for angle theta[3]).
 
     Returns
     -------
     rot_matrix : ndarray
-        Corresponding rotation martrices for each input angle, align with the first index.
+        Corresponding rotation martrices for each input angle,
+        align with the first index.
 
     See Also
     --------
@@ -143,44 +153,71 @@ def R_axis( theta, axis ):
     Ry : Return y-rotation matrices with rotational angle theta.
     Rx : Return x-rotation matrices with rotational angle theta.
     '''
-    if isinstance(theta, np.ndarray): # array version
-        sin_theta = np.sin( theta )
-        cos_theta = np.cos( theta )
-        axis = axis / np.sqrt( np.sum(axis * axis, axis = 1) )[:,np.newaxis]
-        rot_matrix = np.zeros( (theta.shape[0], 3, 3) )
-        rot_matrix[:,0,0] = cos_theta + axis[:,0] ** 2 * (1 - cos_theta)
-        rot_matrix[:,1,1] = cos_theta + axis[:,1] ** 2 * (1 - cos_theta)
-        rot_matrix[:,2,2] = cos_theta + axis[:,2] ** 2 * (1 - cos_theta)
-        rot_matrix[:,0,1] = axis[:,0] * axis[:,1] * (1 - cos_theta) - axis[:,2] * sin_theta
-        rot_matrix[:,1,0] = axis[:,0] * axis[:,1] * (1 - cos_theta) + axis[:,2] * sin_theta
-        rot_matrix[:,0,2] = axis[:,0] * axis[:,2] * (1 - cos_theta) + axis[:,1] * sin_theta
-        rot_matrix[:,2,0] = axis[:,0] * axis[:,2] * (1 - cos_theta) - axis[:,1] * sin_theta
-        rot_matrix[:,1,2] = axis[:,1] * axis[:,2] * (1 - cos_theta) - axis[:,0] * sin_theta
-        rot_matrix[:,2,1] = axis[:,1] * axis[:,2] * (1 - cos_theta) + axis[:,0] * sin_theta
-    else: #scalar
-        sin_theta = math.sin( theta )
-        cos_theta = math.cos( theta )
-        axis = axis / math.sqrt( np.dot(axis, axis) )
+    if isinstance(theta, np.ndarray):  # array version
+        sin_theta = np.sin(theta)
+        cos_theta = np.cos(theta)
+        axis = axis / np.sqrt(np.sum(axis * axis, axis=1))[:, np.newaxis]
+        rot_matrix = np.zeros((theta.shape[0], 3, 3))
+        rot_matrix[:, 0, 0] = cos_theta + axis[:, 0] ** 2 * (1 - cos_theta)
+        rot_matrix[:, 1, 1] = cos_theta + axis[:, 1] ** 2 * (1 - cos_theta)
+        rot_matrix[:, 2, 2] = cos_theta + axis[:, 2] ** 2 * (1 - cos_theta)
+        rot_matrix[:, 0, 1] = (
+            axis[:, 0] * axis[:, 1] * (1 - cos_theta) -
+            axis[:, 2] * sin_theta)
+        rot_matrix[:, 1, 0] = (
+            axis[:, 0] * axis[:, 1] * (1 - cos_theta) +
+            axis[:, 2] * sin_theta)
+        rot_matrix[:, 0, 2] = (
+            axis[:, 0] * axis[:, 2] * (1 - cos_theta) +
+            axis[:, 1] * sin_theta)
+        rot_matrix[:, 2, 0] = (
+            axis[:, 0] * axis[:, 2] * (1 - cos_theta) -
+            axis[:, 1] * sin_theta)
+        rot_matrix[:, 1, 2] = (
+            axis[:, 1] * axis[:, 2] * (1 - cos_theta) -
+            axis[:, 0] * sin_theta)
+        rot_matrix[:, 2, 1] = (
+            axis[:, 1] * axis[:, 2] * (1 - cos_theta) +
+            axis[:, 0] * sin_theta)
+    else:  # scalar
+        sin_theta = math.sin(theta)
+        cos_theta = math.cos(theta)
+        axis = axis / math.sqrt(np.dot(axis, axis))
         rot_matrix = np.identity(3)
-        rot_matrix[0,0] = cos_theta + axis[0] ** 2 * (1 - cos_theta)
-        rot_matrix[1,1] = cos_theta + axis[1] ** 2 * (1 - cos_theta)
-        rot_matrix[2,2] = cos_theta + axis[2] ** 2 * (1 - cos_theta)
-        rot_matrix[0,1] = axis[0] * axis[1] * (1 - cos_theta) - axis[2] * sin_theta
-        rot_matrix[1,0] = axis[0] * axis[1] * (1 - cos_theta) + axis[2] * sin_theta
-        rot_matrix[0,2] = axis[0] * axis[2] * (1 - cos_theta) + axis[1] * sin_theta
-        rot_matrix[2,0] = axis[0] * axis[2] * (1 - cos_theta) - axis[1] * sin_theta
-        rot_matrix[1,2] = axis[1] * axis[2] * (1 - cos_theta) - axis[0] * sin_theta
-        rot_matrix[2,1] = axis[1] * axis[2] * (1 - cos_theta) + axis[0] * sin_theta
+        rot_matrix[0, 0] = cos_theta + axis[0] ** 2 * (1 - cos_theta)
+        rot_matrix[1, 1] = cos_theta + axis[1] ** 2 * (1 - cos_theta)
+        rot_matrix[2, 2] = cos_theta + axis[2] ** 2 * (1 - cos_theta)
+        rot_matrix[0, 1] = (
+            axis[0] * axis[1] * (1 - cos_theta) -
+            axis[2] * sin_theta)
+        rot_matrix[1, 0] = (
+            axis[0] * axis[1] * (1 - cos_theta) +
+            axis[2] * sin_theta)
+        rot_matrix[0, 2] = (
+            axis[0] * axis[2] * (1 - cos_theta) +
+            axis[1] * sin_theta)
+        rot_matrix[2, 0] = (
+            axis[0] * axis[2] * (1 - cos_theta) -
+            axis[1] * sin_theta)
+        rot_matrix[1, 2] = (
+            axis[1] * axis[2] * (1 - cos_theta) -
+            axis[0] * sin_theta)
+        rot_matrix[2, 1] = (
+            axis[1] * axis[2] * (1 - cos_theta) +
+            axis[0] * sin_theta)
     return rot_matrix
 
-def params2coords( params ):
+
+def params2coords(params):
     '''
-    Convert base-pair step parameters to bp-center coordinates and rotation matrix.
+    Convert base-pair step parameters to bp-center coordinates
+    and rotation matrix.
 
     Parameters
     ----------
     params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Å, angles in unit of radians.
+        Input base-pair step parameters. Distances in unit of Å,
+        angles in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     Returns
@@ -192,23 +229,35 @@ def params2coords( params ):
 
     See Also
     --------
-    coords2params : Convert bp-center coordinates and rotation matrix to base-pair step parameters.
+    coords2params :
+        Convert bp-center coordinates and rotation matrix
+        to base-pair step parameters.
     '''
-    if len( params.shape ) == 1: #1D case
-        Tau = math.sqrt( params[3] ** 2 + params[4] ** 2)
+    if len(params.shape) == 1:  # 1D case
+        Tau = math.sqrt(params[3] ** 2 + params[4] ** 2)
         Phi = math.atan2(params[3], params[4])
-        o2 = Rz( params[5] * 0.5 - Phi ).dot( Ry( Tau * 0.5 ) ).dot( Rz( Phi ) ).dot( params[0:3] )
-        R2 = Rz( -Phi + params[5] * 0.5 ).dot( Ry( Tau ) ).dot( Rz( params[5] * 0.5 + Phi ) )
-    else: #2D case
-        Tau = np.sqrt( params[:,3] ** 2 + params[:,4] ** 2)
-        Phi = np.arctan2(params[:,3], params[:,4])
-        o2 = np.einsum('ijk,ikl,ilm,im->ij', Rz( params[:,5] * 0.5 - Phi ), Ry( Tau * 0.5 ), Rz( Phi ), params[:,0:3] )
-        R2 = np.einsum('ijk,ikl,ilm->ijm', Rz( -Phi + params[:,5] * 0.5 ), Ry( Tau ), Rz( params[:,5] * 0.5 + Phi ) )
+        o2 = (
+            Rz(params[5] * 0.5 - Phi).dot(Ry(Tau * 0.5)).
+            dot(Rz(Phi)).dot(params[0:3]))
+        R2 = (
+            Rz(-Phi + params[5] * 0.5).dot(Ry(Tau)).
+            dot(Rz(params[5] * 0.5 + Phi)))
+    else:  # 2D case
+        Tau = np.sqrt(params[:, 3] ** 2 + params[:, 4] ** 2)
+        Phi = np.arctan2(params[:, 3], params[:, 4])
+        o2 = np.einsum(
+            'ijk,ikl,ilm,im->ij', Rz(params[:, 5] * 0.5 - Phi),
+            Ry(Tau * 0.5), Rz(Phi), params[:, 0:3])
+        R2 = np.einsum(
+            'ijk,ikl,ilm->ijm', Rz(-Phi + params[:, 5] * 0.5),
+            Ry(Tau), Rz(params[:, 5] * 0.5 + Phi))
     return o2, R2
 
-def coords2params( o2, R2 ):
+
+def coords2params(o2, R2):
     '''
-    Convert bp-center coordinates and rotation matrix to base-pair step parameters.
+    Convert bp-center coordinates and rotation matrix to
+    base-pair step parameters.
     The frame of bp1 is used as reference ( o1 = [0 0 0] and R1 = np.eye(3) )
 
     Parameters
@@ -221,21 +270,24 @@ def coords2params( o2, R2 ):
     Returns
     -------
     params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Å, angles in unit of radians.
+        Input base-pair step parameters. Distances in unit of Å,
+        angles in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     See Also
     --------
-    params2coords : Convert base-pair step parameters to bp-center coordinates and rotation matrix.
+    params2coords :
+        Convert base-pair step parameters to bp-center coordinates
+        and rotation matrix.
     '''
-    if  len( o2.shape ) == 1: #1D case
-        Tau = math.acos(R2[2,2])
-        if math.sin( Tau ) > 0:
-            alpha = math.atan2( R2[1,2],  R2[0,2])
-            gamma = math.atan2( R2[2,1], -R2[2,0])
+    if len(o2.shape) == 1:  # 1D case
+        Tau = math.acos(R2[2, 2])
+        if math.sin(Tau) > 0:
+            alpha = math.atan2(R2[1, 2], R2[0, 2])
+            gamma = math.atan2(R2[2, 1], -R2[2, 0])
         else:
-            alpha = math.atan2( -R2[1,2], -R2[0,2])
-            gamma = math.atan2( -R2[2,1],  R2[2,0])
+            alpha = math.atan2(-R2[1, 2], -R2[0, 2])
+            gamma = math.atan2(-R2[2, 1], R2[2, 0])
         Twst = alpha + gamma
         Phi = 0.5 * (gamma - alpha)
         if Twst > pi:
@@ -247,31 +299,38 @@ def coords2params( o2, R2 ):
         Roll = Tau * np.cos(Phi)
         Tilt = Tau * np.sin(Phi)
         if Tau < 1e-6:
-            Twst = math.atan2(R2[1,0], R2[0,0])
-        d_vec = Rz( -Phi ).dot( Ry( -Tau * 0.5 ) ).dot( Rz( -Twst * 0.5 + Phi ) ).dot( o2 )
-        return np.hstack( (d_vec, Tilt, Roll, Twst) )
-    else: #2D case
-        Tau = np.arccos(R2[:,2,2])
-        sign_sin_Tau = np.sign( np.sin( Tau ) )
-        alpha = np.arctan2( sign_sin_Tau * R2[:,1,2],  sign_sin_Tau * R2[:,0,2])
-        gamma = np.arctan2( sign_sin_Tau * R2[:,2,1], -sign_sin_Tau * R2[:,2,0])
+            Twst = math.atan2(R2[1, 0], R2[0, 0])
+        d_vec = Rz(-Phi).dot(Ry(-Tau * 0.5)).dot(Rz(-Twst * 0.5 + Phi)).dot(o2)
+        return np.hstack((d_vec, Tilt, Roll, Twst))
+    else:  # 2D case
+        Tau = np.arccos(R2[:, 2, 2])
+        sign_sin_Tau = np.sign(np.sin(Tau))
+        alpha = np.arctan2(
+            sign_sin_Tau * R2[:, 1, 2], sign_sin_Tau * R2[:, 0, 2])
+        gamma = np.arctan2(
+            sign_sin_Tau * R2[:, 2, 1], -sign_sin_Tau * R2[:, 2, 0])
         Twst = alpha + gamma
         Phi = 0.5 * (gamma - alpha)
         Phi[Twst > pi] += pi
         Phi[Twst <= -pi] += pi
         Twst[Twst > pi] -= 2 * pi
-        Twst[Twst <= -pi] += 2 *pi
+        Twst[Twst <= -pi] += 2 * pi
         Roll = Tau * np.cos(Phi)
         Tilt = Tau * np.sin(Phi)
         special_idx = (Tau < 1e-6)
         if np.any(special_idx):
-            Twst[special_idx] = np.arctan2(R2[special_idx,1,0], R2[special_idx,0,0])
-        d_vec = np.einsum('ijk,ikl,ilm,im->ij', Rz( -Phi ), Ry( -Tau * 0.5 ), Rz( -Twst * 0.5 + Phi ), o2 )
-        return np.column_stack( (d_vec, Tilt, Roll, Twst) )
+            Twst[special_idx] = np.arctan2(
+                R2[special_idx, 1, 0], R2[special_idx, 0, 0])
+        d_vec = np.einsum(
+            'ijk,ikl,ilm,im->ij', Rz(-Phi), Ry(-Tau * 0.5),
+            Rz(-Twst * 0.5 + Phi), o2)
+        return np.column_stack((d_vec, Tilt, Roll, Twst))
 
-def params2data( params, frame0 = None ):
+
+def params2data(params, frame0=None):
     '''
-    Convert list of base-pair step parameters to delta-r vectors and frames of each base-pair.
+    Convert list of base-pair step parameters to delta-r vectors and
+    frames of each base-pair.
 
     Parameters
     ----------
@@ -292,16 +351,17 @@ def params2data( params, frame0 = None ):
     if frame0 is None:
         frame0 = np.eye(3)
     n_bp = params.shape[0] + 1
-    frames = np.zeros( (n_bp,3,3) )
-    o, R = params2coords( params )
-    unitarize( R )
-    for i in xrange(n_bp) :
-        if i == 0 :
-            frames[i] = unitarize( frame0 )
-        else :
-            frames[i] = unitarize( frames[i-1].dot(R[i-1]) )
+    frames = np.zeros((n_bp, 3, 3))
+    o, R = params2coords(params)
+    unitarize(R)
+    for i in xrange(n_bp):
+        if i == 0:
+            frames[i] = unitarize(frame0)
+        else:
+            frames[i] = unitarize(frames[i-1].dot(R[i-1]))
     dr = np.einsum('ijk,ik->ij', frames[:i], o)
     return dr, frames
+
 
 def coord2dr(coord):
     '''
@@ -320,9 +380,11 @@ def coord2dr(coord):
     dr = coord[1:] - coord[:-1]
     return dr
 
-def data2params( dr, frames ):
+
+def data2params(dr, frames):
     '''
-    Convert delta-r vectors and frames of each base-pair back to the step parameters.
+    Convert delta-r vectors and frames of each base-pair back to
+    the step parameters.
 
     Parameters
     ----------
@@ -339,14 +401,15 @@ def data2params( dr, frames ):
         Distance in unit of Å, angle in unit of radians.
     '''
     n = dr.shape[0]
-    o = np.einsum( 'ijk,ij ->ik', frames[:-1], dr )
-    R = np.empty((n,3,3))
+    o = np.einsum('ijk,ij ->ik', frames[:-1], dr)
+    R = np.empty((n, 3, 3))
     for i in xrange(n):
         R[i] = unitarize(frames[i].T.dot(frames[i+1]))
     params = coords2params(o, R)
     return params
 
-def unitarize( R ):
+
+def unitarize(R):
     '''
     Enforce unitarity of the input matrix using Gram-Schmidt process.
     This function overwrites the input matrix.
@@ -361,23 +424,27 @@ def unitarize( R ):
     R : ndarray, shape (N,3,3)
         Unitarized input matrix.
     '''
-    if len( R.shape ) == 2: #1D case
-        R[0] /= math.sqrt( R[0].dot( R[0]) )
-        R[1] -= R[1].dot( R[0]) * R[0]
-        R[1] /= math.sqrt(  R[1].dot( R[1]) )
-        R[2] -= R[2].dot( R[0]) * R[0]
-        R[2] -= R[2].dot( R[1]) * R[1]
-        R[2] /= math.sqrt( R[2].dot( R[2]) )
-    else: #2D case
-        R[:,0] /= np.sqrt( np.sum( R[:,0] ** 2, axis=1) )[:,np.newaxis]
-        R[:,1] -= np.einsum( 'ij,ij->i', R[:,1], R[:,0] )[:,np.newaxis] * R[:,0]
-        R[:,1] /= np.sqrt( np.sum( R[:,1] ** 2, axis=1) )[:,np.newaxis]
-        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,0] )[:,np.newaxis] * R[:,0]
-        R[:,2] -= np.einsum( 'ij,ij->i', R[:,2], R[:,1] )[:,np.newaxis] * R[:,1]
-        R[:,2] /= np.sqrt( np.sum( R[:,2] ** 2, axis=1) )[:,np.newaxis]
+    if len(R.shape) == 2:  # 1D case
+        R[0] /= math.sqrt(R[0].dot(R[0]))
+        R[1] -= R[1].dot(R[0]) * R[0]
+        R[1] /= math.sqrt(R[1].dot(R[1]))
+        R[2] -= R[2].dot(R[0]) * R[0]
+        R[2] -= R[2].dot(R[1]) * R[1]
+        R[2] /= math.sqrt(R[2].dot(R[2]))
+    else:  # 2D case
+        R[:, 0] /= np.sqrt(np.sum(R[:, 0] ** 2, axis=1))[:, np.newaxis]
+        R[:, 1] -= (
+            np.einsum('ij,ij->i', R[:, 1], R[:, 0])[:, np.newaxis] * R[:, 0])
+        R[:, 1] /= np.sqrt(np.sum(R[:, 1] ** 2, axis=1))[:, np.newaxis]
+        R[:, 2] -= (
+            np.einsum('ij,ij->i', R[:, 2], R[:, 0])[:, np.newaxis] * R[:, 0])
+        R[:, 2] -= (
+            np.einsum('ij,ij->i', R[:, 2], R[:, 1])[:, np.newaxis] * R[:, 1])
+        R[:, 2] /= np.sqrt(np.sum(R[:, 2] ** 2, axis=1))[:, np.newaxis]
     return R
 
-def MC_acpt_rej( score_old, score_new, kT = kBT ):
+
+def MC_acpt_rej(score_old, score_new, kT=kBT):
     '''
     Decide whether to accept a Monte-Carlo move.
 
@@ -396,12 +463,13 @@ def MC_acpt_rej( score_old, score_new, kT = kBT ):
         True for accept, False for reject.
     '''
     exponent = (score_new - score_old) / kT
-    if  exponent <= 1e-9 or math.exp(-exponent) >= random.random_sample():
+    if exponent <= 1e-9 or math.exp(-exponent) >= random.random_sample():
         return True
     else:
         return False
 
-def read_seq_from_fasta( fasta ):
+
+def read_seq_from_fasta(fasta):
     '''
     Read the sequence from a fasta file.
 
@@ -428,4 +496,3 @@ def read_seq_from_fasta( fasta ):
         if line[0] not in comment_symbols:
             seq += line.strip()
     return seq
-

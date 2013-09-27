@@ -20,6 +20,7 @@ import abc
 import warnings
 import numpy as np
 
+
 #####Score function#####
 class ScoreBase(object):
     '''
@@ -34,6 +35,7 @@ class ScoreBase(object):
     @abc.abstractmethod
     def __call__(self, pose):
         return
+
 
 class ScoreExt(ScoreBase):
     '''
@@ -67,6 +69,7 @@ class ScoreExt(ScoreBase):
             Score of the pose.
         '''
         return -pose.z_terminal * self.force
+
 
 class ScoreTorsionTrap(ScoreBase):
     '''
@@ -104,8 +107,13 @@ class ScoreTorsionTrap(ScoreBase):
             Score of the pose.
         '''
         if not pose.compute_tw_wr:
-            warnings.warn('pose.compute_tw_wr should be set to Ture for repeating scoring with target link!!!', RuntimeWarning)
-        return 0.5 * self.stiffness * (pose.link_fuller - self.target_link) ** 2
+            warnings.warn(
+                'pose.compute_tw_wr should be set to Ture for repeating'
+                'scoring with target link!!!', RuntimeWarning)
+        return (
+            0.5 * self.stiffness *
+            (pose.link_fuller - self.target_link) ** 2)
+
 
 class ScoreXyTrap(ScoreBase):
     '''
@@ -142,6 +150,7 @@ class ScoreXyTrap(ScoreBase):
         dist_sq = np.sum(xy ** 2)
         return 0.5 * self.stiffness * dist_sq
 
+
 class ScoreComb(ScoreBase):
     '''
     Score function combining multiple score terms.
@@ -156,7 +165,7 @@ class ScoreComb(ScoreBase):
     `score_list` : list
         See Parameters section above.
     '''
-    def __init__(self, score_list = []):
+    def __init__(self, score_list=[]):
         self.score_list = score_list
 
     def __call__(self, pose):
@@ -206,6 +215,7 @@ class ScoreComb(ScoreBase):
         '''
         return (not self.score_list)
 
+
 class ScoreTweezers(ScoreComb):
     '''
     Score function for tweezers experiments.
@@ -223,16 +233,16 @@ class ScoreTweezers(ScoreComb):
     '''
     def __init__(
             self,
-            force = 0,
-            torsional_stiffness = 0,
-            target_link = None,
-            xy_stiffness = 0
+            force=0,
+            torsional_stiffness=0,
+            target_link=None,
+            xy_stiffness=0
     ):
         self.score_list = []
         if force != 0:
             self.score_list.append(ScoreExt(force))
         if torsional_stiffness != 0 and target_link is not None:
             self.score_list.append(
-                    ScoreTorsionTrap(torsional_stiffness, target_link))
+                ScoreTorsionTrap(torsional_stiffness, target_link))
         if xy_stiffness != 0:
             self.score_list.append(ScoreXyTrap(xy_stiffness))

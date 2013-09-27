@@ -43,18 +43,19 @@ __version__ = '0.2'
 
 #list of all the modules (files)
 __all__ = [
-"util",
-"pose",
-"random_step",
-"score_function",
-'fit_function'
+    "util",
+    "pose",
+    "random_step",
+    "score_function",
+    "fit_function"
 ]
 
 #Initialize Random number generator used throughout
 import numpy as np
 from numpy import random
 
-def constant_seed( seed=24601 ):
+
+def constant_seed(seed=24601):
     '''
     Set constant random seed.
 
@@ -65,7 +66,6 @@ def constant_seed( seed=24601 ):
     '''
     random.seed(seed)
 #####Useful constants#####
-kB = 1.3806488e-1 #Boltzmann constant in pN.A/K
-kBT = kB * 298.15 #kB.T at room temperature (25 degree Celsius)
-ez = np.array( [0,0,1] ) #z unit vector
-from math import pi
+kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+ez = np.array([0, 0, 1])  # z unit vector

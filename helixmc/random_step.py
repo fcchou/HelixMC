@@ -22,6 +22,7 @@ import os.path
 from util import params2coords
 from __init__ import random
 
+
 #####Random base-pair step parameters generator classes#####
 class RandomStepBase(object):
     """
@@ -30,7 +31,9 @@ class RandomStepBase(object):
     See Also
     --------
     RandomStepSimple : Simple random bp-step generator.
-    RandomStepAgg : Random bp-step generator by aggregrating multiple independent bp-step generators.
+    RandomStepAgg :
+        Random bp-step generator by aggregrating multiple
+        independent bp-step generators.
     """
     __metaclass__ = abc.ABCMeta
 
@@ -50,6 +53,7 @@ class RandomStepBase(object):
     def gaussian_sampling(self):
         return
 
+
 class RandomStepSimple(RandomStepBase):
     '''
     Simple random bp-step generator.
@@ -59,14 +63,18 @@ class RandomStepSimple(RandomStepBase):
     Parameters
     ----------
     params : ndarray, shape (N,6), optional
-        Input base-pair step parameters. Usually obtained by analyzing the structures in PDB.
-        Must be specified if params_cov and params_avg is not being input, or if gaussian_sampling is set to False.
+        Input base-pair step parameters. Usually obtained by analyzing
+        the structures in PDB.
+        Must be specified if params_cov and params_avg is not being input,
+        or if gaussian_sampling is set to False.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
         Distance in unit of Å, angle in unit of radians.
     params_cov : ndarray, shape (6,6), optional
-        Covariance matrix of the multivariate Gaussian for step parameters. Used for Gaussian sampling.
+        Covariance matrix of the multivariate Gaussian for step parameters.
+        Used for Gaussian sampling.
     params_avg : ndarray, shape (6,6), optional
-        Averages of the multivariate Gaussian for step parameters. Used for Gaussian sampling.
+        Averages of the multivariate Gaussian for step parameters.
+        Used for Gaussian sampling.
     gaussian_sampling : bool, optional
         Whether to sample assuming a multivariate Gaussian. Default is True.
 
@@ -86,20 +94,29 @@ class RandomStepSimple(RandomStepBase):
     Raises
     ------
     ValueError
-        If params is not specified, and either params_avg and params_cov are not specified.
+        If params is not specified, and either params_avg and params_cov
+        are not specified.
         If params is not specified, but gaussian_sampling is set to False.
 
     See Also
     --------
-    RandomStepBase : Base class for Random bp-step generator, for inheritence only.
-    RandomStepAgg : Random bp-step generator by aggregrating multiple independent bp-step generators.
+    RandomStepBase :
+        Base class for Random bp-step generator, for inheritence only.
+    RandomStepAgg :
+        Random bp-step generator by aggregrating multiple
+        independent bp-step generators.
     '''
-    def __init__(self, params=None, params_cov=None, params_avg=None, gaussian_sampling=True):
+    def __init__(
+        self, params=None, params_cov=None,
+        params_avg=None, gaussian_sampling=True
+    ):
         self._gaussian_sampling = gaussian_sampling
         self.params = params
         if params is None:
             if params_avg is None or params_cov is None:
-                raise ValueError('params is not specified; params_avg and params_cov are not specified.')
+                raise ValueError(
+                    'params is not specified; params_avg and'
+                    ' params_cov are not specified.')
             self._params_cov = params_cov
             self._params_avg = params_avg
             ### To avoid float-point error ###
@@ -117,7 +134,9 @@ class RandomStepSimple(RandomStepBase):
             self._max_cached_data = 20000
             self._idx = self._max_cached_data
         elif self._params is None:
-            raise ValueError('Params is not specified, but gaussian_sampling is set to False.')
+            raise ValueError(
+                'Params is not specified, '
+                'but gaussian_sampling is set to False.')
 
     @property
     def params_avg(self):
@@ -135,13 +154,13 @@ class RandomStepSimple(RandomStepBase):
     def params(self, val):
         self._params = val
         if val is not None:
-            self._params_avg = np.average( val, axis=0 )
-            self._params_cov = np.cov( val, rowvar=0 )
+            self._params_avg = np.average(val, axis=0)
+            self._params_cov = np.cov(val, rowvar=0)
             ### To avoid float-point error ###
             self._params_avg[self._params_avg < 1e-15] = 0
             self._params_cov[self._params_cov < 1e-15] = 0
             ######
-            self._o_list, self._R_list = params2coords( val )
+            self._o_list, self._R_list = params2coords(val)
             self._n_bp_step = val.shape[0]
         self.gaussian_sampling = self.gaussian_sampling
 
@@ -154,7 +173,8 @@ class RandomStepSimple(RandomStepBase):
         params: ndarray, shape (6)
             Randomly generated bp-step parameter set.
         o : ndarray, shape (3)
-            Corresponding bp-center for the 2nd bp of the bp-step (1st bp is at origin and oriented with the coordinate frame).
+            Corresponding bp-center for the 2nd bp of the bp-step
+            (1st bp is at origin and oriented with the coordinate frame).
         R : ndarray, shape (3,3)
             Corresponding frame for the 2nd bp of the bp-step.
         '''
@@ -162,23 +182,30 @@ class RandomStepSimple(RandomStepBase):
             self._idx += 1
             if self._idx >= self._max_cached_data:
                 self._idx = 0
-                self._cached_params = random.multivariate_normal( self._params_avg, self._params_cov, self._max_cached_data )
-                self._o_list, self._R_list = params2coords( self._cached_params )
-            return self._cached_params[self._idx], self._o_list[self._idx], self._R_list[self._idx]
+                self._cached_params = random.multivariate_normal(
+                    self._params_avg, self._params_cov, self._max_cached_data)
+                self._o_list, self._R_list = params2coords(self._cached_params)
+            return (
+                self._cached_params[self._idx], self._o_list[self._idx],
+                self._R_list[self._idx])
         else:
             i = random.randint(self._n_bp_step)
             return self._params[i], self._o_list[i], self._R_list[i]
 
-def load_gaussian_params( filename ):
+
+def load_gaussian_params(filename):
     '''
-    Load a single Gaussian parameter file from disk and output a RandomStepSimple object.
+    Load a single Gaussian parameter file from disk and output
+    a RandomStepSimple object.
 
     Parameters
     ----------
     filename : str
-        Name of the Gaussian parameter file, in .npy or plain text format. First row is the mean parameters and
-        the following six rows represents the covariance matrix.
-        The routine will look for helixmc/data folder if the file cannot be found.
+        Name of the Gaussian parameter file, in .npy or plain text format.
+        First row is the mean parameters and the following six rows represents
+        the covariance matrix.
+        The routine will look for helixmc/data folder if the file cannot
+        be found.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
         Distance in unit of Å, angle in unit of radians.
 
@@ -197,19 +224,21 @@ def load_gaussian_params( filename ):
         file_real = os.path.join(location, 'data/', file_real)
     if not os.path.exists(file_real):
         raise ValueError('Cannot find the input file %s!' % filename)
-    if file_real[-3:] == 'npy' :
-        gaussian_params = np.load( file_real )
-    else :
-        gaussian_params = np.loadtxt( file_real )
+    if file_real[-3:] == 'npy':
+        gaussian_params = np.load(file_real)
+    else:
+        gaussian_params = np.loadtxt(file_real)
     params_avg = gaussian_params[0]
     params_cov = gaussian_params[1:]
-    random_step = RandomStepSimple( params_avg = params_avg, params_cov = params_cov, gaussian_sampling = True )
+    random_step = RandomStepSimple(
+        params_avg=params_avg, params_cov=params_cov, gaussian_sampling=True)
     return random_step
 
 
 class RandomStepAgg(RandomStepBase):
     '''
-    Random bp-step generator by aggregating multiple independent simple bp-step generators.
+    Random bp-step generator by aggregating multiple
+    independent simple bp-step generators.
     Useful for sequence dependence simulations.
 
     Parameters
@@ -232,20 +261,22 @@ class RandomStepAgg(RandomStepBase):
 
     See Also
     --------
-    RandomStepBase : Base class for Random bp-step generator, for inheritence only.
+    RandomStepBase :
+        Base class for Random bp-step generator, for inheritence only.
     RandomStepSimple : Simple random bp-step generator.
     '''
-    def __init__(self, data_file = None, gaussian_sampling=True):
+    def __init__(self, data_file=None, gaussian_sampling=True):
         self._names = []
         self._rand_list = []
         self._gaussian_sampling = gaussian_sampling
         if data_file is not None:
-            self.load_from_file( data_file )
+            self.load_from_file(data_file)
 
     def load_from_file(self, data_file):
         '''
         Load data file in .npz format and append to the current aggregation.
-        The routine will look for helixmc/data folder if the data_file cannot be found.
+        The routine will look for helixmc/data folder if
+        the data_file cannot be found.
 
         Parameters
         ----------
@@ -264,7 +295,8 @@ class RandomStepAgg(RandomStepBase):
             raise ValueError('Cannot find the data file %s!' % data_file)
         data = np.load(data_file_real)
         for name in data.files:
-            self.append_random_step( name, RandomStepSimple( params=data[name], gaussian_sampling=self.gaussian_sampling ) )
+            self.append_random_step(name, RandomStepSimple(
+                params=data[name], gaussian_sampling=self.gaussian_sampling))
 
     def append_random_step(self, name, random_step):
         '''
@@ -284,12 +316,15 @@ class RandomStepAgg(RandomStepBase):
         ValuError
             If the input name already exists in self.names.
         '''
-        if not isinstance( random_step, RandomStepBase ):
-            raise TypeError('Appended random_step is not a subclass of RandomStepBase.')
+        if not isinstance(random_step, RandomStepBase):
+            raise TypeError(
+                'Appended random_step is not a subclass of RandomStepBase.')
         if name in self._names:
-            raise ValueError("Appended random_step name '%s' already exists in list of names!" % name)
-        self._names.append( name )
-        self._rand_list.append( random_step )
+            raise ValueError(
+                "Appended random_step name '%s' already "
+                "exists in list of names!" % name)
+        self._names.append(name)
+        self._rand_list.append(random_step)
 
     def symmetrize(self):
         '''
@@ -308,11 +343,12 @@ class RandomStepAgg(RandomStepBase):
             if 'U' in name:
                 is_RNA = True
         if is_DNA and is_RNA:
-            raise ValueError("The data is RNA-DNA mixture!! Cannot symmetrize.")
+            raise ValueError(
+                "The data is RNA-DNA mixture!! Cannot symmetrize.")
         if is_DNA:
-            name_conv = { 'A':'T', 'T':'A', 'G':'C', 'C':'G' }
+            name_conv = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
         else:
-            name_conv = { 'A':'U', 'U':'A', 'G':'C', 'C':'G' }
+            name_conv = {'A': 'U', 'U': 'A', 'G': 'C', 'C': 'G'}
 
         new_params = {}
         for name in self._names:
@@ -321,8 +357,8 @@ class RandomStepAgg(RandomStepBase):
                 sym_name += name_conv[lett]
             sym_name = sym_name[::-1]
             params1 = self.get_rand_step(name).params
-            params1[:,0] *= -1
-            params1[:,3] *= -1
+            params1[:, 0] *= -1
+            params1[:, 3] *= -1
             params2 = np.vstack((self.get_rand_step(sym_name).params, params1))
             new_params[sym_name] = params2
 
@@ -346,7 +382,7 @@ class RandomStepAgg(RandomStepBase):
 
     @property
     def params_avg(self):
-        params_list = np.empty( (len(self._rand_list),6) )
+        params_list = np.empty((len(self._rand_list), 6))
         for i, rand in enumerate(self._rand_list):
             params_list[i] = rand.params_avg
         return np.average(params_list, axis=0)
@@ -397,15 +433,17 @@ class RandomStepAgg(RandomStepBase):
         if isinstance(identifier, int):
             return self._rand_list[identifier]
         elif isinstance(identifier, str):
-            return self._rand_list[ self.name2rand_idx(identifier) ]
+            return self._rand_list[self.name2rand_idx(identifier)]
         else:
-            raise TypeError("Input identifier has invalid datatype (is %s, should be int or str)!!" % type(identifier))
+            raise TypeError(
+                "Input identifier has invalid datatype "
+                "(is %s, should be int or str)!!" % type(identifier))
 
     def __call__(self, identifier=None):
         '''
         Draw one random bp-step parameter set from the distribution.
-        Randomly select one generator in the aggregation and return its generated result
-        if no input parameter is given.
+        Randomly select one generator in the aggregation and
+        return its generated result if no input parameter is given.
 
         Parameters
         ----------
@@ -417,8 +455,8 @@ class RandomStepAgg(RandomStepBase):
         params: ndarray, shape (6)
             Randomly generated bp-step parameter set.
         o : ndarray, shape (3)
-            Corresponding bp-center for the 2nd bp of the bp-step (1st bp is at origin and
-            oriented with the coordinate frame).
+            Corresponding bp-center for the 2nd bp of the bp-step (1st bp is
+            at origin and oriented with the coordinate frame).
         R : ndarray, shape (3,3)
             Corresponding frame for the 2nd bp of the bp-step.
 
@@ -428,12 +466,12 @@ class RandomStepAgg(RandomStepBase):
             If the input identifier is not int or str
         '''
         if identifier is None:
-            return self._rand_list[ random.randint( len(self._rand_list) ) ]()
+            return self._rand_list[random.randint(len(self._rand_list))]()
         elif isinstance(identifier, int):
             return self._rand_list[identifier]()
         elif isinstance(identifier, str):
-            return self._rand_list[ self.name2rand_idx(identifier) ] ()
+            return self._rand_list[self.name2rand_idx(identifier)]()
         else:
-            raise TypeError("Input identifier has invalid datatype (is %s, should be int or str)!!" % type(identifier))
-
-
+            raise TypeError(
+                "Input identifier has invalid datatype "
+                "(is %s, should be int or str)!!" % type(identifier))
