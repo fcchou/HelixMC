@@ -359,7 +359,7 @@ def params2data(params, frame0=None):
             frames[i] = unitarize(frame0)
         else:
             frames[i] = unitarize(frames[i-1].dot(R[i-1]))
-    dr = np.einsum('ijk,ik->ij', frames[:i], o)
+    dr = np.einsum('ijk,ik->ij', frames[:-1], o)
     return dr, frames
 
 
