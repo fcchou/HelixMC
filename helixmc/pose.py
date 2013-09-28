@@ -19,9 +19,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
-from util import (
-    params2data, writhe_exact, writhe_fuller, ribbon_twist,
-    params2coords, unitarize, dr2coord)
+from util import params2data, writhe_exact, writhe_fuller, ribbon_twist
+from util import params2coords, unitarize, dr2coord
 from __init__ import ez
 
 
