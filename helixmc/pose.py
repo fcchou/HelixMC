@@ -33,20 +33,16 @@ class HelixPose(object):
     ----------
     input_file : str, optional
         Input file (.npz) that stores the helix pose data. Overides
-        'init_params' if both specified.
-    init_params : ndarray, shape (6), optional
-        Parameter set used for initializing the helix pose. The initialized
-        pose will have the same bp-step parameters throughout.
-    n_bp : int, optional
-        Number of base-pairs in the model. Must be specified if init_params is
-        given.
-    compute_tw_wr : bool, optional
-        Whether to compute twist and writhe (Fuller's writhe) during system
-        update. Should be set to True for
-        link-constrained simulations.
+        'params' if both specified.
+    params : ndarray of (N,6), optional
+        List of all bp-step parameters. Number of params should equal
+        to n_bp -1.
     frame0 : ndarray of (3,3)
         The frame of the first base-pair, default is np.eye(3) (overlaps with
-        global coordinate).
+        global coordinate). For initialization with params only.
+    compute_tw_wr : bool, optional
+        Whether to compute twist and writhe (Fuller's writhe) during system
+        update. Should be set to True for link-constrained simulations.
 
     Attributes
     ----------
@@ -58,9 +54,9 @@ class HelixPose(object):
         Fuller's writhe of the helix.
     `twist` : float
         Supercoiling twist of the helix.
-    `coord_terminal` : ndarray
+    `coord_terminal` : 1d array of (3)
         Coordinate (x,y,z) of the center of last base-pair.
-    `frame_terminal` : ndarray
+    `frame_terminal` : ndarray of (3,3)
         Coordinate frame of the last base-pair. Each column represent the
         cooresponding axis (frame[:,0] is the x-axis etc.)
     `z_terminal` : float
@@ -69,18 +65,18 @@ class HelixPose(object):
         Link of the helix computed using Fuller's approximation.
     `link_exact` : float
         Exact link of the helix.
-    `coord` : ndarray
-        Coordinates of all base-pairs in the helix.
-    `dr` : ndarray
-        Delta-r vectors of the entire helix.
-    `frames` : ndarray
-        Frames of all bp-steps in the helix.
-    `params` : ndarray
-        List of all bp-step parameters in the helix.
     `n_bp` : int
         Number of base-pairs in the helix.
-    `rb_vec` : ndarray
-        Ribbon vectors of all base-pairs in the helix.
+    `coord` : ndarray of (N,3)
+        Coordinates of all base-pairs in the helix (n_bp entries).
+    `dr` : ndarray of (N,3)
+        Delta-r vectors of the entire helix (n_bp-1 entries).
+    `frames` : ndarray of (N,3,3)
+        Frames of all base-pairs in the helix (n_bp entries).
+    `params` : ndarray of (N,6)
+        List of all bp-step parameters in the helix (n_bp-1 entries).
+    `rb_vec` : ndarray of (N,3)
+        Ribbon vectors of all base-pairs in the helix (n_bp entries).
 
     Raises
     ------
@@ -88,8 +84,8 @@ class HelixPose(object):
         If n_bp < 2
     '''
     def __init__(
-        self, input_file=None, init_params=None, n_bp=0,
-        compute_tw_wr=False, frame0=None
+        self, input_file=None, params=None, compute_tw_wr=False,
+        frame0=None
     ):
         #core data
         self._n_bp = None
@@ -111,14 +107,9 @@ class HelixPose(object):
 
         if input_file is not None:
             self.load_from_file(input_file)
-            self.compute_tw_wr = compute_tw_wr
-        elif init_params is not None:
-            if n_bp < 2:
-                raise ValueError('HelixPose cannot have n_bp < 2!')
-            self._n_bp = n_bp
-            self._params = np.tile(init_params, (n_bp-1, 1)).copy()
-            self._dr, self._frames = params2data(self._params, frame0)
-            self.compute_tw_wr = compute_tw_wr
+        elif params is not None:
+            self.set_params(params, frame0)
+        self.compute_tw_wr = compute_tw_wr
 
     def load_from_file(self, input_file):
         '''
@@ -186,6 +177,23 @@ class HelixPose(object):
             self._update_all_twist()
         else:
             self._compute_tw_wr = False
+
+    def set_params(self, params, frame0=None):
+        '''
+        Set the bp-step params of the HelixPose.
+
+        Parameters
+        ----------
+        params : ndarray of (N,6), optional
+            List of all bp-step parameters. Number of params should equal
+            to n_bp -1.
+        frame0 : ndarray of (3,3)
+            The frame of the first base-pair, default is np.eye(3).
+        '''
+        self._n_bp = params.shape[0] + 1
+        self._params = params
+        self._dr, self._frames = params2data(params, frame0)
+        self._obs_clear()
 
     #######################
     #Update system
@@ -463,16 +471,16 @@ class HelixPose(object):
         return self._frames.copy()
 
     @property
-    def params(self):
-        return self._params.copy()
-
-    @property
     def n_bp(self):
         return self._n_bp
 
     @property
     def rb_vec(self):
         return self._frames[:, :, 1].copy()
+
+    @property
+    def params(self):
+        return self._params.copy()
 
     #########################
     #Plotting functions
