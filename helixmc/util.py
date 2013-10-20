@@ -363,6 +363,43 @@ def params2data(params, frame0=None):
     return dr, frames
 
 
+def frames2params_3dna(o1, o2, F1, F2):
+    '''
+    Convert bp-center coordinates and frame matrices in 3DNA format to
+    base-pair step parameters.
+
+    Parameters
+    ----------
+    o1 : ndarray, shape (N,3)
+        Origins for the bp-centers of the 1st base-pair.
+    o2 : ndarray, shape (N,3)
+        Origins for the bp-centers of the 2nd base-pair.
+    F1 : ndarray, shape (N,3,3)
+        Frames for the 1st base-pair.
+    F2 : ndarray, shape (N,3,3)
+        Frames for the 2nd base-pair.
+
+    Returns
+    -------
+    params : ndarray, shape (N,6)
+        Input base-pair step parameters. Distances in unit of Å,
+        angles in unit of radians.
+        Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
+
+    See Also
+    --------
+    coords2params :
+        Convert bp-center coordinates and rotation matrix
+        to base-pair step parameters.
+    '''
+    if len(o1.shape) == 1:  # 1D case
+        return coords2params(F1.dot(o2 - o1), F1.dot(F2.T))
+    else:  # 2D case
+        o = np.einsum('ijk,ik->ij', F1, o2 - o1)
+        R = np.einsum('ijk,ilk->ijl', F1, F2)
+        return coords2params(o, R)
+
+
 def coord2dr(coord):
     '''
     Convert xyz coordinates of axis curve to delta-r vectors.
