@@ -19,7 +19,7 @@ measuring the end-to-end distance and the rotation of the terminal bp
 been done in recent single-molecule tweezers experiments [R2]_, making HelixMC
 a powerful tool for direct simulations of these experiments.
 
-HelixMC is coded in Python in an object-oriented fashion. Some rate-limiting 
+HelixMC is coded in Python in an object-oriented fashion. Some rate-limiting
 core computations are speeded up using Cython. Therefore HelixMC provides a
 framework that is easy to use and to extend, as well as being resonable fast
 when it comes to large-scale computations.
@@ -70,7 +70,7 @@ following lines to your ``~/.bashrc``::
     export PYTHONPATH=$PYTHONPATH:<HelixMC Path>
 
 Then build the Cython extension. Under the ``helixmc/`` folder, run::
-    
+
     python _cython_build.py build_ext --inplace
 
 Note that this requires you to have Cython installed. Otherwise you can choose
@@ -98,10 +98,10 @@ Now we demonstrate a simple example for `helixmc-run`.
 
 First, run the following command to kick out a MC run::
 
-    $ helixmc-run -params_file DNA_default.npz -n_bp 100 -n_step 10 -seq GCCG \
-    -force 5 -compute_fuller_link True -out_frame test_run
+    $ helixmc-run -params DNA_default.npz -n_bp 100 -n_step 10 -seq GCCG \
+    -force 5 -compute_fuller_link -out_frame test_run
 
-Here, ``-params_file`` give the input database file that contains bp-step
+Here, ``-params`` give the input database file that contains bp-step
 parameters curated from PDB (by default it searches the helixmc database folder
 if it does not find the input file). ``-n_bp`` is the total number of bp in the
 helix. ``-n_step`` is the number of MC steps. ``-seq`` gives the sequence of
@@ -130,8 +130,8 @@ the following::
 
 The observables for each frame are stored in ``MC_data.npz``. Normally the
 coordinates and reference frames of the last bp are recorded. If
-``-compute_fuller_link`` or ``-compute_exact_link`` is set to True, the twist
-and writhe of the helix will also be stored (note that link = twist + writhe).
+``-compute_fuller_link`` or ``-compute_exact_link`` is used, the twist and
+writhe of the helix will also be stored (note that link = twist + writhe).
 
 For example I can compute the average z-extension and the average link
 as follows::
@@ -150,7 +150,7 @@ as follows::
 
 Remember we stored the final frame of the simulation to ``test_run.npz``. We
 will now plot the helix using that::
-    
+
     >>> pose = HelixPose('test_run.npz')
     >>> pose.plot_centerline() #plot the centerline
     >>> pose.plot_helix() #plot the entire helix
@@ -203,7 +203,7 @@ given. These datasets were all extracted from structures in Protein Data Bank
 (PDB, http://www.pdb.org/), with different selection and filtering. The list
 below summarizes these data.
 
-:DNA_default: 
+:DNA_default:
     B-DNA data from structures with resolution (Rs) <= 2.8 Å,
     excluding protein-binding models.
 
@@ -213,7 +213,7 @@ below summarizes these data.
 :DNA_2.0_noprot:
     B-DNA, Rs <= 2.0 Å, excluding protein-binding models.
 
-:RNA_default: 
+:RNA_default:
     RNA, Rs <= 2.8 Å, excluding protein-binding models.
 
 :RNA_2.8_all:
@@ -225,17 +225,41 @@ below summarizes these data.
 :Z-DNA:
     Z-DNA, Rs <= 2.8 Å, including protein-binding models.
 
+:\*unfiltered:
+    Unfiltered datasets (no filtering of histogram outliers).
+
+:DNA_gau:
+    Single 6D Gaussian built from DNA_default.
+
+:RNA_gau:
+    Single 6D Gaussian built from RNA_default.
+
+:DNA_gau_graft:
+    Chimera dataset with mean from DNA_gau and covariance from RNA_gau.
+
+:RNA_gau_graft:
+    Chimera dataset with mean from RNA_gau and covariance from DNA_gau.
+
+:\*gau_refit:
+    Manually refitted datasets to match experimental measurements.
+
+Note that Gaussian dataset (`*gau*.npy`) must be loaded with
+`-gaussian_params` tag in `helixmc-run` command line (instead of `params`).
+Also Gaussian dataset does not support sequence specific simulations.
+
 The corresponding lists of PDB models being used are given in the
 ``helixmc/data/pdb_list/`` folder.
 
-These datasets are in .npz format (Numpy archive). The data for different
-bp-steps of different sequences were separated into different arrays in the
-file. For B-DNA and RNA, parameter sets with Rise >= 5.5 Å or Twist <= 5° were
-thrown away as outliers. Then, parameter sets with values beyond 4 standard
-deviations away from the mean for any of the 6 bp-step parameters were also
-removed. For B-DNA (except `DNA_2.8_all`, where the protein binding makes
-A-DNA and B-DNA unseparable), we further clustered the data using k-means
-algorithm to separate the A-DNA and B-DNA data.
+These datasets are in npy/npz format (Numpy array/archive). For the npz files,
+the data for different bp-steps of different sequences were separated into
+different arrays in the file. For B-DNA and RNA, parameter sets with
+Rise >= 5.5 Å or Twist <= 5° were thrown away as outliers. Then, parameter
+sets with values beyond 4 standard deviations away from the mean for any
+of the 6 bp-step parameters were also removed. For B-DNA (except
+`DNA_2.8_all`, where the protein binding makes A-DNA and B-DNA unseparable),
+we further clustered the data using k-means algorithm to separate the A-DNA
+and B-DNA data. Note that these filtering steps are skipped in the unfiltered
+datasets.
 
 For Z-DNA, we only considered two types of bp-steps: CG and GC. We used the
 following selection criteria: Twist <= -30° for GC, and -30° < Twist <= 5° for

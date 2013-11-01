@@ -8,34 +8,33 @@ import mpl_toolkits.mplot3d.axes3d as p3
 
 # Load data #
 pose_list = []
-pose_list.append( HelixPose( 'data0.npz' ) )
-pose_list.append( HelixPose( 'data1.npz' ) )
-pose_list.append( HelixPose( 'data2.npz' ) )
+pose_list.append(HelixPose('data0.npz'))
+pose_list.append(HelixPose('data1.npz'))
+pose_list.append(HelixPose('data2.npz'))
 
-coords = [ pose.coord / 10 for pose in pose_list ]
+coords = [pose.coord / 10 for pose in pose_list]
 colors = 'kbrgycm'
 
 # Top View #
 plt.figure()
 for i, coord in enumerate(coords):
-    plt.plot( coord[:,0], coord[:,1], color = colors[i] )
+    plt.plot(coord[:, 0], coord[:, 1], color=colors[i])
 plt.ylabel('Y (nm)')
 plt.xlabel('X (nm)')
-plt.title( 'Top view' )
+plt.title('Top view')
 
 # Side View #
 plt.figure()
 for i, coord in enumerate(coords):
-    plt.plot( coord[:,0], coord[:,2], color = colors[i] )
+    plt.plot(coord[:, 0], coord[:, 2], color=colors[i])
 plt.ylabel('Z (nm)')
 plt.xlabel('X (nm)')
-plt.title( 'side view' )
+plt.title('side view')
 
 # 3D Plot #
 fig = plt.figure()
 ax = p3.Axes3D(fig)
 for i, pose in enumerate(pose_list):
-    pose.plot_centerline( color = colors[i], show = False, fig_ax = ax )
+    pose.plot_centerline(color=colors[i], show=False, fig_ax=ax)
 
 plt.show()
-

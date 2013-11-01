@@ -34,18 +34,21 @@ allow easy handling of sequence-dependent sampling (by aggregating several
 `RandomStepSimple` for different sequences). The user can also create their
 own `RandomStep` objects by inheriting from `RandomStepBase`.
 
-Third, :ref:`Scorefxn <Scorefxn>` objects take a `HelixPose` and scores it.
+Third, :ref:`Score <Score>` objects take a `HelixPose` and scores it.
 The scoring can then be used to decide whether a Monte-Carlo move should be
-accepted. Currently the only score function is `ScorefxnTweezers`, that allows
-socring with external z-direction stretching force and/or harmonic trapping of
-linking number. The user can also define their own scoring by inheriting from
-`ScorefxnBase`.
+accepted. Currently we have 3 simple score terms `ScoreExt`,
+`ScoreTorsionTrap` and `ScoreXyTrap`, which scores a HelixPose under
+Z-extension, torsional trap and xy horizontal trap respectively. These 3 score
+terms are summarized into `ScoreTweezers`, which is a sub-class of `ScoreAgg`,
+an aggregator class that combines multiple score functions. `ScoreTweezers` is
+the workhorse score functions currently in used. The user can also define
+their own scoring by inheriting from `ScoreBase`.
 
 Last, the :ref:`util <util>` module contains useful functions for evaluating
 twist and writhe, for conversion between bp-step parameters and cartesian
 translation and rotation operation, and so on. The :ref:`fitfxn <fitfxn>`
 module is a standalone module that contains a few widely used analytical
-fitting functions based on elastic rod models.
+fitting functions based on the elastic rod model.
 
 Constant Random Seed
 ====================
@@ -84,8 +87,12 @@ Score Functions
    :toctree: generated/
    :template: class.rst
 
-   scorefxn.ScorefxnBase
-   scorefxn.ScorefxnTweezers
+   score.ScoreBase
+   score.ScoreExt
+   score.ScoreTorsionTrap
+   score.ScoreXyTrap
+   score.ScoreAgg
+   score.ScoreTweezers
 
 .. _util:
 
@@ -119,7 +126,10 @@ Useful Conversions
    util.params2coords
    util.coords2params
    util.dr2coord
+   util.coord2dr
    util.params2data
+   util.data2params
+   util.frames2params_3dna
 
 Other Functions
 ---------------
@@ -137,6 +147,7 @@ Useful Fitting Functions
 .. autosummary::
    :toctree: generated/
 
+   fitfxn.wlc_odijk
    fitfxn.wlc_bouchiat
    fitfxn.wlc_bouchiat_impl
    fitfxn.f_wlc_bouchiat_impl

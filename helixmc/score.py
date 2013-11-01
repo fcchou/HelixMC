@@ -151,9 +151,9 @@ class ScoreXyTrap(ScoreBase):
         return 0.5 * self.stiffness * dist_sq
 
 
-class ScoreComb(ScoreBase):
+class ScoreAgg(ScoreBase):
     '''
-    Score function combining multiple score terms.
+    Score function aggregates of multiple score terms.
 
     Parameters
     ----------
@@ -216,7 +216,7 @@ class ScoreComb(ScoreBase):
         return (not self.score_list)
 
 
-class ScoreTweezers(ScoreComb):
+class ScoreTweezers(ScoreAgg):
     '''
     Score function for tweezers experiments.
 
