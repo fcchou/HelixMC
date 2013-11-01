@@ -47,7 +47,7 @@ below summarizes these data.
     Manually refitted datasets to match experimental measurements.
 
 Note that Gaussian dataset (`*gau*.npy`) must be loaded with
-`-gaussian_params` tag in `helixmc-run` command line (instead of `params`).
+`-gaussian_params` tag in `helixmc-run` command line (instead of `-params`).
 Also Gaussian dataset does not support sequence specific simulations.
 
 The corresponding lists of PDB models being used are given in the
