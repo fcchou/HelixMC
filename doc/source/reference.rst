@@ -79,7 +79,7 @@ Random Base-pair Steps Generators
    random_step.RandomStepSimple
    random_step.RandomStepAgg
 
-.. _Scorefxn:
+.. _Score:
 
 Score Functions
 ===============

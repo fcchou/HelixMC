@@ -78,6 +78,13 @@ class RandomStepSimple(RandomStepBase):
     gaussian_sampling : bool, optional
         Whether to sample assuming a multivariate Gaussian. Default is True.
 
+    Raises
+    ------
+    ValueError
+        If params is not specified, and either params_avg and params_cov
+        are not specified.
+        If params is not specified, but gaussian_sampling is set to False.
+
     Attributes
     ----------
     `gaussian_sampling` : bool
@@ -87,16 +94,7 @@ class RandomStepSimple(RandomStepBase):
     `params_cov` : ndarray
         See the Parameters section.
     `params` : ndarray
-        See the Parameters section. If no params is given when the RandomStep
-        is initialized, return None.
-
-
-    Raises
-    ------
-    ValueError
-        If params is not specified, and either params_avg and params_cov
-        are not specified.
-        If params is not specified, but gaussian_sampling is set to False.
+        See the Parameters section. Return None if not specified at init.
 
     See Also
     --------

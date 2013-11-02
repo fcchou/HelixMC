@@ -37,7 +37,7 @@ def wlc_odijk(F, A, L, S, kT=kBT):
     S : float
         Stretch modulus, in pN.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.Å.
+        Temperature times Boltzmann constant, in pN.Å. Default is 298.15 K.
 
     Returns
     -------
@@ -76,7 +76,7 @@ def wlc_bouchiat(A, L, z, kT=kBT):
     z : float or 1D ndarray
         Average Z-extension of the helix, in Å.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.Å.
+        Temperature times Boltzmann constant, in pN.Å. Default is 298.15 K.
 
     Returns
     -------
@@ -106,9 +106,8 @@ def wlc_bouchiat(A, L, z, kT=kBT):
     References
     ----------
     .. [#] Bouchiat C, Wang MD, Allemand J, Strick T, Block SM, et al. (1999)
-        Estimating the persistence
-       length of a worm-like chain molecule from force-extension measurements.
-        Biophys. J. 76: 409-413.
+        Estimating the persistence length of a worm-like chain molecule from
+        force-extension measurements. Biophys. J. 76: 409-413.
     '''
     z_div_L = z / L
     a = 0.25 / (1.0 - z_div_L) ** 2 - 0.25 + z_div_L
@@ -142,7 +141,7 @@ def wlc_bouchiat_impl(A, L, S, z, F, kT=kBT):
     F : float or  1D ndarray
         Z-direction stretching force, in pN.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.Å.
+        Temperature times Boltzmann constant, in pN.Å. Default is 298.15 K.
 
     Returns
     -------
@@ -192,7 +191,7 @@ def f_wlc_bouchiat_impl(A, L, S, z, kT=kBT):
     z : float or 1D ndarray
         Average Z-extension of the helix, in Å.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.Å.
+        Temperature times Boltzmann constant, in pN.Å. Default is 298.15 K.
 
     Returns
     -------
@@ -230,7 +229,7 @@ def moroz_3rd(A, C, F, kT=kBT):
     F : float or 1D ndarray
         Z-direction stretching force, in pN.
     kT : float, optional
-        Temperature times Boltzmann constant, in pN.Å.
+        Temperature times Boltzmann constant, in pN.Å. Default is 298.15 K.
 
     Returns
     -------
