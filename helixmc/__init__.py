@@ -39,7 +39,7 @@ Links
 - Das Lab: http://www.stanford.edu/~rhiju/
 """
 #version
-__version__ = '0.2'
+__version__ = '0.5'
 
 #list of all the modules (files)
 __all__ = [
