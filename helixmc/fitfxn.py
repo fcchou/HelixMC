@@ -122,8 +122,7 @@ def wlc_bouchiat(A, L, z, kT=kBT):
 
 def wlc_bouchiat_impl(A, L, S, z, F, kT=kBT):
     r'''
-    Implicit worm-like chain fitting formula described in
-    Bouchiat et al. 1999 paper.
+    Implicit worm-like chain formula described in Bouchiat et al. 1999 paper.
     Comparison is done in log10(F) space instead (more robust in practice).
     An extensive rod factor is added for fitting force-extension
     curve at high-force.

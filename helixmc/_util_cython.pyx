@@ -222,8 +222,7 @@ def writhe_fuller(double[:, ::1] dr, bool return_val_only=True):
     '''
     writhe_fuller(dr, return_val_only=True)
 
-    Compute the writhe of the helix using the Fuller's approximated single
-    integral.
+    Compute the writhe using the Fuller's approximated single integral.
     Only guarantee to be correct modulo 4 pi. O(N) complexity.
 
     Parameters

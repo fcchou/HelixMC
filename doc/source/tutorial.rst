@@ -7,23 +7,6 @@ HelixMC Tutorial
 :Release: |version|
 :Date: |today|
 
-HelixMC is a software package for Monte-Carlo (MC) simulations of DNA/RNA
-helices using the base-pair (bp) level model [R1]_. This type of
-coarse-grained model bridges between simple elastic rod models and full-atom
-representations, providing a resonably sophiscated and yet computationally
-tractable way to model long DNA/RNA helices up to thousands and to evalute
-their mechanical properties of bp. HelixMC has the utility of applying
-external stetching and twisting forces to the terminal of the helix and
-measuring the end-to-end distance and the rotation of the terminal bp
-(known as `linking number`) during the process. This is exactly what has
-been done in recent single-molecule tweezers experiments [R2]_, making HelixMC
-a powerful tool for direct simulations of these experiments.
-
-HelixMC is coded in Python in an object-oriented fashion. Some rate-limiting
-core computations are speeded up using Cython. Therefore HelixMC provides a
-framework that is easy to use and to extend, as well as being resonable fast
-when it comes to large-scale computations.
-
 This tutorial demonstrates how to install and run simple calculations with
 HelixMC, and breifly summarizes available examples and bp-step paramerter
 database. For details on the classes and functions availble, please see
@@ -82,7 +65,7 @@ Now you should be all set. To test the install, simply run::
 
     $ helixmc-run --help
 
-This should output the help information for `helixmc-run` application.
+This should output the help information for ``helixmc-run`` application.
 
 Run HelixMC
 ===========
@@ -90,11 +73,12 @@ Run HelixMC
 The `helixmc-run` application wraps the classes and functions of HelixMC to
 allow simple MC job submissions from command line.
 
-A detailed help for all options of `helixmc-run` can be obtained by running::
+A detailed help for all options of ``helixmc-run`` can be obtained
+by running::
 
     $ helixmc-run --help
 
-Now we demonstrate a simple example for `helixmc-run`.
+Now we demonstrate a simple example for ``helixmc-run``.
 
 First, run the following command to kick out a MC run::
 
@@ -107,7 +91,7 @@ if it does not find the input file). ``-n_bp`` is the total number of bp in the
 helix. ``-n_step`` is the number of MC steps. ``-seq`` gives the sequence of
 the nucleic acids (ATCG for DNA and AUCG for RNA). ``-force`` is the applied
 z-direction stretching force. ``-compute_fuller_link`` tells HelixMC to compute
-and store the linking number using Fuller's approximation [R3]_.
+and store the linking number using Fuller's approximation [R1]_.
 ``-out_frame`` option will make HelixMC save the final frame to disk as
 ``test_run.npz`` in this case.
 
@@ -176,13 +160,13 @@ Here is a list of examples in the ``examples/`` folder.
     torsioal-trap single-molecule experiment [R2]_.
 
 :z-dna:
-    Simulation of Z-DNA using `helixmc-run`.
+    Simulation of Z-DNA using ``helixmc-run``.
 
 :fuller_check:
     Check the if the Fuller's approximation is correct in certain criteria.
 
 :data_fitting:
-    How to use `helixmc.fitfxn` to fit simulation or experiment
+    How to use ``helixmc.fitfxn`` to fit simulation or experiment
     data to simple analytical models.
 
 :helixplot:
@@ -190,7 +174,7 @@ Here is a list of examples in the ``examples/`` folder.
 
 :Lp_Olson:
     How to perform alternative evaluation of bending persistence
-    length using the method suggested by Olson et al. [R1]_.
+    length using the method suggested by Olson et al. [R3]_.
 
 :bp_database:
     Examples on curating bp-step parameters from PDB.
@@ -243,9 +227,10 @@ below summarizes these data.
 :\*gau_refit:
     Manually refitted datasets to match experimental measurements.
 
-Note that Gaussian dataset (`*gau*.npy`) must be loaded with
-`-gaussian_params` tag in `helixmc-run` command line (instead of `-params`).
-Also Gaussian dataset does not support sequence specific simulations.
+Note that Gaussian dataset (``*gau*.npy``) must be loaded with
+``-gaussian_params`` tag in ``helixmc-run`` command line (instead of
+``-params``). Also Gaussian dataset does not support sequence specific
+simulations.
 
 The corresponding lists of PDB models being used are given in the
 ``helixmc/data/pdb_list/`` folder.
@@ -256,10 +241,10 @@ different arrays in the file. For B-DNA and RNA, parameter sets with
 Rise >= 5.5 Å or Twist <= 5° were thrown away as outliers. Then, parameter
 sets with values beyond 4 standard deviations away from the mean for any
 of the 6 bp-step parameters were also removed. For B-DNA (except
-`DNA_2.8_all`, where the protein binding makes A-DNA and B-DNA unseparable),
-we further clustered the data using k-means algorithm to separate the A-DNA
-and B-DNA data. Note that these filtering steps are skipped in the unfiltered
-datasets.
+``DNA_2.8_all``, where the protein binding makes A-DNA and B-DNA
+unseparable), we further clustered the data using k-means algorithm to
+separate the A-DNA and B-DNA data. Note that these filtering steps are
+skipped in the unfiltered datasets.
 
 For Z-DNA, we only considered two types of bp-steps: CG and GC. We used the
 following selection criteria: Twist <= -30° for GC, and -30° < Twist <= 5° for
@@ -272,14 +257,15 @@ curation of ``DNA_2.0_noprot.npz``.
 
 References
 ==========
-.. [R1] Olson WK, Colasanti AV, Czapla L, Zheng G (2008) Insights into the
-   Sequence-Dependent Macromolecular Properties of DNA from Base-Pair Level
-   Modeling. In: Voth GA, editor. Coarse-Graining of Condensed Phase and
-   Biomolecular Systems: CRC Press. pp. 205-223.
+.. [R1] Fuller FB (1978) Decomposition of the linking number of a closed
+   ribbon: A problem from molecular biology. PNAS 75: 3557-3561.
 
 .. [R2] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
    Freely orbiting magnetic tweezers to directly monitor changes in the twist
    of nucleic acids. Nat. Comm. 2: 439.
 
-.. [R3] Fuller FB (1978) Decomposition of the linking number of a closed
-   ribbon: A problem from molecular biology. PNAS 75: 3557-3561.
+.. [R3] Olson WK, Colasanti AV, Czapla L, Zheng G (2008) Insights into the
+   Sequence-Dependent Macromolecular Properties of DNA from Base-Pair Level
+   Modeling. In: Voth GA, editor. Coarse-Graining of Condensed Phase and
+   Biomolecular Systems: CRC Press. pp. 205-223.
+

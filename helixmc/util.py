@@ -329,8 +329,7 @@ def coords2params(o2, R2):
 
 def params2data(params, frame0=None):
     '''
-    Convert list of base-pair step parameters to delta-r vectors and
-    frames of each base-pair.
+    Convert base-pair step parameters to delta-r vectors and frames.
 
     Parameters
     ----------
@@ -365,8 +364,7 @@ def params2data(params, frame0=None):
 
 def frames2params_3dna(o1, o2, F1, F2):
     '''
-    Convert bp-center coordinates and frame matrices in 3DNA format to
-    base-pair step parameters.
+    Convert bp coordinates and frames in 3DNA format to step parameters.
 
     Parameters
     ----------
