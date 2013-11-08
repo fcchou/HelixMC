@@ -20,7 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 from util import params2data, writhe_exact, writhe_fuller, ribbon_twist
-from util import params2coords, unitarize, dr2coord
+from util import params2coords, unitarize, dr2coords
 from __init__ import ez
 
 
@@ -459,8 +459,8 @@ class HelixPose(object):
         return self.twist + self.writhe_exact
 
     @property
-    def coord(self):
-        return dr2coord(self._dr)
+    def coords(self):
+        return dr2coords(self._dr)
 
     @property
     def dr(self):

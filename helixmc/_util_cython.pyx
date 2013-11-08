@@ -8,7 +8,6 @@ cimport numpy as np
 cimport cython
 from cpython cimport bool
 from __init__ import ez
-from util import dr2coords
 
 cdef extern from "math.h" nogil:
     double sqrt(double x)
@@ -193,7 +192,7 @@ def writhe_exact(dr):
     .. [#] Klenin K, Langowski J (2000) Computation of writhe in modeling of
         supercoiled DNA. Biopolymers 54: 307-317.
     '''
-    r0 = dr2coords(dr)
+    r0 = np.vstack((np.zeros(3), np.cumsum(dr, axis=0)))  # convert to coords
     r1 = r0[1:] - r0[0]
     r2 = r0[:-1] - r0[-1]
     writhe_int = _writhe_int(r0)
