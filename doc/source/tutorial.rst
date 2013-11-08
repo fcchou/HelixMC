@@ -38,7 +38,7 @@ The source code of HelixMC is hosted on GitHub. To download, simply run::
     $ git clone https://github.com/fcchou/HelixMC.git
 
 Or you can go to https://github.com/fcchou/HelixMC/ and download the source
-code by clicking the "ZIP" button on upper-left.
+code by clicking the "Download ZIP" button.
 
 After this, you can instal HelixMC by using::
 
@@ -123,21 +123,21 @@ as follows::
     >>> data = np.load('MC_data.npz')
     >>> data.files
     ['coord_terminal', 'twist', 'writhe', 'frame_terminal']
-    >>> data['coord_terminal'][:,2] #2 for the z-elements
+    >>> data['coord_terminal'][:,2]  # 2 for the z-elements
     array([ 309.06198311,  317.92717085,  320.17158221,  304.42561971,
             319.07461907,  306.94162915,  314.7566295 ,  319.04106375,
             322.42125203,  325.72718993])
-    >>> np.average(data['coord_terminal'][:,2]) #avg. z-extension in Å
+    >>> np.average(data['coord_terminal'][:,2])  # avg. z-extension in Å
     315.95487393228649
-    >>> np.average(data['twist'] + data['writhe']) #avg. link in radian
+    >>> np.average(data['twist'] + data['writhe'])  # avg. link in radian
     60.648749666780688
 
 Remember we stored the final frame of the simulation to ``test_run.npz``. We
 will now plot the helix using that::
 
     >>> pose = HelixPose('test_run.npz')
-    >>> pose.plot_centerline() #plot the centerline
-    >>> pose.plot_helix() #plot the entire helix
+    >>> pose.plot_centerline()  # plot the centerline
+    >>> pose.plot_helix()  # plot the entire helix
 
 You should see something similar to the following
 
@@ -260,9 +260,9 @@ References
 .. [R1] Fuller FB (1978) Decomposition of the linking number of a closed
    ribbon: A problem from molecular biology. PNAS 75: 3557-3561.
 
-.. [R2] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
-   Freely orbiting magnetic tweezers to directly monitor changes in the twist
-   of nucleic acids. Nat. Comm. 2: 439.
+.. [R2] Lipfert J, Kerssemakers JWJ, Jager T, Dekker NH (2010) Magnetic
+    torque tweezers: measuring torsional stiffness in DNA and RecA-DNA
+    filaments. Nature Methods 7: 977–980.
 
 .. [R3] Olson WK, Colasanti AV, Czapla L, Zheng G (2008) Insights into the
    Sequence-Dependent Macromolecular Properties of DNA from Base-Pair Level

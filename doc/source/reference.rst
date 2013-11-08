@@ -125,10 +125,11 @@ Useful Conversions
 
    util.params2coords
    util.coords2params
-   util.dr2coord
-   util.coord2dr
+   util.dr2coords
+   util.coords2dr
    util.params2data
    util.data2params
+   util.params_join
    util.frames2params_3dna
 
 Other Functions

@@ -8,6 +8,7 @@ cimport numpy as np
 cimport cython
 from cpython cimport bool
 from __init__ import ez
+from util import dr2coords
 
 cdef extern from "math.h" nogil:
     double sqrt(double x)
@@ -89,6 +90,7 @@ cdef inline void normal_vec(double * r, double * rp) nogil:
         rp[0] = 0
         rp[1] = 0
         rp[2] = 1  # Since r is parallel to ex, just take ez as normal vector
+
 ##########################################################
 # Compute the internal writhe in pure Cython #
 cdef double _writhe_int(double[:, ::1] r) nogil:
@@ -152,30 +154,10 @@ cdef double _writhe_int(double[:, ::1] r) nogil:
             else:
                 writhe_int -= area
     return writhe_int
+
+
 ##########################################################
 # Python functions #
-
-
-def dr2coord(dr):
-    '''
-    dr2coord(dr)
-
-    Convert delta-r vectors to coordinates.
-
-    Parameters
-    ----------
-    dr : ndarray, shape (N,3)
-        Input delta_r vectors (dr[i] = r[i+1] - r[i]).
-
-    Returns
-    -------
-    coord : ndarray, shape (N+1,3)
-        Coordinates for the base-pair-centers (r[i]).
-    '''
-    coord = np.vstack((np.zeros(3), np.cumsum(dr, axis=0)))
-    return coord
-
-
 def writhe_exact(dr):
     '''
     writhe_exact(dr)
@@ -211,7 +193,7 @@ def writhe_exact(dr):
     .. [#] Klenin K, Langowski J (2000) Computation of writhe in modeling of
         supercoiled DNA. Biopolymers 54: 307-317.
     '''
-    r0 = dr2coord(dr)
+    r0 = dr2coords(dr)
     r1 = r0[1:] - r0[0]
     r2 = r0[:-1] - r0[-1]
     writhe_int = _writhe_int(r0)

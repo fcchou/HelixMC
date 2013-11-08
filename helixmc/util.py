@@ -21,7 +21,7 @@ import math
 from numpy import pi
 from . import random, kBT
 from os.path import exists
-from _util_cython import dr2coord, writhe_fuller, writhe_exact, ribbon_twist
+from _util_cython import writhe_fuller, writhe_exact, ribbon_twist
 
 
 #####Utility functions#####
@@ -269,9 +269,8 @@ def coords2params(o2, R2):
 
     Returns
     -------
-    params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Å,
-        angles in unit of radians.
+        Base-pair step parameters.
+        Distance in unit of Å, angle in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     See Also
@@ -327,6 +326,42 @@ def coords2params(o2, R2):
         return np.column_stack((d_vec, Tilt, Roll, Twst))
 
 
+def coords2dr(coord):
+    '''
+    Convert xyz coordinates of axis curve to delta-r vectors.
+
+    Parameters
+    ----------
+    coord : ndarray, shape (N,3)
+        The axis curve xyz coordinates in unit of Å (r vectors).
+
+    Returns
+    -------
+    dr : ndarray, shape (N,3)
+        Delta-r vectors (dr[i] = r[i+1] - r[i]).
+    '''
+    dr = coord[1:] - coord[:-1]
+    return dr
+
+
+def dr2coords(dr):
+    '''
+    Convert delta-r vectors to coordinates.
+
+    Parameters
+    ----------
+    dr : ndarray, shape (N,3)
+        Input delta_r vectors (dr[i] = r[i+1] - r[i]).
+
+    Returns
+    -------
+    coord : ndarray, shape (N+1,3)
+        Coordinates for the base-pair-centers (r[i]).
+    '''
+    coord = np.vstack((np.zeros(3), np.cumsum(dr, axis=0)))
+    return coord
+
+
 def params2data(params, frame0=None):
     '''
     Convert base-pair step parameters to delta-r vectors and frames.
@@ -362,6 +397,34 @@ def params2data(params, frame0=None):
     return dr, frames
 
 
+def data2params(dr, frames):
+    '''
+    Convert delta-r vectors and frames of each base-pair back to
+    the step parameters.
+
+    Parameters
+    ----------
+    dr : ndarray, shape (N,3)
+        Delta-r vectors (dr[i] = r[i+1] - r[i]).
+    frames : ndarray, shape (N+1,3,3)
+        Frame of each base-pair.
+
+    Returns
+    -------
+    params : ndarray, shape (N,6)
+        Base-pair step parameters.
+        Distance in unit of Å, angle in unit of radians.
+        Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
+    '''
+    n = dr.shape[0]
+    o = np.einsum('ijk,ij ->ik', frames[:-1], dr)
+    R = np.empty((n, 3, 3))
+    for i in xrange(n):
+        R[i] = unitarize(frames[i].T.dot(frames[i+1]))
+    params = coords2params(o, R)
+    return params
+
+
 def frames2params_3dna(o1, o2, F1, F2):
     '''
     Convert bp coordinates and frames in 3DNA format to step parameters.
@@ -380,8 +443,8 @@ def frames2params_3dna(o1, o2, F1, F2):
     Returns
     -------
     params : ndarray, shape (N,6)
-        Input base-pair step parameters. Distances in unit of Å,
-        angles in unit of radians.
+        Base-pair step parameters.
+        Distance in unit of Å, angle in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
 
     See Also
@@ -398,50 +461,28 @@ def frames2params_3dna(o1, o2, F1, F2):
         return coords2params(o, R)
 
 
-def coord2dr(coord):
+def params_join(params):
     '''
-    Convert xyz coordinates of axis curve to delta-r vectors.
+    Convert consequtive bp-params to the params between 1st and last bp.
 
     Parameters
     ----------
-    coord : ndarray, shape (N,3)
-        The axis curve xyz coordinates in unit of Å (r vectors).
-
-    Returns
-    -------
-    dr : ndarray, shape (N,3)
-        Delta-r vectors (dr[i] = r[i+1] - r[i]).
-    '''
-    dr = coord[1:] - coord[:-1]
-    return dr
-
-
-def data2params(dr, frames):
-    '''
-    Convert delta-r vectors and frames of each base-pair back to
-    the step parameters.
-
-    Parameters
-    ----------
-    dr : ndarray, shape (N,3)
-        Delta-r vectors (dr[i] = r[i+1] - r[i]).
-    frames : ndarray, shape (N+1,3,3)
-        Frame of each base-pair.
-
-    Returns
-    -------
     params : ndarray, shape (N,6)
-        Base-pair step parameters.
+        Input base-pair step parameters. Distances in unit of Å,
+        angles in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
-        Distance in unit of Å, angle in unit of radians.
+
+    Returns
+    -------
+    params :  ndarray, shape (6)
+        Base-pair step parameters between 1st and last.
     '''
-    n = dr.shape[0]
-    o = np.einsum('ijk,ij ->ik', frames[:-1], dr)
-    R = np.empty((n, 3, 3))
-    for i in xrange(n):
-        R[i] = unitarize(frames[i].T.dot(frames[i+1]))
-    params = coords2params(o, R)
-    return params
+    dr, frames = params2coords(params)
+    if params.shape[0] == 1:
+        return params
+    o = np.sum(dr, axis=0)
+    R = frames[-1]
+    return coords2params(o, R)
 
 
 def unitarize(R):
