@@ -193,8 +193,9 @@ def writhe_exact(dr):
         supercoiled DNA. Biopolymers 54: 307-317.
     '''
     r0 = np.vstack((np.zeros(3), np.cumsum(dr, axis=0)))  # convert to coords
+    length = len(r0)
     r1 = r0[1:] - r0[0]
-    r2 = r0[:-1] - r0[-1]
+    r2 = r0[:(length - 1)] - r0[length - 1]
     writhe_int = _writhe_int(r0)
     return writhe_int + writhe_fuller(r1) + writhe_fuller(-r2)
 
@@ -280,9 +281,9 @@ def writhe_fuller(double[:, ::1] dr, bool return_val_only=True):
         return area
 
 
-def ribbon_twist(dr, rb_vec, return_val_only=True):
+def ribbon_twist(dr, rb_vec, return_val_only=True, twist_center=0.0):
     '''
-    ribbon_twist(dr, rb_vec, return_val_only=True)
+    ribbon_twist(dr, rb_vec, return_val_only=True, twist_center=0.0)
 
     Compute the ribbon-twist (supercoiling twist) of a helix.
 
@@ -297,6 +298,8 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
         If True, return one float value for the overall twist of the system.
         Otherwise return the individual twists for each bp-step.
         Default set to True.
+    twist_center : float, optional
+        Fold the step twists to (center - pi, center + pi], default to 0.
 
     Returns
     -------
@@ -307,7 +310,7 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
     Raises
     ------
     ValueError
-        If dr.shape[0] != rb_vec.shape[0] + 1
+        If dr.shape[0] != rb_vec.shape[0] + 1.
 
     See Also
     --------
@@ -333,6 +336,10 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
     cdef double rc[3]
     cdef double angle, sign, alpha0, alpha1, beta, twist_temp
     cdef np.intp_t i
+
+    # Decide the range of step twist
+    cdef twist_lower = -pi + twist_center
+    cdef twist_upper = pi + twist_center
 
     #Compute inital b vector and alpha
     cross(&dr_c[0, 0], &dr_c[1, 0], b0)
@@ -376,9 +383,9 @@ def ribbon_twist(dr, rb_vec, return_val_only=True):
 
         #Compute twist
         twist_temp = beta + alpha1 - alpha0
-        if twist_temp > pi:
+        if twist_temp > twist_upper:
             twist_temp -= 2 * pi
-        elif twist_temp <= -pi:
+        elif twist_temp <= twist_lower:
             twist_temp += 2 * pi
         twist_c[i] = twist_temp
 

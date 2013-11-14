@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
+from scipy.stats import circmean
 import abc
 import os.path
 from util import params2coords
@@ -121,6 +122,84 @@ class RandomStepSimple(RandomStepBase):
             self._params_avg[self._params_avg < 1e-15] = 0
             self._params_cov[self._params_cov < 1e-15] = 0
 
+    @classmethod
+    def load_gaussian_params(cls, filename):
+        '''
+        Load a single Gaussian parameter file from disk.
+
+        Parameters
+        ----------
+        filename : str
+            Name of the Gaussian parameter file, in .npy or plain text format.
+            First row is the mean parameters and the following six rows
+            represents the covariance matrix.
+            The routine will look for helixmc/data folder if the file cannot
+            be found.
+            Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
+            Distance in unit of Å, angle in unit of radians.
+
+        Returns
+        -------
+        random_step : RandomStepSimple
+            Random step generator corresponds to the input file.
+
+        Raises
+        ------
+        ValueError : if the input file does not exist.
+        '''
+        file_real = filename[:]
+        if not os.path.exists(file_real):
+            location = os.path.abspath(os.path.dirname(__file__))
+            file_real = os.path.join(location, 'data/', file_real)
+        if not os.path.exists(file_real):
+            raise ValueError('Cannot find the input file %s!' % filename)
+        if file_real[-3:] == 'npy':
+            gaussian_params = np.load(file_real)
+        else:
+            gaussian_params = np.loadtxt(file_real)
+        params_avg = gaussian_params[0]
+        params_cov = gaussian_params[1:]
+        return cls(
+            params_avg=params_avg, params_cov=params_cov)
+
+    @classmethod
+    def load_params(cls, filename, gaussian_sampling=True):
+        '''
+        Load a simple bp-step parameter file from disk.
+
+        Parameters
+        ----------
+        filename : str
+            Name of the parameter file, in .npy or text format. It should
+            contain a (N * 6) numpy array, where each row is a step parameter.
+            The routine will look for helixmc/data folder if the file cannot
+            be found.
+            Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
+            Distance in unit of Å, angle in unit of radians.
+        gaussian_sampling : bool, optional
+            Whether to sample assuming a multivariate Gaussian.
+
+        Returns
+        -------
+        random_step : RandomStepSimple
+            Random step generator corresponds to the input file.
+
+        Raises
+        ------
+        ValueError : if the input file does not exist.
+        '''
+        file_real = filename[:]
+        if not os.path.exists(file_real):
+            location = os.path.abspath(os.path.dirname(__file__))
+            file_real = os.path.join(location, 'data/', file_real)
+        if not os.path.exists(file_real):
+            raise ValueError('Cannot find the input file %s!' % filename)
+        if file_real[-3:] == 'npy':
+            params = np.load(file_real)
+        else:
+            params = np.loadtxt(file_real)
+        return cls(params, gaussian_sampling=gaussian_sampling)
+
     @property
     def gaussian_sampling(self):
         return self._gaussian_sampling
@@ -153,13 +232,18 @@ class RandomStepSimple(RandomStepBase):
         self._params = val
         if val is not None:
             self._params_avg = np.average(val, axis=0)
+            #self._params_avg = np.hstack((
+            #    np.average(val[:, :3], axis=0), circmean(val[:, 3:], axis=0)))
+            #val[:, 3:] -= self._params_avg[3:]
+            #val[:, 3:][val[:, 3:] > np.pi] -= 2 * np.pi
+            #val[:, 3:][val[:, 3:] <= -np.pi] += 2 * np.pi
             self._params_cov = np.cov(val, rowvar=0)
             ### To avoid float-point error ###
             self._params_avg[self._params_avg < 1e-15] = 0
             self._params_cov[self._params_cov < 1e-15] = 0
             ######
-            self._o_list, self._R_list = params2coords(val)
-            self._n_bp_step = val.shape[0]
+            self._o_list, self._R_list = params2coords(self._params)
+            self._n_bp_step = self._params.shape[0]
         self.gaussian_sampling = self.gaussian_sampling
 
     def __call__(self):
@@ -189,48 +273,6 @@ class RandomStepSimple(RandomStepBase):
         else:
             i = random.randint(self._n_bp_step)
             return self._params[i], self._o_list[i], self._R_list[i]
-
-
-def load_gaussian_params(filename):
-    '''
-    Load a single Gaussian parameter file from disk and output
-    a RandomStepSimple object.
-
-    Parameters
-    ----------
-    filename : str
-        Name of the Gaussian parameter file, in .npy or plain text format.
-        First row is the mean parameters and the following six rows represents
-        the covariance matrix.
-        The routine will look for helixmc/data folder if the file cannot
-        be found.
-        Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
-        Distance in unit of Å, angle in unit of radians.
-
-    Returns
-    -------
-    random_step : RandomStepSimple
-        Random step generator corresponds to the input file.
-
-    Raises
-    ------
-    ValueError : if the input file does not exist.
-    '''
-    file_real = filename[:]
-    if not os.path.exists(file_real):
-        location = os.path.abspath(os.path.dirname(__file__))
-        file_real = os.path.join(location, 'data/', file_real)
-    if not os.path.exists(file_real):
-        raise ValueError('Cannot find the input file %s!' % filename)
-    if file_real[-3:] == 'npy':
-        gaussian_params = np.load(file_real)
-    else:
-        gaussian_params = np.loadtxt(file_real)
-    params_avg = gaussian_params[0]
-    params_cov = gaussian_params[1:]
-    random_step = RandomStepSimple(
-        params_avg=params_avg, params_cov=params_cov, gaussian_sampling=True)
-    return random_step
 
 
 class RandomStepAgg(RandomStepBase):
@@ -384,6 +426,9 @@ class RandomStepAgg(RandomStepBase):
         for i, rand in enumerate(self._rand_list):
             params_list[i] = rand.params_avg
         return np.average(params_list, axis=0)
+        return np.hstack((
+            np.average(params_list[:, :3], axis=0),
+            circmean(params_list[:, 3:], axis=0)))
 
     @property
     def names(self):

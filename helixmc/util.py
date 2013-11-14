@@ -339,6 +339,11 @@ def coords2dr(coord):
     -------
     dr : ndarray, shape (N,3)
         Delta-r vectors (dr[i] = r[i+1] - r[i]).
+
+    See Also
+    --------
+    dr2coords :
+        Convert delta-r vectors to coordinates.
     '''
     dr = coord[1:] - coord[:-1]
     return dr
@@ -357,6 +362,11 @@ def dr2coords(dr):
     -------
     coord : ndarray, shape (N+1,3)
         Coordinates for the base-pair-centers (r[i]).
+
+    See Also
+    --------
+    coords2dr :
+        Convert xyz coordinates of axis curve to delta-r vectors.
     '''
     coord = np.vstack((np.zeros(3), np.cumsum(dr, axis=0)))
     return coord
@@ -364,7 +374,7 @@ def dr2coords(dr):
 
 def params2data(params, frame0=None):
     '''
-    Convert base-pair step parameters to delta-r vectors and frames.
+    Convert step parameters to delta-r vectors and frames.
 
     Parameters
     ----------
@@ -381,6 +391,11 @@ def params2data(params, frame0=None):
         Delta-r vectors (dr[i] = r[i+1] - r[i]).
     frames : ndarray, shape (N+1,3,3)
         Frame of each base-pair.
+
+    See Also
+    --------
+    data2params :
+        Convert delta-r vectors and frames to step parameters.
     '''
     if frame0 is None:
         frame0 = np.eye(3)
@@ -397,10 +412,22 @@ def params2data(params, frame0=None):
     return dr, frames
 
 
+def _data2params(dr, f1, f2):
+    '''
+    Convert delta-r, frame for 1st and 2nd bp to step parameters.
+    '''
+    if len(dr.shape) == 1:  # 1D case
+        return coords2params(f1.T.dot(dr), f1.T.dot(f2))
+    else:
+        o = np.einsum('ijk,ij ->ik', f1, dr)
+        R = np.einsum('ikj,ikl->ijl', f1, f2)
+        params = coords2params(o, unitarize(R))
+        return params
+
+
 def data2params(dr, frames):
     '''
-    Convert delta-r vectors and frames of each base-pair back to
-    the step parameters.
+    Convert delta-r vectors and frames to step parameters.
 
     Parameters
     ----------
@@ -415,19 +442,18 @@ def data2params(dr, frames):
         Base-pair step parameters.
         Distance in unit of Å, angle in unit of radians.
         Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
+
+    See Also
+    --------
+    params2data :
+        Convert step parameters to delta-r vectors and frames.
     '''
-    n = dr.shape[0]
-    o = np.einsum('ijk,ij ->ik', frames[:-1], dr)
-    R = np.empty((n, 3, 3))
-    for i in xrange(n):
-        R[i] = unitarize(frames[i].T.dot(frames[i+1]))
-    params = coords2params(o, R)
-    return params
+    return _data2params(dr, frames[:-1], frames[1:])
 
 
-def frames2params_3dna(o1, o2, F1, F2):
+def frames2params(o1, o2, f1, f2):
     '''
-    Convert bp coordinates and frames in 3DNA format to step parameters.
+    Convert bp coordinates and frames to step parameters.
 
     Parameters
     ----------
@@ -435,9 +461,9 @@ def frames2params_3dna(o1, o2, F1, F2):
         Origins for the bp-centers of the 1st base-pair.
     o2 : ndarray, shape (N,3)
         Origins for the bp-centers of the 2nd base-pair.
-    F1 : ndarray, shape (N,3,3)
+    f1 : ndarray, shape (N,3,3)
         Frames for the 1st base-pair.
-    F2 : ndarray, shape (N,3,3)
+    f2 : ndarray, shape (N,3,3)
         Frames for the 2nd base-pair.
 
     Returns
@@ -449,16 +475,29 @@ def frames2params_3dna(o1, o2, F1, F2):
 
     See Also
     --------
-    coords2params :
-        Convert bp-center coordinates and rotation matrix
-        to base-pair step parameters.
+    frames2params_3dna :
+        Convert bp coordinates and frames in 3DNA format to step parameters.
     '''
-    if len(o1.shape) == 1:  # 1D case
-        return coords2params(F1.dot(o2 - o1), F1.dot(F2.T))
-    else:  # 2D case
-        o = np.einsum('ijk,ik->ij', F1, o2 - o1)
-        R = np.einsum('ijk,ilk->ijl', F1, F2)
-        return coords2params(o, R)
+    return _data2params(o2 - o1, f1, f2)
+
+
+def frames2params_3dna(o1, o2, f1, f2):
+    '''
+    Convert bp coordinates and frames in 3DNA format to step parameters.
+    Note that the 3DNA base-pair frames differ from HelixMC
+    by a transpose operation.
+
+    See Also
+    --------
+    frames2params :
+        Convert bp coordinates and frames to step parameters.
+    '''
+    if len(o1.shape == 1):  # 1D case
+        return frames2params(o1, o2, f1.T, f2.T)
+    else:
+        return frames2params(
+            o1, o2, np.transpose(f1, (0, 2, 1)),
+            np.transpose(f2, (0, 2, 1)))
 
 
 def params_join(params):
@@ -490,7 +529,7 @@ def params_join(params):
 def unitarize(R):
     '''
     Enforce unitarity of the input matrix using Gram-Schmidt process.
-    This function overwrites the input matrix.
+    This function modifies the input matrix inplace.
 
     Parameters
     ----------

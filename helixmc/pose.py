@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
+from scipy.stats import circmean
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 from util import params2data, writhe_exact, writhe_fuller, ribbon_twist
@@ -94,6 +95,7 @@ class HelixPose(object):
         self._params = None
         self._writhe_data = None
         self._twist_data = None
+        self._twist_center = 0.0
         self._compute_tw_wr = False
 
         #Auxillary cached data
@@ -110,6 +112,7 @@ class HelixPose(object):
         elif params is not None:
             self.set_params(params, frame0)
         self.compute_tw_wr = compute_tw_wr
+        self.guess_twist_center()
 
     def load_from_file(self, input_file):
         '''
@@ -165,6 +168,14 @@ class HelixPose(object):
         np.savez(
             filename, params=self._params, dr=self._dr, frames=self._frames)
 
+    def guess_twist_center(self):
+        '''
+        Attempt to guess the twist center value.
+        Use circmean of the current twists.
+        '''
+        self._update_all_twist()
+        self._twist_center = circmean(self._twist_data)
+
     @property
     def compute_tw_wr(self):
         return self._compute_tw_wr
@@ -204,7 +215,7 @@ class HelixPose(object):
     def _update_all_twist(self):
         "Update Twist data."
         self._twist_data = ribbon_twist(
-            self._dr, self._frames[:, :, 1], return_val_only=False)
+            self._dr, self._frames[:, :, 1], False, self._twist_center)
 
     def _update_indv_twist(self, full_update=False):
         '''
@@ -228,7 +239,8 @@ class HelixPose(object):
             frames = self._frames.copy()
             frames[(i+1):] = np.einsum(
                 'jk,ikl->ijl', self._mat, frames[(i+1):])
-            twist[:] = ribbon_twist(self._dr, frames[:, :, 1], False)
+            twist[:] = ribbon_twist(
+                self._dr, frames[:, :, 1], False, self._twist_center)
             return twist
 
         if i == 0 or i == 1:
@@ -236,23 +248,27 @@ class HelixPose(object):
             frames[(i+1):] = np.einsum(
                 'jk,ikl->ijl', self._mat, frames[(i+1):])
             twist[:(i+2)] = ribbon_twist(
-                np.vstack((ez, dr[:(i+3)])), frames[:, :, 1], False)
+                np.vstack((ez, dr[:(i+3)])), frames[:, :, 1],
+                False, self._twist_center)
             frames = np.einsum('jk,ikl->ijl', self._mat, self._frames[-2:])
             twist[-1] = ribbon_twist(
-                np.vstack((dr[-2:], ez)), frames[:, :, 1], False)
+                np.vstack((dr[-2:], ez)), frames[:, :, 1],
+                False, self._twist_center)
         elif i == self._n_bp - 2 or i == self._n_bp - 3:
             frames = self._frames[(i-1):].copy()
             frames[2:] = np.einsum('jk,ikl->ijl', self._mat, frames[2:])
             twist[(i-1):] = ribbon_twist(
-                np.vstack((dr[(i-2):], ez)), frames[:, :, 1], False)
+                np.vstack((dr[(i-2):], ez)), frames[:, :, 1],
+                False, self._twist_center)
         else:
             frames = self._frames[(i-1):(i+3)].copy()
             frames[2:] = np.einsum('jk,ikl->ijl', self._mat, frames[2:])
             twist[(i-1):(i+2)] = ribbon_twist(
-                dr[(i-2):(i+3)], frames[:, :, 1], False)
+                dr[(i-2):(i+3)], frames[:, :, 1], False, self._twist_center)
             frames = np.einsum('jk,ikl->ijl', self._mat, self._frames[-2:])
             twist[-1] = ribbon_twist(
-                np.vstack((dr[-2:], ez)), frames[:, :, 1], False)
+                np.vstack((dr[-2:], ez)), frames[:, :, 1],
+                False, self._twist_center)
         return twist
 
     def update(self, i, params, o=None, R=None):
@@ -429,7 +445,8 @@ class HelixPose(object):
         if self._obs['twist'] is None:
             if not self.compute_tw_wr:
                 self._obs['twist'] = ribbon_twist(
-                    self._dr, self._frames[:, :, 1])
+                    self._dr, self._frames[:, :, 1],
+                    twist_center=self._twist_center)
             else:
                 self._obs['twist'] = np.sum(self._twist_data)
         return self._obs['twist']

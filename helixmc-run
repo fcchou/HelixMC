@@ -22,7 +22,6 @@ import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
 from helixmc.random_step import RandomStepSimple, RandomStepAgg
-from helixmc.random_step import load_gaussian_params
 from helixmc.score import ScoreTweezers
 import time
 import argparse
@@ -142,21 +141,14 @@ if args.params is not None:
             raise argparse.ArgumentError(
                 '-seq is specified but user did not input '
                 'a seq-dependent database file!')
-        if args.params[-3:] == 'npy':
-            params = np.load(args.params)
-        elif args.params[-3:] == 'txt':
-            params = np.loadtxt(args.params)
-        else:
-            raise argparse.ArgumentError(
-                'Input of -params is of unknown datatype!')
-        random_step = RandomStepSimple(
-            params, gaussian_sampling=not args.no_gaussian_sampling)
+        random_step = RandomStepSimple.load_params(
+            args.params, gaussian_sampling=not args.no_gaussian_sampling)
 else:
     if args.seq is not None:
         raise argparse.ArgumentError(
             '-seq is specified but user did not input'
             ' a seq-dependent database file!')
-    random_step = load_gaussian_params(args.gaussian_params)
+    random_step = RandomStepSimple.load_gaussian_params(args.gaussian_params)
     if args.no_gaussian_sampling:
         raise argparse.ArgumentError(
             '-no_gaussian_sampling when -gaussian_params is being input!')
