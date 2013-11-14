@@ -5,7 +5,8 @@ import os
 import subprocess
 import numpy as np
 
-test_path = os.path.join( os.path.abspath(os.path.dirname(__file__)),
+test_path = os.path.join(
+    os.path.abspath(os.path.dirname(__file__)),
     'cmdline_tests')
 
 result_folder = 'test_results'
@@ -40,4 +41,3 @@ for test in tests:
             np.savetxt(key, data[key], fmt='%.6f')
     os.remove('MC_data.npz')
     os.chdir('../')
-

@@ -477,9 +477,11 @@ def params_join(params):
     params :  ndarray, shape (6)
         Base-pair step parameters between 1st and last.
     '''
-    dr, frames = params2coords(params)
-    if params.shape[0] == 1:
+    if len(params.shape) == 1:
         return params
+    if params.shape[0] == 1:
+        return params[0]
+    dr, frames = params2data(params)
     o = np.sum(dr, axis=0)
     R = frames[-1]
     return coords2params(o, R)
