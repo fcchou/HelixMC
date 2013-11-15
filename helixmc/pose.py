@@ -174,7 +174,7 @@ class HelixPose(object):
         Use circmean of the current twists.
         '''
         self._update_all_twist()
-        self._twist_center = circmean(self._twist_data)
+        self._twist_center = circmean(self._twist_data, np.pi, -np.pi)
 
     @property
     def compute_tw_wr(self):

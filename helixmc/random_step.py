@@ -231,16 +231,16 @@ class RandomStepSimple(RandomStepBase):
     def params(self, val):
         self._params = val
         if val is not None:
-            self._params_avg = np.average(val, axis=0)
-            #self._params_avg = np.hstack((
-            #    np.average(val[:, :3], axis=0), circmean(val[:, 3:], axis=0)))
-            #val[:, 3:] -= self._params_avg[3:]
-            #val[:, 3:][val[:, 3:] > np.pi] -= 2 * np.pi
-            #val[:, 3:][val[:, 3:] <= -np.pi] += 2 * np.pi
+            self._params_avg = np.hstack((
+                np.average(val[:, :3], axis=0),
+                circmean(val[:, 3:], np.pi, -np.pi, axis=0)))
+            val = val - self._params_avg
+            val[:, 3:][val[:, 3:] > np.pi] -= 2 * np.pi
+            val[:, 3:][val[:, 3:] <= -np.pi] += 2 * np.pi
             self._params_cov = np.cov(val, rowvar=0)
             ### To avoid float-point error ###
-            self._params_avg[self._params_avg < 1e-15] = 0
-            self._params_cov[self._params_cov < 1e-15] = 0
+            self._params_avg[np.abs(self._params_avg) < 1e-15] = 0
+            self._params_cov[np.abs(self._params_cov) < 1e-15] = 0
             ######
             self._o_list, self._R_list = params2coords(self._params)
             self._n_bp_step = self._params.shape[0]
@@ -425,10 +425,9 @@ class RandomStepAgg(RandomStepBase):
         params_list = np.empty((len(self._rand_list), 6))
         for i, rand in enumerate(self._rand_list):
             params_list[i] = rand.params_avg
-        return np.average(params_list, axis=0)
         return np.hstack((
             np.average(params_list[:, :3], axis=0),
-            circmean(params_list[:, 3:], axis=0)))
+            circmean(params_list[:, 3:], np.pi, -np.pi, axis=0)))
 
     @property
     def names(self):

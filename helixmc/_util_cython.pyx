@@ -338,8 +338,8 @@ def ribbon_twist(dr, rb_vec, return_val_only=True, twist_center=0.0):
     cdef np.intp_t i
 
     # Decide the range of step twist
-    cdef twist_lower = -pi + twist_center
-    cdef twist_upper = pi + twist_center
+    cdef double twist_lower = twist_center - pi
+    cdef double twist_upper = twist_center + pi
 
     #Compute inital b vector and alpha
     cross(&dr_c[0, 0], &dr_c[1, 0], b0)
