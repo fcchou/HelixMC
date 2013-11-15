@@ -13,4 +13,5 @@ install:
 script:
   - python integration_tests/runtest.py
   - diff -r test_results/ integration_tests/stored_results/
+  - python helixmc/tests/util_test.py
   - nosetests -v helixmc
