@@ -4,6 +4,7 @@ python:
 virtualenv:
   system_site_packages: true
 before_install:
+  - sudo apt-get update -qq
   - sudo apt-get install -qq python-numpy python-scipy python-matplotlib cython
   - sudo apt-get install -qq python-nose
 install:
@@ -12,4 +13,4 @@ install:
 script:
   - python integration_tests/runtest.py
   - diff -r test_results/ integration_tests/stored_results/
-  - nosetests
+  - nosetests -v helixmc
