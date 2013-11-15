@@ -613,3 +613,27 @@ def read_seq_from_fasta(fasta):
         if line[0] not in comment_symbols:
             seq += line.strip()
     return seq
+
+
+def _circmean(arr, axis=None):
+    '''
+    Circular mean of angles.
+    Results are in [-pi, pi]. Note that scipy.stats has a similar function,
+    but we re-implement it because the scipy one depends on its version.
+
+    Parameters
+    ----------
+    arr : ndarray
+        Input numpy array.
+
+    axis : int, optional
+        Axis on which the mean is computed.
+
+    Returns
+    -------
+    mean : ndarray
+        The circular mean.
+    '''
+    sin_mean = np.average(np.sin(arr), axis=axis)
+    cos_mean = np.average(np.cos(arr), axis=axis)
+    return np.arctan2(sin_mean, cos_mean)

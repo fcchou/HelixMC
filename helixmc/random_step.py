@@ -17,10 +17,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-from scipy.stats import circmean
 import abc
 import os.path
-from util import params2coords
+from util import params2coords, _circmean
 from __init__ import random
 
 
@@ -233,7 +232,7 @@ class RandomStepSimple(RandomStepBase):
         if val is not None:
             self._params_avg = np.hstack((
                 np.average(val[:, :3], axis=0),
-                circmean(val[:, 3:], np.pi, -np.pi, axis=0)))
+                _circmean(val[:, 3:], axis=0)))
             val = val - self._params_avg
             val[:, 3:][val[:, 3:] > np.pi] -= 2 * np.pi
             val[:, 3:][val[:, 3:] <= -np.pi] += 2 * np.pi
@@ -427,7 +426,7 @@ class RandomStepAgg(RandomStepBase):
             params_list[i] = rand.params_avg
         return np.hstack((
             np.average(params_list[:, :3], axis=0),
-            circmean(params_list[:, 3:], np.pi, -np.pi, axis=0)))
+            _circmean(params_list[:, 3:], axis=0)))
 
     @property
     def names(self):

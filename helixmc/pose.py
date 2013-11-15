@@ -17,11 +17,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-from scipy.stats import circmean
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 from util import params2data, writhe_exact, writhe_fuller, ribbon_twist
-from util import params2coords, unitarize, dr2coords
+from util import params2coords, unitarize, dr2coords, _circmean
 from __init__ import ez
 
 
@@ -174,7 +173,7 @@ class HelixPose(object):
         Use circmean of the current twists.
         '''
         self._update_all_twist()
-        self._twist_center = circmean(self._twist_data, np.pi, -np.pi)
+        self._twist_center = _circmean(self._twist_data)
 
     @property
     def compute_tw_wr(self):
