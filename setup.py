@@ -30,7 +30,7 @@ setup(
     version=VERSION,
     download_url=DOWNLOAD_URL,
     long_description=LONG_DESCRIPTION,
-    packages=["helixmc"],
+    packages=['helixmc', 'helixmc.tests'],
     scripts=['helixmc-run'],
     package_data=package_data,
     ext_modules=ext_modules,

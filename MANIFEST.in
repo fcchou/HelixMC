@@ -1,0 +1,6 @@
+recursive-include doc/source *
+recursive-include examples *
+recursive-include helixmc *.c *.h *.py *.rst
+recursive-include helixmc/data *.npz *.npz *.txt
+include COPYING
+include README.rst
