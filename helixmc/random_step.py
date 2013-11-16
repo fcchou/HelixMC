@@ -118,8 +118,8 @@ class RandomStepSimple(RandomStepBase):
             self._params_cov = params_cov
             self._params_avg = params_avg
             ### To avoid float-point error ###
-            #self._params_avg[np.abs(self._params_avg) < 1e-15] = 0
-            #self._params_cov[np.abs(self._params_cov) < 1e-15] = 0
+            self._params_avg[np.abs(self._params_avg) < 1e-15] = 0
+            self._params_cov[np.abs(self._params_cov) < 1e-15] = 0
 
     @classmethod
     def load_gaussian_params(cls, filename):
