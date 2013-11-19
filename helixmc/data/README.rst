@@ -43,8 +43,11 @@ below summarizes these data.
 :RNA_gau_graft:
     Chimera dataset with mean from RNA_gau and covariance from DNA_gau.
 
-:\*gau_refit:
+:\*gau_refit
     Manually refitted datasets to match experimental measurements.
+
+:\*_2.8_all_\?bp:
+    Multi-bp datasets derived from the `2.8_all` pdb lists.
 
 Note that Gaussian dataset (`*gau*.npy`) must be loaded with
 `-gaussian_params` tag in `helixmc-run` command line (instead of `-params`).

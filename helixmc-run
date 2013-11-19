@@ -184,7 +184,7 @@ else:
         check_file_exist(args.frame0)
         frame0 = np.load(args.frame0)
     # The params should be in (n_bp-1, 6)
-    params = np.tile(random_step.params_avg, (n_bp-1, 1)).copy()
+    params = np.tile(random_step.params_avg, (n_bp-1, 1))
     pose = HelixPose(params=params, frame0=frame0)
 
 scorefxn = ScoreTweezers(
