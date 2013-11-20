@@ -13,7 +13,7 @@ Contacts
 Links
 -----
 - Source code: https://github.com/fcchou/HelixMC
-- HTML documentation: http://fcchou.github.com/HelixMC/
+- HTML documentation: http://helixmc.readthedocs.org/
 - Das Lab: http://www.stanford.edu/~rhiju/
 
 
