@@ -53,3 +53,5 @@ helixmc/build/
 doc/build/
 doc/source/generated/
 test_results/
+dist/
+MANIFEST

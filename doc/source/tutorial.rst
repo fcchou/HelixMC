@@ -29,36 +29,40 @@ by HelixMC. The versions we used are given in parathesis.
 * A working C/C++ compiler. Here we used GCC (4.6.3)
 
 The easiest way to setup the python environment is to use latest Enthought
-Python Distribution (http://www.enthought.com/). HelixMC will probably run in
-different environments but there is no gurantee for that.
+Python Distribution (http://www.enthought.com/).
 
-The source code of HelixMC is hosted on GitHub. To download, simply run::
+The easiest way to install is to use pip install::
+
+    $ pip install helixmc
+
+Alternatively, one can download the source code from the latest GitHub
+repository. Simply run::
 
     $ git clone https://github.com/fcchou/HelixMC.git
 
 Or you can go to https://github.com/fcchou/HelixMC/ and download the source
 code by clicking the "Download ZIP" button.
 
-After this, you can instal HelixMC by using::
+After this, you can instal HelixMC using `setup.py`::
 
-  python setup.py build
-  sudo python setup.py install
+    $ python setup.py build
+    $ sudo python setup.py install
 
-Alternatively, you can just add your HelixMC folder into the system's
-``$PATH`` and ``$PYTHONPATH``. In bash this can be done by adding the
-following lines to your ``~/.bashrc``::
+Instead of installing using setup.py, you can just add your HelixMC folder
+into the system's ``$PATH`` and ``$PYTHONPATH``. In bash this can be done by
+adding the following lines to your ``~/.bashrc``::
 
     export PATH=$PATH:<HelixMC Path>
     export PYTHONPATH=$PYTHONPATH:<HelixMC Path>
 
 Then build the Cython extension. Under the ``helixmc/`` folder, run::
 
-    python _cython_build.py build_ext --inplace
+    $ python _cython_build.py build_ext --inplace
 
 Note that this requires you to have Cython installed. Otherwise you can choose
 to build the c source file, then you do not need Cython::
 
-    python _c_build.py build_ext --inplace
+    $ python _c_build.py build_ext --inplace
 
 Now you should be all set. To test the install, simply run::
 
