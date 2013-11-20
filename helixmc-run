@@ -199,7 +199,7 @@ def MC_move(pose, moving_step, scorefxn):
         next_step_data = random_step(seq_id[moving_step])
     else:
         next_step_data = random_step()
-    if scorefxn.is_empty():
+    if scorefxn.is_empty:
         pose.update(moving_step, *next_step_data)
         return True
     else:
