@@ -49,9 +49,4 @@ setup(
         'Operating System :: Unix',
         'Operating System :: MacOS'
     ],
-    install_requires=[
-        'numpy>=1.6.1',
-        'scipy>=0.10.1',
-        'matplotlib>=1.1.0',
-    ],
 )
