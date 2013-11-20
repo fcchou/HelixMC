@@ -224,8 +224,8 @@ def writhe_fuller(double[:, ::1] dr, bool return_val_only=True):
 
     See Also
     --------
-    writhe_exact :
-        Compute the writhe of the helix using the exact Gauss double integral.
+    writhe_exact : Compute the writhe of the helix using the exact Gauss
+    double integral.
     ribbon_twist : Compute the ribbon-twist of a helix.
 
     Notes

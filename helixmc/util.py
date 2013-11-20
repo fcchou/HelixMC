@@ -44,9 +44,8 @@ def Rz(theta):
     --------
     Ry : Return y-rotation matrices with rotational angle theta.
     Rx : Return x-rotation matrices with rotational angle theta.
-    R_axis :
-        Return rotation matrices with rotational angle theta along
-        an arbitary rotation axis.
+    R_axis : Return rotation matrices with rotational angle theta
+    along an arbitary rotation axis.
     '''
     if isinstance(theta, np.ndarray):  # array version
         sin_theta = np.sin(theta)
