@@ -1,9 +1,8 @@
 HelixMC Integration Tests
 =========================
-
-This folder contains tests for HelixMC. Currently we only test the helixmc-run
-command lines. These test command lines are located in the `cmdline_tests`
-folder. To start the test, simply run::
+This folder contains command line integration tests for HelixMC. The test
+command lines are located in the `cmdline_tests` folder. To start the test,
+simply run::
 
   python runtest.py
 

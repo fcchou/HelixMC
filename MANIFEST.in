@@ -1,6 +1,5 @@
-recursive-include doc/source *
-recursive-include examples *
-recursive-include helixmc *.c *.h *.py *.rst
-recursive-include helixmc/data *.npz *.npz *.txt
+recursive-include helixmc *.c *.py *.rst *.pyx
+recursive-include helixmc/data *.npz *.npy *.txt
 include COPYING
 include README.rst
+include setup.py

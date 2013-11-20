@@ -164,6 +164,8 @@ class ScoreAgg(ScoreBase):
     ----------
     `score_list` : list
         See Parameters section above.
+    `is_empty` : bool
+        If the score_list is empty.
     '''
     def __init__(self, score_list=[]):
         self.score_list = score_list
@@ -204,15 +206,8 @@ class ScoreAgg(ScoreBase):
         '''
         self.score_list = []
 
+    @property
     def is_empty(self):
-        '''
-        Check if the current score is empty.
-
-        Returns
-        -------
-        is_empty : bool
-            If the score_list is empty.
-        '''
         return (not self.score_list)
 
 

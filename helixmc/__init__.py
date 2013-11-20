@@ -35,8 +35,8 @@ Contacts
 Links
 -----
 - Source code: https://github.com/fcchou/HelixMC
-- HTML documentation: http://fcchou.github.com/HelixMC/
-- Das Lab: http://www.stanford.edu/~rhiju/
+- HTML documentation: http://helixmc.readthedocs.org/
+- Das Lab @ Stanford: http://daslab.stanford.edu
 """
 #version
 __version__ = '0.5'

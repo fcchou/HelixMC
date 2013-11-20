@@ -1,6 +1,5 @@
 About us
 ========
-
 The HelixMC project is authored by Fang-Chieh Chou in 2013, under the
 supervison of Dr. Rhiju Das, at the Biochemistry Department of Stanford
 Unviersity.
@@ -14,12 +13,11 @@ Links
 -----
 - Source code: https://github.com/fcchou/HelixMC
 - HTML documentation: http://helixmc.readthedocs.org/
-- Das Lab: http://www.stanford.edu/~rhiju/
+- Das Lab @ Stanford: http://daslab.stanford.edu
 
 
 Citing HelixMC
 --------------
-
 If you use HelixMC in scientific publications, we would appreciate
 citations to the following paper:
 
@@ -27,7 +25,6 @@ citations to the following paper:
 
 Funding
 -------
-
 Fang-Chieh Chou is supported by an HHMI International Student Research
 Fellowship, and a Stanford Bio-X Graduate Student Research Fellowship.
 

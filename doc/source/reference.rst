@@ -7,7 +7,6 @@ HelixMC Reference
 :Release: |version|
 :Date: |today|
 
-
 .. currentmodule:: helixmc
 
 This reference document details functions, modules, and objects
@@ -16,7 +15,6 @@ For learning how to use HelixMC, see also :ref:`tutorial`.
 
 Code Organization
 =================
-
 HelixMC is coded in Python in an object-oriented fashion, allowing easy usage
 and extension. Here we briefly summarizes the organization of the code.
 

@@ -1,6 +1,5 @@
 Examples
 ========
-
 Here is a list of examples in the ``examples/`` folder.
 
 :force_ext:
@@ -23,7 +22,7 @@ Here is a list of examples in the ``examples/`` folder.
 :helixplot:
     More examples for plotting the helices.
 
-:Lp_Olson:
+:lp_olson:
     How to perform alternative evaluation of bending persistence
     length using the method suggested by Olson et al. [R1]_.
 
@@ -38,4 +37,3 @@ Here is a list of examples in the ``examples/`` folder.
 .. [R2] Lipfert J, Wiggin M, Kerssemakers JWJ, Pedaci F, Dekker NH (2011)
    Freely orbiting magnetic tweezers to directly monitor changes in the twist
    of nucleic acids. Nat. Comm. 2: 439.
-

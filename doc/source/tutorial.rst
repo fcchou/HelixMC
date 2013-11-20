@@ -14,7 +14,6 @@ database. For details on the classes and functions availble, please see
 
 Install
 =======
-
 Currently HelixMC has only been tested on Linux. It should run on other
 Unix-like system (e.g. Mac OS X). The following packages are also required
 by HelixMC. The versions we used are given in parathesis.
@@ -69,7 +68,6 @@ This should output the help information for ``helixmc-run`` application.
 
 Run HelixMC
 ===========
-
 The `helixmc-run` application wraps the classes and functions of HelixMC to
 allow simple MC job submissions from command line.
 
@@ -149,7 +147,6 @@ folder in HelixMC, which is briefly summarized below.
 
 Other Examples
 ==============
-
 Here is a list of examples in the ``examples/`` folder.
 
 :force_ext:
@@ -172,7 +169,7 @@ Here is a list of examples in the ``examples/`` folder.
 :helixplot:
     More examples for plotting the helices.
 
-:Lp_Olson:
+:lp_olson:
     How to perform alternative evaluation of bending persistence
     length using the method suggested by Olson et al. [R3]_.
 
@@ -181,7 +178,6 @@ Here is a list of examples in the ``examples/`` folder.
 
 Base-pair Step Parameters Database
 ==================================
-
 In the ``helixmc/data/`` folder, several different bp-step parameter sets are
 given. These datasets were all extracted from structures in Protein Data Bank
 (PDB, http://www.pdb.org/), with different selection and filtering. The list

@@ -1,6 +1,5 @@
 Base-pair Step Parameters Database
 ==================================
-
 In the ``helixmc/data/`` folder, several different bp-step parameter sets are
 given. These datasets were all extracted from structures in Protein Data Bank
 (PDB, http://www.pdb.org/), with different selection and filtering. The list

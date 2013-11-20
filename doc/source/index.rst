@@ -5,7 +5,6 @@
 
 HelixMC documentation
 =====================
-
 HelixMC is a software package for Monte-Carlo (MC) simulations of DNA/RNA
 helices using the base-pair level model. It provides a powerful tool to
 understand the flexibility of DNA/RNA helices through numerical simualtions.

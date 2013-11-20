@@ -1,19 +1,24 @@
 #! /usr/bin/env python
 
-from distutils.core import setup
-from distutils.extension import Extension
+try:
+    from setuptools import setup
+    from setuptools import Extension
+except:
+    from distutils.core import setup
+    from distutils.extension import Extension
 import helixmc
 import numpy
 
 DISTNAME = 'helixmc'
-DESCRIPTION = "Python-based Monte Carlo simulator for DNA/RNA helices."
+DESCRIPTION = "Python-based Monte Carlo simulator for DNA/RNA duplexes."
 LONG_DESCRIPTION = open('README.rst').read()
 AUTHOR = 'Fang-Chieh Chou'
-AUTHOR_EMAIL = 'fcchou@stanford.edu'
+AUTHOR_EMAIL = 'fcchou1986@gmail.com'
 URL = 'http://fcchou.github.com/HelixMC/'
 LICENSE = 'GPL'
-DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC'
-VERSION = str(helixmc.__version__)
+DOWNLOAD_URL = 'https://github.com/fcchou/HelixMC/tarball/master'
+VERSION = helixmc.__version__
+PLATFORMS = ["Linux", "Mac OS-X", "Unix"]
 ext_modules = [Extension(
     "helixmc._util_cython", ["helixmc/_util_cython.c"],
     include_dirs=[numpy.get_include()]
@@ -28,6 +33,7 @@ setup(
     license=LICENSE,
     url=URL,
     version=VERSION,
+    platforms=PLATFORMS,
     download_url=DOWNLOAD_URL,
     long_description=LONG_DESCRIPTION,
     packages=['helixmc', 'helixmc.tests'],
@@ -42,5 +48,10 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: Unix',
         'Operating System :: MacOS'
+    ],
+    install_requires=[
+        'numpy>=1.6.1',
+        'scipy>=0.10.1',
+        'matplotlib>=1.1.0',
     ],
 )
