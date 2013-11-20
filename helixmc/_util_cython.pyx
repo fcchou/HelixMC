@@ -176,9 +176,11 @@ def writhe_exact(dr):
 
     See Also
     --------
-    writhe_fuller : Compute the writhe of the helix using the Fuller's
-    approximated single integral.
-    ribbon_twist : Compute the ribbon-twist of a helix.
+    writhe_fuller :
+        Compute the writhe of the helix using the Fuller approximated single
+        integral.
+    ribbon_twist :
+        Compute the ribbon-twist of a helix.
 
     Notes
     -----
@@ -224,9 +226,10 @@ def writhe_fuller(double[:, ::1] dr, bool return_val_only=True):
 
     See Also
     --------
-    writhe_exact : Compute the writhe of the helix using the exact Gauss
-    double integral.
-    ribbon_twist : Compute the ribbon-twist of a helix.
+    writhe_exact :
+        Compute the writhe of the helix using the exact Gauss double integral.
+    ribbon_twist :
+        Compute the ribbon-twist of a helix.
 
     Notes
     -----
@@ -315,8 +318,8 @@ def ribbon_twist(dr, rb_vec, return_val_only=True, twist_center=0.0):
     See Also
     --------
     writhe_fuller :
-        Compute the writhe of the helix using the Fuller's
-        approximated single integral.
+        Compute the writhe of the helix using the Fuller approximated single
+        integral.
     writhe_exact :
         Compute the writhe of the helix using the exact Gauss double integral.
     '''

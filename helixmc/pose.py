@@ -44,6 +44,11 @@ class HelixPose(object):
         Whether to compute twist and writhe (Fuller's writhe) during system
         update. Should be set to True for link-constrained simulations.
 
+    Raises
+    ------
+    ValueError
+        If n_bp < 2
+
     Attributes
     ----------
     `compute_tw_wr` : bool
@@ -78,10 +83,6 @@ class HelixPose(object):
     `rb_vec` : ndarray of (N,3)
         Ribbon vectors of all base-pairs in the helix (n_bp entries).
 
-    Raises
-    ------
-    ValueError
-        If n_bp < 2
     '''
     def __init__(
         self, input_file=None, params=None, compute_tw_wr=False,

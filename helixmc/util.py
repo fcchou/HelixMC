@@ -148,9 +148,12 @@ def R_axis(theta, axis):
 
     See Also
     --------
-    Rz : Return z-rotation matrices with rotational angle theta.
-    Ry : Return y-rotation matrices with rotational angle theta.
-    Rx : Return x-rotation matrices with rotational angle theta.
+    Rz :
+        Return z-rotation matrices with rotational angle theta.
+    Ry :
+        Return y-rotation matrices with rotational angle theta.
+    Rx :
+        Return x-rotation matrices with rotational angle theta.
     '''
     if isinstance(theta, np.ndarray):  # array version
         sin_theta = np.sin(theta)
@@ -229,8 +232,8 @@ def params2coords(params):
     See Also
     --------
     coords2params :
-        Convert bp-center coordinates and rotation matrix
-        to base-pair step parameters.
+        Convert bp-center coordinates and rotation matrix to base-pair step
+        parameters.
     '''
     if len(params.shape) == 1:  # 1D case
         Tau = math.sqrt(params[3] ** 2 + params[4] ** 2)
@@ -275,8 +278,8 @@ def coords2params(o2, R2):
     See Also
     --------
     params2coords :
-        Convert base-pair step parameters to bp-center coordinates
-        and rotation matrix.
+        Convert base-pair step parameters to bp-center coordinates and
+        rotation matrix.
     '''
     if len(o2.shape) == 1:  # 1D case
         Tau = math.acos(R2[2, 2])

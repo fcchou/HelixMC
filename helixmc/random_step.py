@@ -30,9 +30,11 @@ class RandomStepBase(object):
 
     See Also
     --------
-    RandomStepSimple : Simple random bp-step generator.
-    RandomStepAgg : Random bp-step generator by aggregrating multiple
-    independent bp-step generators.
+    RandomStepSimple :
+        Simple random bp-step generator.
+    RandomStepAgg :
+        Random bp-step generator by aggregrating multiple independent bp-step
+        generators.
     """
     __metaclass__ = abc.ABCMeta
 
@@ -100,8 +102,8 @@ class RandomStepSimple(RandomStepBase):
     RandomStepBase :
         Base class for Random bp-step generator, for inheritence only.
     RandomStepAgg :
-        Random bp-step generator by aggregrating multiple
-        independent bp-step generators.
+        Random bp-step generator by aggregrating multiple independent bp-step
+        generators.
     '''
     def __init__(
         self, params=None, params_cov=None,
@@ -299,9 +301,10 @@ class RandomStepAgg(RandomStepBase):
 
     See Also
     --------
-    RandomStepBase : Base class for Random bp-step generator, for
-    inheritence only.
-    RandomStepSimple : Simple random bp-step generator.
+    RandomStepBase :
+        Base class for Random bp-step generator, for inheritence only.
+    RandomStepSimple :
+        Simple random bp-step generator.
     '''
     def __init__(self, data_file=None, gaussian_sampling=True):
         self._names = []
