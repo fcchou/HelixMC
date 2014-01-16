@@ -128,6 +128,7 @@ Useful Conversions
    util.params2data
    util.data2params
    util.params_join
+   util.frames2params
    util.frames2params_3dna
 
 Other Functions
@@ -138,6 +139,7 @@ Other Functions
    util.unitarize
    util.MC_acpt_rej
    util.read_seq_from_fasta
+   util.circmean
 
 .. _fitfxn:
 

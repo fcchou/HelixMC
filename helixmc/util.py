@@ -617,7 +617,7 @@ def read_seq_from_fasta(fasta):
     return seq
 
 
-def _circmean(arr, axis=None):
+def circmean(arr, axis=None):
     '''
     Circular mean of angles.
     Results are in [-pi, pi]. Note that scipy.stats has a similar function,
