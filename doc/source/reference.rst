@@ -137,9 +137,9 @@ Other Functions
    :toctree: generated/
 
    util.unitarize
+   util.circmean
    util.MC_acpt_rej
    util.read_seq_from_fasta
-   util.circmean
 
 .. _fitfxn:
 
