@@ -26,7 +26,7 @@ print 'Avg. Z:', np.average(data['coord_terminal'][:, 2])
 print 'Avg. Link:', np.average(data['twist'] + data['writhe'])
 
 # Helix Plotting #
-pose = HelixPose('test_run.npz')
+pose = HelixPose.from_file('test_run.npz')
 pose.plot_centerline(show=False)  # plot the centerline
 plt.title('Center line')
 

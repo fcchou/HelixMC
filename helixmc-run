@@ -177,7 +177,7 @@ if args.seq is not None:
 
 if args.in_frame is not None:
     check_file_exist(args.in_frame)
-    pose = HelixPose(input_file=args.in_frame)
+    pose = HelixPose.from_file(args.in_frame)
 else:
     frame0 = None
     if args.frame0 is not None:
@@ -185,7 +185,7 @@ else:
         frame0 = np.load(args.frame0)
     # The params should be in (n_bp-1, 6)
     params = np.tile(random_step.params_avg, (n_bp-1, 1))
-    pose = HelixPose(params=params, frame0=frame0)
+    pose = HelixPose(params, frame0)
 
 scorefxn = ScoreTweezers(
     args.force, args.torsional_stiffness, args.target_link, args.xy_stiffness)

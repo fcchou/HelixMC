@@ -8,9 +8,9 @@ import mpl_toolkits.mplot3d.axes3d as p3
 
 # Load data #
 pose_list = []
-pose_list.append(HelixPose('data0.npz'))
-pose_list.append(HelixPose('data1.npz'))
-pose_list.append(HelixPose('data2.npz'))
+pose_list.append(HelixPose.from_file('data0.npz'))
+pose_list.append(HelixPose.from_file('data1.npz'))
+pose_list.append(HelixPose.from_file('data2.npz'))
 
 coords = [pose.coord / 10 for pose in pose_list]
 colors = 'kbrgycm'

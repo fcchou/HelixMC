@@ -140,6 +140,7 @@ Other Functions
    util.circmean
    util.MC_acpt_rej
    util.read_seq_from_fasta
+   util.locate_data_file
 
 .. _fitfxn:
 

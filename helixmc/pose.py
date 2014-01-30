@@ -31,23 +31,15 @@ class HelixPose(object):
 
     Parameters
     ----------
-    input_file : str, optional
-        Input file (.npz) that stores the helix pose data. Overides
-        'params' if both specified.
-    params : ndarray of (N,6), optional
+    params : ndarray of (N,6)
         List of all bp-step parameters. Number of params should equal
-        to n_bp -1.
+        to n_bp - 1.
     frame0 : ndarray of (3,3)
         The frame of the first base-pair, default is np.eye(3) (overlaps with
         global coordinate). For initialization with params only.
     compute_tw_wr : bool, optional
-        Whether to compute twist and writhe (Fuller's writhe) during system
+        Whether to compute twist and writhe (Fuller writhe) during system
         update. Should be set to True for link-constrained simulations.
-
-    Raises
-    ------
-    ValueError
-        If n_bp < 2
 
     Attributes
     ----------
@@ -85,8 +77,7 @@ class HelixPose(object):
 
     '''
     def __init__(
-        self, input_file=None, params=None, compute_tw_wr=False,
-        frame0=None
+        self, params, frame0=None, compute_tw_wr=False
     ):
         #core data
         self._n_bp = None
@@ -107,21 +98,22 @@ class HelixPose(object):
         self._obs['frame_terminal'] = None
         self._obs['score'] = None
 
-        if input_file is not None:
-            self.load_from_file(input_file)
-        elif params is not None:
-            self.set_params(params, frame0)
+        self.set_params(params, frame0)
         self.compute_tw_wr = compute_tw_wr
         self.guess_twist_center()
 
-    def load_from_file(self, input_file):
+    @classmethod
+    def from_file(cls, input_file, compute_tw_wr=False):
         '''
         Load pose data from an input file.
 
         Parameters
         ----------
         input_file : str
-            Name of the input file containing the pose data.
+            Input file (.npz) that stores the helix pose data.
+        compute_tw_wr : bool, optional
+            Whether to compute twist and writhe (Fuller writhe) during system
+            update. Should be set to True for link-constrained simulations.
 
         Raises
         ------
@@ -129,12 +121,10 @@ class HelixPose(object):
             If n_bp < 2 in the input file.
         '''
         data = np.load(input_file)
-        self._params = data['params']
-        self._dr = data['dr']
-        self._frames = data['frames']
-        self._n_bp = self._frames.shape[0]
-        if self._n_bp < 2:
-            raise ValueError('HelixPose cannot have n_bp < 2!')
+        params = data['params']
+        frame0 = data['frame0']
+        pose = cls(params, frame0, compute_tw_wr)
+        return pose
 
     def copy(self):
         '''
@@ -166,7 +156,7 @@ class HelixPose(object):
             Name of the output file.
         '''
         np.savez(
-            filename, params=self._params, dr=self._dr, frames=self._frames)
+            filename, params=self._params, frame0=self._frames[0])
 
     def guess_twist_center(self):
         '''
@@ -197,7 +187,7 @@ class HelixPose(object):
         ----------
         params : ndarray of (N,6), optional
             List of all bp-step parameters. Number of params should equal
-            to n_bp -1.
+            to n_bp - 1.
         frame0 : ndarray of (3,3)
             The frame of the first base-pair, default is np.eye(3).
         '''

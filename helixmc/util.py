@@ -20,7 +20,7 @@ import numpy as np
 import math
 from numpy import pi
 from . import random, kBT
-from os.path import exists
+from os.path import isfile, join, abspath, dirname
 from _util_cython import writhe_fuller, writhe_exact, ribbon_twist
 
 
@@ -607,7 +607,7 @@ def read_seq_from_fasta(fasta):
     ValueError
         If the fasta file does not exist.
     '''
-    if not exists(fasta):
+    if not isfile(fasta):
         raise ValueError('The fasta file %s does not exist.' % fasta)
     comment_symbols = ['>', ';', '#']
     seq = ''
@@ -625,7 +625,7 @@ def circmean(arr, axis=None):
 
     Parameters
     ----------
-    arr : ndarray
+    arr : numpy.ndarray
         Input numpy array.
 
     axis : int, optional
@@ -633,9 +633,38 @@ def circmean(arr, axis=None):
 
     Returns
     -------
-    mean : ndarray
+    mean : numpy.ndarray
         The circular mean.
     '''
     sin_mean = np.average(np.sin(arr), axis=axis)
     cos_mean = np.average(np.cos(arr), axis=axis)
     return np.arctan2(sin_mean, cos_mean)
+
+
+def locate_data_file(data_file):
+    '''
+    Search for the input data_file.
+    Will look in either current folder or HelixMC data/.
+
+    Parameters
+    ----------
+    data_file : string
+        Input numpy array.
+
+    Returns
+    -------
+    data_file_working : string
+        Actual path of the found data file.
+
+    Raises
+    ------
+    ValueError : if the input file does not exist.
+    '''
+    if not isfile(data_file):
+        location = abspath(dirname(__file__))
+        data_file_working = join(location, 'data/', data_file)
+    else:
+        data_file_working = data_file
+    if not isfile(data_file_working):
+        raise ValueError('Cannot find the data file %s!' % data_file)
+    return data_file_working

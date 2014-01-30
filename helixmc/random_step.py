@@ -18,8 +18,7 @@
 
 import numpy as np
 import abc
-import os.path
-from util import params2coords, circmean
+from util import params2coords, circmean, locate_data_file
 from __init__ import random
 
 
@@ -133,8 +132,8 @@ class RandomStepSimple(RandomStepBase):
             Name of the Gaussian parameter file, in .npy or plain text format.
             First row is the mean parameters and the following six rows
             represents the covariance matrix.
-            The routine will look for helixmc/data folder if the file cannot
-            be found.
+            The routine will look for helixmc/data/ if the file is not
+            found in current folder.
             Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
             Distance in unit of Å, angle in unit of radians.
 
@@ -142,21 +141,12 @@ class RandomStepSimple(RandomStepBase):
         -------
         random_step : RandomStepSimple
             Random step generator corresponds to the input file.
-
-        Raises
-        ------
-        ValueError : if the input file does not exist.
         '''
-        file_real = filename[:]
-        if not os.path.exists(file_real):
-            location = os.path.abspath(os.path.dirname(__file__))
-            file_real = os.path.join(location, 'data/', file_real)
-        if not os.path.exists(file_real):
-            raise ValueError('Cannot find the input file %s!' % filename)
-        if file_real[-3:] == 'npy':
-            gaussian_params = np.load(file_real)
+        file_working = locate_data_file(filename)
+        if file_working[-3:] == 'npy':
+            gaussian_params = np.load(file_working)
         else:
-            gaussian_params = np.loadtxt(file_real)
+            gaussian_params = np.loadtxt(file_working)
         params_avg = gaussian_params[0]
         params_cov = gaussian_params[1:]
         return cls(
@@ -170,10 +160,10 @@ class RandomStepSimple(RandomStepBase):
         Parameters
         ----------
         filename : str
-            Name of the parameter file, in .npy or text format. It should
-            contain a (N * 6) numpy array, where each row is a step parameter.
-            The routine will look for helixmc/data folder if the file cannot
-            be found.
+            Name of the parameter file, in .npy or text format. It should be
+            a (N * 6) numpy array. Each row contains the 6 step parameters.
+            The routine will look for helixmc/data/ if the file is not
+            found in current folder.
             Order = [Shift, Slide, Rise, Tilt, Roll, Twist]
             Distance in unit of Å, angle in unit of radians.
         gaussian_sampling : bool, optional
@@ -183,21 +173,12 @@ class RandomStepSimple(RandomStepBase):
         -------
         random_step : RandomStepSimple
             Random step generator corresponds to the input file.
-
-        Raises
-        ------
-        ValueError : if the input file does not exist.
         '''
-        file_real = filename[:]
-        if not os.path.exists(file_real):
-            location = os.path.abspath(os.path.dirname(__file__))
-            file_real = os.path.join(location, 'data/', file_real)
-        if not os.path.exists(file_real):
-            raise ValueError('Cannot find the input file %s!' % filename)
-        if file_real[-3:] == 'npy':
-            params = np.load(file_real)
+        file_working = locate_data_file(filename)
+        if file_working[-3:] == 'npy':
+            params = np.load(file_working)
         else:
-            params = np.loadtxt(file_real)
+            params = np.loadtxt(file_working)
         return cls(params, gaussian_sampling=gaussian_sampling)
 
     @property
@@ -316,25 +297,16 @@ class RandomStepAgg(RandomStepBase):
     def load_from_file(self, data_file):
         '''
         Load data file in .npz format and append to the current aggregation.
-        The routine will look for helixmc/data folder if
-        the data_file cannot be found.
+            The routine will look for helixmc/data/ if the file is not
+            found in current folder.
 
         Parameters
         ----------
         data_file : str, optional
             Pre-curated database file with sequence dependence in .npz format.
-
-        Raises
-        ------
-        ValueError : if the data_file does not exist.
         '''
-        data_file_real = data_file[:]
-        if not os.path.exists(data_file_real):
-            location = os.path.abspath(os.path.dirname(__file__))
-            data_file_real = os.path.join(location, 'data/', data_file_real)
-        if not os.path.exists(data_file_real):
-            raise ValueError('Cannot find the data file %s!' % data_file)
-        data = np.load(data_file_real)
+        file_working = locate_data_file(data_file)
+        data = np.load(file_working)
         for name in data.files:
             self.append_random_step(name, RandomStepSimple(
                 params=data[name], gaussian_sampling=self.gaussian_sampling))
