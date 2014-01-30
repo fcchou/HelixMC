@@ -36,6 +36,10 @@ setup(
     scripts=['helixmc-run'],
     package_data=package_data,
     ext_modules=ext_modules,
+    requires=[
+        'numpy (>=1.6)',
+        'matplotlib (>=1.1)',
+    ],
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved',

@@ -32,11 +32,10 @@ class HelixPose(object):
     Parameters
     ----------
     params : ndarray of (N,6)
-        List of all bp-step parameters. Number of params should equal
-        to n_bp - 1.
+        List of all bp-step parameters. A N bp helix has (N-1)*6 parameters.
     frame0 : ndarray of (3,3), optional
-        The frame of the first base-pair, default is np.eye(3) (overlaps with
-        global coordinate). For initialization with params only.
+        The frame of the first base-pair, default is np.eye(3)
+        (overlaps with global coordinate).
     compute_tw_wr : bool, optional
         Whether to compute twist and writhe (Fuller writhe) during system
         update. Should be set to True for link-constrained simulations.

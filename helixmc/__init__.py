@@ -39,7 +39,7 @@ Links
 - Das Lab @ Stanford: http://daslab.stanford.edu
 """
 #version
-__version__ = '0.5'
+__version__ = '0.8'
 
 #list of all the modules (files)
 __all__ = [
