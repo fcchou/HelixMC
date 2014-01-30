@@ -22,8 +22,6 @@ by HelixMC. The versions we used are given in parathesis.
 
 * Numpy (1.6.1)
 
-* Scipy (0.10.1)
-
 * Matplotlib (1.1.0)
 
 * A working C/C++ compiler. Here we used GCC (4.6.3)

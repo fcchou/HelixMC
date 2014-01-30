@@ -23,7 +23,7 @@ Links
 Dependencies
 ============
 The required dependencies to build the software are Python >= 2.7,
-Numpy >= 1.6, SciPy >= 0.10, Matplotlib >= 1.1.0,
+Numpy >= 1.6, Matplotlib >= 1.1.0,
 and a working C/C++ compiler.
 
 Install
