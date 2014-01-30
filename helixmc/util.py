@@ -625,7 +625,7 @@ def circmean(arr, axis=None):
 
     Parameters
     ----------
-    arr : numpy.ndarray
+    arr : ndarray
         Input numpy array.
 
     axis : int, optional
@@ -633,7 +633,7 @@ def circmean(arr, axis=None):
 
     Returns
     -------
-    mean : numpy.ndarray
+    mean : ndarray
         The circular mean.
     '''
     sin_mean = np.average(np.sin(arr), axis=axis)

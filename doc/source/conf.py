@@ -35,7 +35,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary',
 
 #Autodoc Stuffs
 autosummary_generate = True
-
+numpydoc_show_class_members = False
 
 def skip(app, what, name, obj, skip, options):
     if name == "__init__" or name == '__call__':

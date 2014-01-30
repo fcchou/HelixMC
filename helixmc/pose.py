@@ -34,7 +34,7 @@ class HelixPose(object):
     params : ndarray of (N,6)
         List of all bp-step parameters. Number of params should equal
         to n_bp - 1.
-    frame0 : ndarray of (3,3)
+    frame0 : ndarray of (3,3), optional
         The frame of the first base-pair, default is np.eye(3) (overlaps with
         global coordinate). For initialization with params only.
     compute_tw_wr : bool, optional
