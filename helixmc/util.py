@@ -494,7 +494,7 @@ def frames2params_3dna(o1, o2, f1, f2):
     frames2params :
         Convert bp coordinates and frames to step parameters.
     '''
-    if len(o1.shape == 1):  # 1D case
+    if len(o1.shape) == 1:  # 1D case
         return frames2params(o1, o2, f1.T, f2.T)
     else:
         return frames2params(
