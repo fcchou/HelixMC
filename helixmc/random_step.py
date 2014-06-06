@@ -339,45 +339,6 @@ class RandomStepAgg(RandomStepBase):
         self._names.append(name)
         self._rand_list.append(random_step)
 
-    def symmetrize(self):
-        '''
-        Symmetrize the dataset by counting from opposite direction.
-
-        Raises
-        ------
-        ValueError :
-            If the dataset contain mixed RNA and DNA bases (U and T).
-        '''
-        is_DNA = False
-        is_RNA = False
-        for name in self._names:
-            if 'T' in name:
-                is_DNA = True
-            if 'U' in name:
-                is_RNA = True
-        if is_DNA and is_RNA:
-            raise ValueError(
-                "The data is RNA-DNA mixture!! Cannot symmetrize.")
-        if is_DNA:
-            name_conv = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
-        else:
-            name_conv = {'A': 'U', 'U': 'A', 'G': 'C', 'C': 'G'}
-
-        new_params = {}
-        for name in self._names:
-            sym_name = ''
-            for lett in name:
-                sym_name += name_conv[lett]
-            sym_name = sym_name[::-1]
-            params1 = self.get_rand_step(name).params
-            params1[:, 0] *= -1
-            params1[:, 3] *= -1
-            params2 = np.vstack((self.get_rand_step(sym_name).params, params1))
-            new_params[sym_name] = params2
-
-        for name in self._names:
-            self.get_rand_step(name).params = new_params[name]
-
     def clear_all(self):
         'Clear all random bp-step generator in the aggregation.'
         self._names[:] = []
@@ -490,3 +451,50 @@ class RandomStepAgg(RandomStepBase):
             raise TypeError(
                 "Input identifier has invalid datatype "
                 "(is %s, should be int or str)!!" % type(identifier))
+
+
+def symmetrize_WC(rand_step_agg):
+    '''
+    Symmetrize by counting from opposite direction.
+    Only works for RandomStepAgg containing only Watson-Crick bp steps.
+
+    Parameters
+    ----------
+    rand_step_agg : RandomStepAgg
+        The input rand_step object to be symmetrized
+
+    Raises
+    ------
+    ValueError :
+        If the dataset contain mixed RNA and DNA bases (U and T).
+    '''
+    is_DNA = False
+    is_RNA = False
+    for name in rand_step_agg._names:
+        if 'T' in name:
+            is_DNA = True
+        if 'U' in name:
+            is_RNA = True
+    if is_DNA and is_RNA:
+        raise ValueError(
+            "The data is RNA-DNA mixture!! Cannot symmetrize.")
+    if is_DNA:
+        name_conv = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
+    else:
+        name_conv = {'A': 'U', 'U': 'A', 'G': 'C', 'C': 'G'}
+
+    new_params = {}
+    for name in rand_step_agg._names:
+        sym_name = ''
+        for lett in name:
+            sym_name += name_conv[lett]
+        sym_name = sym_name[::-1]
+        params1 = rand_step_agg.get_rand_step(name).params
+        params1[:, 0] *= -1
+        params1[:, 3] *= -1
+        params2 = np.vstack((
+            rand_step_agg.get_rand_step(sym_name).params, params1))
+        new_params[sym_name] = params2
+
+    for name in rand_step_agg._names:
+        rand_step_agg.get_rand_step(name).params = new_params[name]

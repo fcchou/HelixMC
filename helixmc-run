@@ -21,7 +21,7 @@ import numpy as np
 import helixmc
 from helixmc import util
 from helixmc.pose import HelixPose
-from helixmc.random_step import RandomStepSimple, RandomStepAgg
+from helixmc.random_step import RandomStepSimple, RandomStepAgg, symmetrize_WC
 from helixmc.score import ScoreTweezers
 import time
 import argparse
@@ -131,7 +131,7 @@ if args.params is not None:
         random_step = RandomStepAgg(
             args.params, gaussian_sampling=not args.no_gaussian_sampling)
         if args.symmetrize:
-            random_step.symmetrize()
+            symmetrize_WC(random_step)
     else:
         if args.symmetrize:
             raise argparse.ArgumentError(

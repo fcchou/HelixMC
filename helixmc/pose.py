@@ -134,12 +134,13 @@ class HelixPose(object):
         pose_copy : HelixPose
             Copy of the current pose.
         '''
-        pose_copy = HelixPose()
+        pose_copy = HelixPose(self._params)
         pose_copy._n_bp = self._n_bp
         pose_copy._dr = self._dr.copy()
         pose_copy._frames = self._frames.copy()
         pose_copy._params = self._params.copy()
-        pose_copy._writhe_data = self._writhe_data.copy()
+        if self._writhe_data is not None:
+            pose_copy._writhe_data = self._writhe_data.copy()
         pose_copy._twist_data = self._twist_data.copy()
         pose_copy._obs = self._obs.copy()
         pose_copy._compute_tw_wr = self._compute_tw_wr
