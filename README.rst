@@ -18,6 +18,8 @@ Links
 =====
 - Source code: https://github.com/fcchou/HelixMC
 - HTML documentation: http://helixmc.readthedocs.org/
+- Publication: Chou F-C, Lipfert J, Das R (2014) Blind Predictions of DNA and
+  RNA Tweezers Experiments with Force and Torque. PLoS Comput Biol 10(8): e1003756. `Link <http://dx.doi.org/10.1371/journal.pcbi.1003756>`_
 - Das Lab @ Stanford: http://daslab.stanford.edu
 
 Dependencies
@@ -32,7 +34,7 @@ The easiest way to install is to use pip install::
     $ pip install helixmc
 
 Alternatively, one can download the source code from the latest GitHub
-repository. And install using `setup.py`::
+repository. And install using ``setup.py``::
 
     $ python setup.py build
     $ sudo python setup.py install

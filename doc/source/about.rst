@@ -21,7 +21,9 @@ Citing HelixMC
 If you use HelixMC in scientific publications, we would appreciate
 citations to the following paper:
 
-    <Not available yet>
+- Chou F-C, Lipfert J, Das R (2014) Blind Predictions of DNA and
+  RNA Tweezers Experiments with Force and Torque. PLoS Comput Biol 10(8):
+  e1003756. `Link <http://dx.doi.org/10.1371/journal.pcbi.1003756>`_
 
 Funding
 -------
