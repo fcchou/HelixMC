@@ -466,7 +466,7 @@ class HelixPose(object):
         return self.twist + self.writhe_exact
 
     @property
-    def coords(self):
+    def coord(self):
         return dr2coords(self._dr)
 
     @property
